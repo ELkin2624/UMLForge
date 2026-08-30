@@ -5,8 +5,6 @@ venv/
 env/
 .env/
 .venv/
-Scripts/
-Include/
 
 # =========================================================================
 # Python y Herramientas (Pytest, Ruff, Mypy)
