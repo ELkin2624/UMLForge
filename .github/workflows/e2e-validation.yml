@@ -43,7 +43,7 @@ jobs:
         run: |
           ruff check .
           black --check .
-          mypy packages/ services/api/ scripts/
+          mypy packages/ services/ scripts/ tests/xmi/
 
       - name: Run Automated Pytest Suite
         run: |

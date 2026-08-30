@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from services.api.config import settings
-from services.api.routers import deployment, e2e, health, models
+from services.api.routers import deployment, e2e, health, models, xmi
 from services.api.schemas.errors import APIError, ComponentDiagramUnsupportedError
 
 app = FastAPI(
@@ -27,6 +27,7 @@ app.include_router(health.router)
 app.include_router(models.router)
 app.include_router(deployment.router)
 app.include_router(e2e.router)
+app.include_router(xmi.router)
 
 
 # Exception Handlers

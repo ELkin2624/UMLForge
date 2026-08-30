@@ -8,7 +8,6 @@ from services.api.dependencies import get_model_service, get_storage_service
 from services.api.schemas.errors import (
     ComponentDiagramUnsupportedError,
     InvalidModelError,
-    NotImplementedFeatureError,
 )
 from services.api.schemas.request import GenerateRequest
 from services.api.schemas.response import ValidationResultResponse
@@ -80,13 +79,3 @@ def generate_project(
         media_type="application/zip",
         headers=headers,
     )
-
-
-@router.post("/import/xmi")
-def import_xmi() -> None:
-    raise NotImplementedFeatureError("XMI import/export not implemented yet")
-
-
-@router.post("/export/xmi")
-def export_xmi() -> None:
-    raise NotImplementedFeatureError("XMI import/export not implemented yet")
