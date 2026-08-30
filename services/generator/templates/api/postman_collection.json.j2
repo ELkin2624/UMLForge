@@ -1,0 +1,61 @@
+{
+  "info": {
+    "name": "{{ postman.collection_name }}",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {% for folder in postman.folders %}
+    {
+      "name": "{{ folder.name }}",
+      "item": [
+        {% for req in folder.requests %}
+        {
+          "name": "{{ req.name }}",
+          "request": {
+            "method": "{{ req.method }}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            {% if req.body_json %}
+            "body": {
+              "mode": "raw",
+              "raw": {{ req.body_json | tojson }}
+            },
+            {% endif %}
+            "url": {
+              "raw": "{{ req.url }}",
+              "host": [
+                "{{ req.url }}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  {% for t in req.tests %}
+                  "{{ t }}"{% if not loop.last %},{% endif %}
+                  {% endfor %}
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}

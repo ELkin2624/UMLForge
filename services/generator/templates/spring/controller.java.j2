@@ -1,0 +1,49 @@
+package {{ package_name }}.controller;
+
+import {{ package_name }}.dto.request.{{ entity.class_name }}Request;
+import {{ package_name }}.dto.response.{{ entity.class_name }}Response;
+import {{ package_name }}.service.{{ entity.class_name }}Service;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/{{ entity.table_name }}")
+public class {{ entity.class_name }}Controller {
+
+    private final {{ entity.class_name }}Service service;
+
+    public {{ entity.class_name }}Controller({{ entity.class_name }}Service service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<{{ entity.class_name }}Response>> getAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<{{ entity.class_name }}Response> getById(@PathVariable {{ entity.id_field.java_type }} id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<{{ entity.class_name }}Response> create(@Valid @RequestBody {{ entity.class_name }}Request request) {
+        return new ResponseEntity<>(service.create(request), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<{{ entity.class_name }}Response> update(@PathVariable {{ entity.id_field.java_type }} id, @Valid @RequestBody {{ entity.class_name }}Request request) {
+        return ResponseEntity.ok(service.update(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable {{ entity.id_field.java_type }} id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}

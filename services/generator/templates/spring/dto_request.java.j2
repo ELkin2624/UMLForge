@@ -1,0 +1,31 @@
+package {{ package_name }}.dto.request;
+
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public class {{ entity.class_name }}Request {
+
+    {% for field in entity.fields %}
+    {% if not field.is_nullable %}
+    @NotNull
+    {% endif %}
+    {% if field.min_length or field.max_length %}
+    @Size({% if field.min_length %}min = {{ field.min_length }}{% endif %}{% if field.min_length and field.max_length %}, {% endif %}{% if field.max_length %}max = {{ field.max_length }}{% endif %})
+    {% endif %}
+    private {{ field.java_type }} {{ field.name }};
+    {% endfor %}
+
+    // Getters and Setters
+    {% for field in entity.fields %}
+    public {{ field.java_type }} get{{ field.name[:1].upper() + field.name[1:] }}() {
+        return {{ field.name }};
+    }
+
+    public void set{{ field.name[:1].upper() + field.name[1:] }}({{ field.java_type }} {{ field.name }}) {
+        this.{{ field.name }} = {{ field.name }};
+    }
+    {% endfor %}
+}

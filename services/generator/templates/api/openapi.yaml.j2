@@ -1,0 +1,17 @@
+openapi: 3.0.1
+info:
+  title: {{ openapi.title }}
+  version: {{ openapi.version }}
+paths:
+  {% for ep in openapi.endpoints %}
+  "{{ ep.path }}":
+    {{ ep.method.lower() }}:
+      summary: {{ ep.summary }}
+      tags:
+        {% for tag in ep.tags %}
+        - {{ tag }}
+        {% endfor %}
+      responses:
+        "200":
+          description: OK
+  {% endfor %}

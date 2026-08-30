@@ -1,0 +1,72 @@
+package {{ package_name }}.service;
+
+import {{ package_name }}.entity.{{ entity.class_name }};
+import {{ package_name }}.dto.request.{{ entity.class_name }}Request;
+import {{ package_name }}.dto.response.{{ entity.class_name }}Response;
+import {{ package_name }}.repository.{{ entity.class_name }}Repository;
+import {{ package_name }}.exception.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.UUID;
+
+@Service
+@Transactional
+public class {{ entity.class_name }}Service {
+
+    private final {{ entity.class_name }}Repository repository;
+
+    public {{ entity.class_name }}Service({{ entity.class_name }}Repository repository) {
+        this.repository = repository;
+    }
+
+    public List<{{ entity.class_name }}Response> findAll() {
+        return repository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public {{ entity.class_name }}Response findById({{ entity.id_field.java_type }} id) {
+        {{ entity.class_name }} entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("{{ entity.class_name }} not found with id: " + id));
+        return mapToResponse(entity);
+    }
+
+    public {{ entity.class_name }}Response create({{ entity.class_name }}Request request) {
+        {{ entity.class_name }} entity = new {{ entity.class_name }}();
+        mapToEntity(request, entity);
+        entity = repository.save(entity);
+        return mapToResponse(entity);
+    }
+
+    public {{ entity.class_name }}Response update({{ entity.id_field.java_type }} id, {{ entity.class_name }}Request request) {
+        {{ entity.class_name }} entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("{{ entity.class_name }} not found with id: " + id));
+        mapToEntity(request, entity);
+        entity = repository.save(entity);
+        return mapToResponse(entity);
+    }
+
+    public void delete({{ entity.id_field.java_type }} id) {
+        {{ entity.class_name }} entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("{{ entity.class_name }} not found with id: " + id));
+        repository.delete(entity);
+    }
+
+    private {{ entity.class_name }}Response mapToResponse({{ entity.class_name }} entity) {
+        {{ entity.class_name }}Response response = new {{ entity.class_name }}Response();
+        response.set{{ entity.id_field.name[:1].upper() + entity.id_field.name[1:] }}(entity.get{{ entity.id_field.name[:1].upper() + entity.id_field.name[1:] }}());
+        {% for field in entity.fields %}
+        response.set{{ field.name[:1].upper() + field.name[1:] }}(entity.get{{ field.name[:1].upper() + field.name[1:] }}());
+        {% endfor %}
+        return response;
+    }
+
+    private void mapToEntity({{ entity.class_name }}Request request, {{ entity.class_name }} entity) {
+        {% for field in entity.fields %}
+        entity.set{{ field.name[:1].upper() + field.name[1:] }}(request.get{{ field.name[:1].upper() + field.name[1:] }}());
+        {% endfor %}
+    }
+}

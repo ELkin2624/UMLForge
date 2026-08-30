@@ -1,0 +1,17 @@
+-- Database Schema for {{ app_name }}
+
+{% for table in schema.tables %}
+CREATE TABLE IF NOT EXISTS {{ table.name }} (
+    {% for col in table.columns %}
+    {{ col.name }} {{ col.sql_type }}{% if col.is_primary_key %} PRIMARY KEY{% endif %}{% if not col.is_nullable and not col.is_primary_key %} NOT NULL{% endif %}{% if not loop.last %},{% endif %}
+    {% endfor %}
+    {% if table.foreign_keys %}
+    ,
+    {% for fk in table.foreign_keys %}
+    {{ fk }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+    {% endif %}
+);
+
+{% endfor %}
+

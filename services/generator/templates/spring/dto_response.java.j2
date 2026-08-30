@@ -1,0 +1,34 @@
+package {{ package_name }}.dto.response;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public class {{ entity.class_name }}Response {
+
+    private {{ entity.id_field.java_type }} {{ entity.id_field.name }};
+    
+    {% for field in entity.fields %}
+    private {{ field.java_type }} {{ field.name }};
+    {% endfor %}
+
+    // Getters and Setters
+    public {{ entity.id_field.java_type }} get{{ entity.id_field.name[:1].upper() + entity.id_field.name[1:] }}() {
+        return {{ entity.id_field.name }};
+    }
+
+    public void set{{ entity.id_field.name[:1].upper() + entity.id_field.name[1:] }}({{ entity.id_field.java_type }} {{ entity.id_field.name }}) {
+        this.{{ entity.id_field.name }} = {{ entity.id_field.name }};
+    }
+
+    {% for field in entity.fields %}
+    public {{ field.java_type }} get{{ field.name[:1].upper() + field.name[1:] }}() {
+        return {{ field.name }};
+    }
+
+    public void set{{ field.name[:1].upper() + field.name[1:] }}({{ field.java_type }} {{ field.name }}) {
+        this.{{ field.name }} = {{ field.name }};
+    }
+    {% endfor %}
+}

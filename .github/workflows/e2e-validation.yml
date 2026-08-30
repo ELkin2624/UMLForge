@@ -1,0 +1,62 @@
+name: E2E Validation Pipeline
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  validate-e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Set up Java 21 & Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "maven"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Newman
+        run: npm install -g newman
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run Linters and Static Type Checking
+        run: |
+          ruff check .
+          black --check .
+          mypy packages/ services/api/ scripts/
+
+      - name: Run Automated Pytest Suite
+        run: |
+          pytest -v
+
+      - name: Execute CLI E2E Validation on Example Model
+        run: |
+          python scripts/run_e2e.py examples/barberia.json --output-dir reports/e2e
+
+      - name: Upload E2E Report Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-validation-reports
+          path: reports/e2e/

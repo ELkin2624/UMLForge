@@ -1,0 +1,19 @@
+package {{ package_name }}.controller;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@SpringBootTest
+public class {{ entity.class_name }}ControllerTest {
+
+    @Autowired
+    private {{ entity.class_name }}Controller controller;
+
+    @Test
+    void contextLoads() {
+        assertNotNull(controller, "The controller should have been autowired");
+    }
+}
