@@ -1,0 +1,16 @@
+{
+  "name": "umlforge-collaboration-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servidor WebSocket Yjs para colaboración en tiempo real de UMLForge.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "y-websocket": "^1.5.0",
+    "yjs": "^13.6.32"
+  }
+}

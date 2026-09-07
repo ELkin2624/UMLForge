@@ -1,0 +1,7 @@
+-r requirements.txt
+pytest
+ruff
+black
+mypy
+httpx
+types-lxml>=2024.0.0

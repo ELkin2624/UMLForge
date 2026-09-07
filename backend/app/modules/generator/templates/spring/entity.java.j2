@@ -1,0 +1,115 @@
+package {{ package_name }}.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.UUID;
+
+@Entity
+@Table(name = "{{ entity.table_name }}")
+{% if entity.has_children %}
+@Inheritance(strategy = InheritanceType.JOINED)
+{% endif %}
+public class {{ entity.class_name }}{% if entity.parent_class %} extends {{ entity.parent_class }}{% endif %} {
+
+    {% if not entity.parent_class %}
+    {% if entity.id_field.is_primary_key %}
+    @Id
+    {% if entity.id_field.java_type == "Long" or entity.id_field.java_type == "Integer" %}
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    {% elif entity.id_field.java_type == "UUID" %}
+    @GeneratedValue(strategy = GenerationType.UUID)
+    {% endif %}
+    private {{ entity.id_field.java_type }} {{ entity.id_field.name }};
+    {% endif %}
+    {% endif %}
+
+    {% for field in entity.fields %}
+    {% if not field.is_nullable %}
+    @NotNull
+    {% endif %}
+    {% if field.min_length or field.max_length %}
+    @Size({% if field.min_length %}min = {{ field.min_length }}{% endif %}{% if field.min_length and field.max_length %}, {% endif %}{% if field.max_length %}max = {{ field.max_length }}{% endif %})
+    {% endif %}
+    {% if field.min_value %}
+    @DecimalMin(value = "{{ field.min_value }}")
+    {% endif %}
+    {% if field.max_value %}
+    @DecimalMax(value = "{{ field.max_value }}")
+    {% endif %}
+    @Column(name = "{{ field.name }}"{% if not field.is_nullable %}, nullable = false{% endif %})
+    private {{ field.java_type }} {{ field.name }};
+
+    {% endfor %}
+
+    {% for rel in entity.relations %}
+    {% if rel.relation_kind == "ONE_TO_MANY" %}
+    @OneToMany({% if rel.mapped_by %}mappedBy = "{{ rel.mapped_by }}"{% endif %}{% if rel.cascade %}, cascade = {{ rel.cascade }}, orphanRemoval = true{% endif %})
+    private List<{{ rel.target_entity }}> {{ rel.name }} = new ArrayList<>();
+    {% elif rel.relation_kind == "MANY_TO_ONE" %}
+    @ManyToOne(fetch = FetchType.LAZY)
+    {% if rel.join_column %}
+    @JoinColumn(name = "{{ rel.join_column }}")
+    {% endif %}
+    private {{ rel.target_entity }} {{ rel.name }};
+    {% elif rel.relation_kind == "MANY_TO_MANY" %}
+    @ManyToMany({% if rel.mapped_by %}mappedBy = "{{ rel.mapped_by }}"{% endif %})
+    private List<{{ rel.target_entity }}> {{ rel.name }} = new ArrayList<>();
+    {% elif rel.relation_kind == "ONE_TO_ONE" %}
+    @OneToOne({% if rel.mapped_by %}mappedBy = "{{ rel.mapped_by }}"{% endif %}{% if rel.cascade %}, cascade = {{ rel.cascade }}{% endif %})
+    {% if rel.join_column %}
+    @JoinColumn(name = "{{ rel.join_column }}")
+    {% endif %}
+    private {{ rel.target_entity }} {{ rel.name }};
+    {% endif %}
+    
+    {% endfor %}
+
+    // Getters and Setters
+
+    {% if not entity.parent_class %}
+    {% if entity.id_field.is_primary_key %}
+    public {{ entity.id_field.java_type }} get{{ entity.id_field.name[:1].upper() + entity.id_field.name[1:] }}() {
+        return {{ entity.id_field.name }};
+    }
+
+    public void set{{ entity.id_field.name[:1].upper() + entity.id_field.name[1:] }}({{ entity.id_field.java_type }} {{ entity.id_field.name }}) {
+        this.{{ entity.id_field.name }} = {{ entity.id_field.name }};
+    }
+    {% endif %}
+    {% endif %}
+
+    {% for field in entity.fields %}
+    public {{ field.java_type }} get{{ field.name[:1].upper() + field.name[1:] }}() {
+        return {{ field.name }};
+    }
+
+    public void set{{ field.name[:1].upper() + field.name[1:] }}({{ field.java_type }} {{ field.name }}) {
+        this.{{ field.name }} = {{ field.name }};
+    }
+    {% endfor %}
+    
+    {% for rel in entity.relations %}
+    {% if rel.is_collection %}
+    public List<{{ rel.target_entity }}> get{{ rel.name[:1].upper() + rel.name[1:] }}() {
+        return {{ rel.name }};
+    }
+
+    public void set{{ rel.name[:1].upper() + rel.name[1:] }}(List<{{ rel.target_entity }}> {{ rel.name }}) {
+        this.{{ rel.name }} = {{ rel.name }};
+    }
+    {% else %}
+    public {{ rel.target_entity }} get{{ rel.name[:1].upper() + rel.name[1:] }}() {
+        return {{ rel.name }};
+    }
+
+    public void set{{ rel.name[:1].upper() + rel.name[1:] }}({{ rel.target_entity }} {{ rel.name }}) {
+        this.{{ rel.name }} = {{ rel.name }};
+    }
+    {% endif %}
+    {% endfor %}
+}
