@@ -24,6 +24,8 @@ class SchemaMapper:
     @classmethod
     def map_schema(cls, entities: list[EntityInfo]) -> SchemaInfo:
         schema = SchemaInfo()
+        entity_by_name = {e.class_name: e for e in entities}
+        join_tables: list[TableInfo] = []
 
         for entity in entities:
             table = TableInfo(name=entity.table_name)
@@ -42,60 +44,89 @@ class SchemaMapper:
                 )
             )
 
-            # Basic Fields
-            for field in entity.fields:
+            # Si hereda (JOINED), su PK es también FK hacia la tabla padre
+            if entity.parent_class and entity.parent_class in entity_by_name:
+                parent_ent = entity_by_name[entity.parent_class]
+                table.foreign_keys.append(
+                    f"FOREIGN KEY ({entity.id_field.name}) REFERENCES {parent_ent.table_name}({parent_ent.id_field.name}) ON DELETE CASCADE"
+                )
+
+            # Atributos ordinarios
+            for f in entity.fields:
                 table.columns.append(
                     ColumnInfo(
-                        name=field.name,
-                        sql_type=field.sql_type,
+                        name=f.name,
+                        sql_type=f.sql_type,
                         is_primary_key=False,
-                        is_nullable=field.is_nullable,
+                        is_nullable=f.is_nullable,
                     )
                 )
 
-            # Foreign Keys (for ManyToOne / OneToOne owners)
+            # Relaciones
             for rel in entity.relations:
+                # Si esta entidad es owner y tiene join_column, agregamos la columna y FK
                 if rel.persistence_owner and rel.join_column:
-                    # Agregamos la columna foránea físicamente a la tabla
+                    target_ent = entity_by_name.get(rel.target_entity)
+                    target_pk = target_ent.id_field.name if target_ent else "id"
+                    fk_sql_type = "UUID" if rel.target_id_type == "UUID" else "BIGINT"
+                    target_table = target_ent.table_name if target_ent else cls._get_table_name(rel.target_entity, entities)
+
                     table.columns.append(
                         ColumnInfo(
                             name=rel.join_column,
-                            sql_type="BIGINT",  # Asumimos Long/BIGINT para IDs por defecto
+                            sql_type=fk_sql_type,
                             is_primary_key=False,
-                            is_nullable=True,  # Opcional según multiplicidad, dejamos True por defecto
+                            is_nullable=True,
                         )
                     )
                     table.foreign_keys.append(
-                        f"FOREIGN KEY ({rel.join_column}) REFERENCES {cls._get_table_name(rel.target_entity, entities)}(id)"
+                        f"FOREIGN KEY ({rel.join_column}) REFERENCES {target_table}({target_pk})"
                     )
 
                 # Si es owner de MANY_TO_MANY, necesitamos una tabla intermedia
                 if rel.persistence_owner and rel.relation_kind == "MANY_TO_MANY":
-                    join_table = TableInfo(
-                        name=f"{entity.table_name}_{cls._get_table_name(rel.target_entity, entities)}"
-                    )
+                    target_ent = entity_by_name.get(rel.target_entity)
+                    target_table = target_ent.table_name if target_ent else cls._get_table_name(rel.target_entity, entities)
+                    join_table = TableInfo(name=f"{entity.table_name}_{target_table}")
+
+                    owner_sql = "UUID" if entity.id_field.java_type == "UUID" else "BIGINT"
+                    target_sql = "UUID" if rel.target_id_type == "UUID" else "BIGINT"
+
+                    col_owner = f"{entity.class_name.lower()}_id"
+                    col_target = f"{rel.target_entity.lower()}_id"
+
                     # FK 1 (este lado)
                     join_table.columns.append(
                         ColumnInfo(
-                            name=f"{entity.class_name.lower()}_id",
-                            sql_type="BIGINT",
-                            is_primary_key=True,
+                            name=col_owner,
+                            sql_type=owner_sql,
+                            is_primary_key=False,
                             is_nullable=False,
                         )
                     )
                     # FK 2 (el otro lado)
                     join_table.columns.append(
                         ColumnInfo(
-                            name=f"{rel.target_entity.lower()}_id",
-                            sql_type="BIGINT",
-                            is_primary_key=True,
+                            name=col_target,
+                            sql_type=target_sql,
+                            is_primary_key=False,
                             is_nullable=False,
                         )
                     )
-                    schema.tables.append(join_table)
+                    join_table.foreign_keys.append(
+                        f"PRIMARY KEY ({col_owner}, {col_target})"
+                    )
+                    join_table.foreign_keys.append(
+                        f"FOREIGN KEY ({col_owner}) REFERENCES {entity.table_name}({entity.id_field.name})"
+                    )
+                    join_table.foreign_keys.append(
+                        f"FOREIGN KEY ({col_target}) REFERENCES {target_table}({target_ent.id_field.name if target_ent else 'id'})"
+                    )
+                    join_tables.append(join_table)
 
             schema.tables.append(table)
 
+        schema.tables.extend(join_tables)
         return schema
 
     @classmethod

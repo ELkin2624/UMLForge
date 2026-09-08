@@ -88,7 +88,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
     }
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (isLocal: boolean = false) => {
     setActiveMenu(null);
     if (!model || isBusy) return;
 
@@ -100,6 +100,18 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
     
     const previewMsg = `Resumen a generar:\nClases: ${classCount}\nAtributos: ${attrCount}\nOperaciones: ${opCount}\nRelaciones: ${relCount}\n\n¿Deseas continuar?`;
     if (!window.confirm(previewMsg)) return;
+
+    let localPath = undefined;
+    if (isLocal) {
+      const defaultPath = localStorage.getItem('lastLocalOutputPath') 
+        || 'C:\\Parcial-sw1-of\\backend-springboot';
+
+      const inputPath = window.prompt('Ruta de salida para el backend Spring Boot:', defaultPath);
+      if (!inputPath) return; // cancelado
+      
+      localStorage.setItem('lastLocalOutputPath', inputPath);
+      localPath = inputPath;
+    }
 
     setGenState('VALIDATING');
     setLoading(true);
@@ -118,17 +130,23 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
       
       // 2. Generar
       setGenState('GENERATING');
-      const blob = await generateProject(model);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${model.name || 'project'}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-      setGenState('SUCCESS');
-      setGenMessage('¡Descarga exitosa!');
+      const response = await generateProject(model, localPath);
+      
+      if (isLocal) {
+        setGenState('SUCCESS');
+        setGenMessage(`¡Generado en ${localPath}!`);
+      } else {
+        const url = window.URL.createObjectURL(response as Blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${model.name || 'project'}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        setGenState('SUCCESS');
+        setGenMessage('¡Descarga exitosa!');
+      }
     } catch (e: any) {
       setGenState('ERROR');
       setGenMessage(e.message);
@@ -256,10 +274,16 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = ({
 
                 <div className="top-dropdown-divider" />
 
-                <button onClick={handleGenerate} disabled={!model || isBusy} className="top-dropdown-item">
+                <button onClick={() => handleGenerate(false)} disabled={!model || isBusy} className="top-dropdown-item">
                   <div className="top-dropdown-item-left">
                     <Download size={15} color="#d97706" />
                     <span>Generar Proyecto SpringBoot (ZIP)</span>
+                  </div>
+                </button>
+                <button onClick={() => handleGenerate(true)} disabled={!model || isBusy} className="top-dropdown-item">
+                  <div className="top-dropdown-item-left">
+                    <Save size={15} color="#059669" />
+                    <span>Generar Proyecto SpringBoot (Carpeta Local)</span>
                   </div>
                 </button>
               </div>

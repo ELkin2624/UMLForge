@@ -1,0 +1,25 @@
+-- Seed data for ConferenceBackend
+INSERT INTO conferences (id, name, city, year) VALUES (1, 'María', '5000000', 1) ON CONFLICT (id) DO NOTHING;
+INSERT INTO conferences (id, name, city, year) VALUES (2, 'Carlos', '5034211', 2) ON CONFLICT (id) DO NOTHING;
+INSERT INTO conferences (id, name, city, year) VALUES (3, 'Ana', '5068422', 3) ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('conferences', 'id'), coalesce(max(id), 1)) FROM conferences;
+INSERT INTO topic_tracks (id, topicName, difficultyLevel) VALUES (1, 'TopicTrack topicName 1', 'TopicTrack difficultyLevel 1') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topic_tracks (id, topicName, difficultyLevel) VALUES (2, 'TopicTrack topicName 2', 'TopicTrack difficultyLevel 2') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topic_tracks (id, topicName, difficultyLevel) VALUES (3, 'TopicTrack topicName 3', 'TopicTrack difficultyLevel 3') ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('topic_tracks', 'id'), coalesce(max(id), 1)) FROM topic_tracks;
+INSERT INTO attendees (id, fullName, email) VALUES (1, 'María González', 'maria.gonzalez1@example.com') ON CONFLICT (id) DO NOTHING;
+INSERT INTO attendees (id, fullName, email) VALUES (2, 'Carlos Rodríguez', 'carlos.rodriguez2@example.com') ON CONFLICT (id) DO NOTHING;
+INSERT INTO attendees (id, fullName, email) VALUES (3, 'Ana Pérez', 'ana.perez3@example.com') ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('attendees', 'id'), coalesce(max(id), 1)) FROM attendees;
+INSERT INTO sessions (id, title, durationMinutes, conference_id) VALUES (1, 'Session title 1', 1, 1) ON CONFLICT (id) DO NOTHING;
+INSERT INTO sessions (id, title, durationMinutes, conference_id) VALUES (2, 'Session title 2', 2, 2) ON CONFLICT (id) DO NOTHING;
+INSERT INTO sessions (id, title, durationMinutes, conference_id) VALUES (3, 'Session title 3', 3, 3) ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('sessions', 'id'), coalesce(max(id), 1)) FROM sessions;
+INSERT INTO keynote_speakers (id, biography, organization) VALUES (1, 'KeynoteSpeaker biography 1', 'KeynoteSpeaker organization 1') ON CONFLICT (id) DO NOTHING;
+INSERT INTO keynote_speakers (id, biography, organization) VALUES (2, 'KeynoteSpeaker biography 2', 'KeynoteSpeaker organization 2') ON CONFLICT (id) DO NOTHING;
+INSERT INTO keynote_speakers (id, biography, organization) VALUES (3, 'KeynoteSpeaker biography 3', 'KeynoteSpeaker organization 3') ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('keynote_speakers', 'id'), coalesce(max(id), 1)) FROM keynote_speakers;
+INSERT INTO sessions_topic_tracks (session_id, topictrack_id) VALUES (1, 1) ON CONFLICT DO NOTHING;
+INSERT INTO sessions_topic_tracks (session_id, topictrack_id) VALUES (1, 2) ON CONFLICT DO NOTHING;
+INSERT INTO sessions_topic_tracks (session_id, topictrack_id) VALUES (2, 2) ON CONFLICT DO NOTHING;
+INSERT INTO sessions_topic_tracks (session_id, topictrack_id) VALUES (3, 1) ON CONFLICT DO NOTHING;

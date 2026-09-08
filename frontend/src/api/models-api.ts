@@ -4,8 +4,7 @@ import { ValidationResult, DeploymentResult, E2EResult } from '../types/api-resp
 
 const API_BASE_URL = '/api/v1';
 
-/**
- * Mapea el CanonicalModel del frontend al DTO esperado por FastAPI,
+/** Mapea el CanonicalModel del frontend al DTO esperado por FastAPI,
  * reemplazando source_id -> source, target_id -> target, y normalizando rel.type a minúsculas.
  */
 function mapToBackendDTO(model: UMLModel): any {
@@ -38,34 +37,45 @@ export async function validateModel(model: UMLModel): Promise<ValidationResult> 
 }
 
 export async function deployProject(model: UMLModel): Promise<DeploymentResult> {
+  const dto = mapToBackendDTO(model);
   return request<DeploymentResult>('/projects/deploy', {
     method: 'POST',
-    body: JSON.stringify(model),
+    body: JSON.stringify(dto),
   });
 }
 
 export async function validateE2E(model: UMLModel): Promise<E2EResult> {
+  const dto = mapToBackendDTO(model);
   return request<E2EResult>('/projects/validate-e2e', {
     method: 'POST',
-    body: JSON.stringify(model),
+    body: JSON.stringify(dto),
   });
 }
 
-export async function generateProject(model: UMLModel): Promise<Blob> {
+export async function generateProject(model: UMLModel, localPath?: string): Promise<Blob | any> {
   const url = `${API_BASE_URL}/models/generate`;
   const dto = mapToBackendDTO(model);
-  const requestBody = {
+  const requestBody: any = {
     project_name: model.name || 'project',
     package_name: 'com.example.project',
     model_data: dto,
   };
   
+  if (localPath) {
+    requestBody.local_output_path = localPath;
+  }
+  
+  const headers: any = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (!localPath) {
+    headers['Accept'] = 'application/zip';
+  }
+  
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/zip',
-    },
+    headers,
     body: JSON.stringify(requestBody),
   });
 
@@ -80,6 +90,10 @@ export async function generateProject(model: UMLModel): Promise<Blob> {
     throw new Error(errorDetail || `HTTP error! status: ${response.status}`);
   }
 
+  if (localPath) {
+    return response.json();
+  }
+  
   return response.blob();
 }
 

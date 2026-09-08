@@ -1,13 +1,14 @@
 spring.application.name={{ app_name }}
 
 # DataSource
-spring.datasource.url=jdbc:postgresql://localhost:5432/{{ app_name }}_db
+spring.datasource.url=jdbc:postgresql://localhost:5432/{{ app_name.lower() }}_db
 spring.datasource.username=postgres
 spring.datasource.password=postgres
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA / Hibernate
 spring.jpa.hibernate.ddl-auto=none
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
@@ -15,9 +16,13 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 # Inicialización por SQL scripts explícitos
 spring.sql.init.mode=always
 spring.sql.init.schema-locations=classpath:schema.sql
+{% if has_seed_data %}
+spring.sql.init.data-locations=classpath:data.sql
+spring.jpa.defer-datasource-initialization=true
+{% else %}
 # Desactivar auto-carga de data.sql vacío por defecto
 spring.sql.init.data-locations=
-# spring.sql.init.data-locations=classpath:data.sql (uncomment to enable seed data)
+{% endif %}
 
 # OpenAPI / Swagger
 springdoc.api-docs.path=/v3/api-docs

@@ -31,20 +31,32 @@ class ProjectGenerator:
                 f"El modelo no es válido para generación:\n{errors_str}"
             )
 
-        # 2. Mapeos de dominio (Semantics)
+        # 2. Mapeos de dominio (Semantics) y Análisis de Dominio
         entities = EntityMapper.map_entities(model)
-        schema_info = SchemaMapper.map_schema(entities)
-        openapi_info = OpenAPIMapper.map_openapi(project_name, entities)
-        postman_info = PostmanMapper.map_postman(project_name, entities)
+        from app.modules.generator.domain.domain_analyzer import DomainAnalyzer
+        from app.modules.generator.domain.dependency_graph import DependencyGraph
+        from app.modules.generator.domain.synthetic_data_generator import SyntheticDataGenerator
+
+        domain = DomainAnalyzer.analyze(model)
+        ordered_entities = DependencyGraph.topological_sort(entities)
+        dataset = SyntheticDataGenerator.generate(model, ordered_entities, domain)
+
+        schema_info = SchemaMapper.map_schema(ordered_entities)
+        openapi_info = OpenAPIMapper.map_openapi(project_name, ordered_entities)
+        postman_info = PostmanMapper.map_postman(project_name, ordered_entities)
+
+        has_seed_data = bool(dataset.sql_statements)
 
         # 3. Contexto base para las plantillas
         context = {
             "app_name": project_name,
             "package_name": package_name,
-            "entities": entities,
+            "entities": ordered_entities,
             "schema": schema_info,
             "openapi": openapi_info,
             "postman": postman_info,
+            "domain": domain.value,
+            "has_seed_data": has_seed_data,
         }
 
         files = []
@@ -113,14 +125,16 @@ class ProjectGenerator:
             )
         )
 
-        # Evitar generar data.sql vacío porque Spring Boot 2.5+ lanza error si está vacío.
-        # files.append(
-        #     GeneratedFile(
-        #         path="src/main/resources/data.sql",
-        #         content=self.renderer.render("database/data.sql.j2", context),
-        #         media_type="application/sql",
-        #     )
-        # )
+        # Generar data.sql con seed coherente determinista SOLO si existen sentencias
+        if has_seed_data:
+            seed_content = "-- Seed data for " + project_name + "\n" + "\n".join(dataset.sql_statements) + "\n"
+            files.append(
+                GeneratedFile(
+                    path="src/main/resources/data.sql",
+                    content=seed_content,
+                    media_type="application/sql",
+                )
+            )
 
         files.append(
             GeneratedFile(
@@ -136,15 +150,16 @@ class ProjectGenerator:
             generate_postman_environment,
         )
 
-        postman_collection = generate_postman_collection(model)
-        postman_environment = generate_postman_environment(model)
-
-        # OLD JINJA TEMPLATE (OBSOLETE)
-        # files.append(GeneratedFile(
-        #     path="postman/collection.json",
-        #     content=self.renderer.render("api/postman_collection.json.j2", context),
-        #     media_type="application/json"
-        # ))
+        postman_collection = generate_postman_collection(
+            model,
+            ordered_entities=ordered_entities,
+            domain=domain,
+            dataset=dataset,
+        )
+        postman_environment = generate_postman_environment(
+            model,
+            dataset=dataset,
+        )
 
         files.append(
             GeneratedFile(

@@ -14,6 +14,9 @@ class GenerateRequest(BaseModel):
     package_name: str = Field(
         default="com.example.demo", description="Paquete base de Java"
     )
+    local_output_path: str | None = Field(
+        default=None, description="Ruta local opcional donde generar el código fuente directamente."
+    )
 
 
 from pydantic import BaseModel, Field

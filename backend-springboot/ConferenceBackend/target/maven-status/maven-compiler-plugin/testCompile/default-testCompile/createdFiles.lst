@@ -1,0 +1,5 @@
+com\conference\app\controller\AttendeeControllerTest.class
+com\conference\app\controller\SessionControllerTest.class
+com\conference\app\controller\TopicTrackControllerTest.class
+com\conference\app\controller\ConferenceControllerTest.class
+com\conference\app\controller\KeynoteSpeakerControllerTest.class

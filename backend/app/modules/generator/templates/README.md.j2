@@ -33,5 +33,5 @@ OpenAPI UI: `http://localhost:8080/swagger-ui.html`
 Para ejecutar las pruebas con Newman contra la API en vivo:
 
 ```bash
-newman run postman/collection.json --env-var "baseUrl=http://localhost:8080"
+newman run postman/{{ app_name }}.postman_collection.json -e postman/{{ app_name }}.postman_environment.json
 ```

@@ -76,9 +76,10 @@ class ModelService:
         project_name: str,
         package_name: str,
         output_base: Path,
+        local_output_path: str | None = None,
     ) -> tuple[Path, str, list[APIErrorDetail]]:
         """
-        Ejecuta el generador de la Fase 2 y devuelve (ruta_al_zip, checksum, warnings).
+        Ejecuta el generador de la Fase 2 y devuelve (ruta_al_zip_o_carpeta, checksum, warnings).
         """
         # Reevaluamos warnings (ya sabemos que es válido si llegó aquí)
         gen_result = ValidationResult()
@@ -91,6 +92,12 @@ class ModelService:
         generator = ProjectGenerator(templates_dir=self.templates_dir)
         try:
             project = generator.generate(uml_model, project_name, package_name)
+
+            if local_output_path:
+                local_dir = Path(local_output_path)
+                local_dir.mkdir(parents=True, exist_ok=True)
+                FilesystemExporter.export(project, local_dir)
+                return local_dir, "N/A", warnings
 
             # Crear directorio temporal único para esta generación dentro de output_base
             tmp_dir = Path(tempfile.mkdtemp(dir=output_base))

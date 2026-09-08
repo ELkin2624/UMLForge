@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/{{ entity.table_name }}")
+@RequestMapping("/api/{{ entity.resource_path }}")
 public class {{ entity.class_name }}Controller {
 
     private final {{ entity.class_name }}Service service;

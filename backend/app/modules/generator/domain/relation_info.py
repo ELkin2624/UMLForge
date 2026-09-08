@@ -36,3 +36,12 @@ class RelationInfo(BaseModel):
     is_composition: bool = Field(
         default=False, description="Indica si es una composición"
     )
+    target_id_type: str = Field(
+        default="Long", description="Tipo Java del ID de la entidad destino (ej. 'Long', 'UUID')"
+    )
+    target_id_field_name: str = Field(
+        default="id", description="Nombre del campo ID en la entidad destino"
+    )
+    target_table: str | None = Field(
+        default=None, description="Nombre de la tabla física en BD de la entidad destino"
+    )

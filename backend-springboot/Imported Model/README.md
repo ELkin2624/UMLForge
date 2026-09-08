@@ -1,0 +1,37 @@
+# Imported Model
+
+Proyecto Spring Boot generado automáticamente desde un modelo UML.
+
+## Requisitos
+- Java 21
+- Maven
+- Docker y Docker Compose (para PostgreSQL)
+- Newman (opcional, para testear con Postman)
+
+## Inicialización
+
+1. Levantar la base de datos PostgreSQL:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. Compilar el proyecto:
+   ```bash
+   mvn clean install
+   ```
+
+3. Ejecutar la aplicación:
+   ```bash
+   mvn spring-boot:run
+   ```
+
+La API estará disponible en `http://localhost:8080`.
+OpenAPI UI: `http://localhost:8080/swagger-ui.html`
+
+## Tests E2E
+
+Para ejecutar las pruebas con Newman contra la API en vivo:
+
+```bash
+newman run postman/collection.json --env-var "baseUrl=http://localhost:8080"
+```

@@ -15,6 +15,9 @@ class EntityInfo(BaseModel):
     table_name: str = Field(
         ..., description="Nombre de la tabla física en SQL (ej. 'clientes')"
     )
+    resource_path: str = Field(
+        default="", description="Ruta REST del recurso relativa a /api (ej. 'clientes')"
+    )
     id_field: FieldInfo = Field(..., description="Campo que actúa como clave primaria")
     fields: list[FieldInfo] = Field(
         default_factory=list,

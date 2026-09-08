@@ -57,7 +57,16 @@ public class {{ entity.class_name }}{% if entity.parent_class %} extends {{ enti
     {% endif %}
     private {{ rel.target_entity }} {{ rel.name }};
     {% elif rel.relation_kind == "MANY_TO_MANY" %}
-    @ManyToMany({% if rel.mapped_by %}mappedBy = "{{ rel.mapped_by }}"{% endif %})
+    {% if rel.persistence_owner %}
+    @ManyToMany
+    @JoinTable(
+        name = "{{ entity.table_name }}_{{ rel.target_table or (rel.target_entity.lower() ~ 's') }}",
+        joinColumns = @JoinColumn(name = "{{ entity.class_name.lower() }}_id"),
+        inverseJoinColumns = @JoinColumn(name = "{{ rel.target_entity.lower() }}_id")
+    )
+    {% else %}
+    @ManyToMany(mappedBy = "{{ rel.mapped_by }}")
+    {% endif %}
     private List<{{ rel.target_entity }}> {{ rel.name }} = new ArrayList<>();
     {% elif rel.relation_kind == "ONE_TO_ONE" %}
     @OneToOne({% if rel.mapped_by %}mappedBy = "{{ rel.mapped_by }}"{% endif %}{% if rel.cascade %}, cascade = {{ rel.cascade }}{% endif %})

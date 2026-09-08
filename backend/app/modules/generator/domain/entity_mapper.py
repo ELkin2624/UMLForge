@@ -38,8 +38,12 @@ class EntityMapper:
                     max_value=attr.max_value,
                 )
 
-                if attr.is_primary_key:
-                    id_field = field_info
+                if attr.is_primary_key or attr.name.lower() == "id":
+                    if not id_field:
+                        field_info.is_primary_key = True
+                        id_field = field_info
+                    else:
+                        fields.append(field_info)
                 else:
                     fields.append(field_info)
 
@@ -82,16 +86,16 @@ class EntityMapper:
             # Segunda pasada para ajustar mappedBy usando el contexto local
             for r in relations:
                 if not r.persistence_owner:
-                    # Si no es owner, el owner (target) tendrá un campo apuntando a nosotros.
-                    # El nombre del campo por defecto en la otra clase es el nombre de nuestra clase en camelCase
-                    # (pluralizado si era colección en el otro lado)
                     r.mapped_by = cls._to_camel_case(uml_class.name)
-                    # NOTA: En un mapeo perfecto 100% fiel, buscaríamos la RelationInfo gemela generada para la otra clase
-                    # y usaríamos su `name` exacto. Esta aproximación es suficiente para la heurística base.
+                    if r.relation_kind == "MANY_TO_MANY":
+                        r.mapped_by += "s"
+
+            resource_path = table_name
 
             entity_info = EntityInfo(
                 class_name=uml_class.name,
                 table_name=table_name,
+                resource_path=resource_path,
                 id_field=id_field,
                 fields=fields,
                 relations=relations,
@@ -99,10 +103,17 @@ class EntityMapper:
             )
             entities.append(entity_info)
 
-        # Segunda pasada general para setear has_children
+        # Segunda pasada general para setear has_children y resolver target_id_type
+        entity_by_name = {e.class_name: e for e in entities}
         for entity in entities:
             if any(e.parent_class == entity.class_name for e in entities):
                 entity.has_children = True
+            for rel in entity.relations:
+                target_ent = entity_by_name.get(rel.target_entity)
+                if target_ent:
+                    rel.target_id_type = target_ent.id_field.java_type
+                    rel.target_id_field_name = target_ent.id_field.name
+                    rel.target_table = target_ent.table_name
 
         return entities
 

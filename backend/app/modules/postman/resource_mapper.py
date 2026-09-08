@@ -2,9 +2,9 @@ from typing import Any
 
 from app.core.canonical_model.class_model import UMLClass
 from app.core.canonical_model.model import UMLModel
+from app.modules.generator.domain.entity_info import EntityInfo
+from app.modules.generator.domain.entity_mapper import EntityMapper
 from pydantic import BaseModel
-
-from .naming import pluralize, to_snake_case
 
 
 class ApiResourceInfo(BaseModel):
@@ -20,42 +20,61 @@ class ApiResourceInfo(BaseModel):
 class ApiResourcePolicy:
     """
     Política para decidir si una clase se convierte en un recurso de la API.
-    Actualmente, todas las clases del modelo UML se consideran persistibles
-    y por tanto, se mapean a recursos.
     """
 
     @classmethod
     def is_resource(cls, uml_class: UMLClass) -> bool:
-        # Aquí se podrían descartar clases abstractas, enums o interfaces
-        # si se agregaran al modelo canónico.
         return True
 
 
-def map_model_to_resources(model: UMLModel) -> list[ApiResourceInfo]:
+def map_entities_to_resources(entities: list[EntityInfo]) -> list[ApiResourceInfo]:
+    """
+    Mapea EntityInfo (modelo de persistencia real de Spring Boot) a ApiResourceInfo.
+    Garantiza que Postman y Spring Boot compartan exactamente la misma ruta REST (resource_path)
+    y los mismos campos de relación (FKs individuales y colecciones Many-to-Many).
+    """
     resources = []
-    for cls in model.classes:
-        if not ApiResourcePolicy.is_resource(cls):
-            continue
 
-        fields = [{"name": attr.name, "type": attr.type} for attr in cls.attributes]
+    for entity in entities:
+        fields = [{"name": f.name, "type": f.java_type} for f in entity.fields]
 
-        # En esta Fase asumimos ID autogenerado, así que no va en CREATE.
-        # Si el modelo tiene ID explícito (es común), lo separamos.
-        # Buscamos si existe un campo "id" explícitamente, pero en Spring generamos Long id.
-        create_fields = [f for f in fields if f["name"].lower() != "id"]
-        update_fields = [f for f in fields if f["name"].lower() != "id"]
-        response_fields = fields
+        create_fields = list(fields)
+        update_fields = list(fields)
 
-        id_field = next((f for f in fields if f["name"].lower() == "id"), None)
-        id_type = id_field["type"] if id_field else "Long"
+        # Agregar campos de relación para persistence owners
+        for rel in entity.relations:
+            if rel.persistence_owner and rel.relation_kind in ("MANY_TO_ONE", "ONE_TO_ONE"):
+                rel_field = {
+                    "name": f"{rel.name}Id",
+                    "type": rel.target_id_type,
+                    "target_id_type": rel.target_id_type,
+                    "is_relation": True,
+                    "target_entity": rel.target_entity,
+                    "relation_kind": rel.relation_kind,
+                }
+                create_fields.append(rel_field)
+                update_fields.append(rel_field)
+            elif rel.persistence_owner and rel.relation_kind == "MANY_TO_MANY":
+                field_name = f"{rel.target_entity[0].lower() + rel.target_entity[1:]}Ids"
+                rel_field = {
+                    "name": field_name,
+                    "type": f"List<{rel.target_id_type}>",
+                    "target_id_type": rel.target_id_type,
+                    "is_relation": True,
+                    "is_collection": True,
+                    "target_entity": rel.target_entity,
+                    "relation_kind": rel.relation_kind,
+                }
+                create_fields.append(rel_field)
+                update_fields.append(rel_field)
+
+        response_fields = [{"name": entity.id_field.name, "type": entity.id_field.java_type}] + create_fields
 
         resources.append(
             ApiResourceInfo(
-                entity_name=cls.name,
-                route=to_snake_case(pluralize(cls.name)).replace(
-                    "_", "-"
-                ),  # o a plural
-                id_type=id_type,
+                entity_name=entity.class_name,
+                route=entity.resource_path,
+                id_type=entity.id_field.java_type,
                 fields=fields,
                 create_fields=create_fields,
                 update_fields=update_fields,
@@ -64,3 +83,12 @@ def map_model_to_resources(model: UMLModel) -> list[ApiResourceInfo]:
         )
 
     return resources
+
+
+def map_model_to_resources(model: UMLModel) -> list[ApiResourceInfo]:
+    """
+    Sobrecarga de compatibilidad: mapea un UMLModel delegando a EntityMapper
+    para mantener una única fuente de verdad.
+    """
+    entities = EntityMapper.map_entities(model)
+    return map_entities_to_resources(entities)

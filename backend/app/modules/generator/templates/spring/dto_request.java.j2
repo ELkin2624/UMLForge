@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 public class {{ entity.class_name }}Request {
 
@@ -18,6 +20,14 @@ public class {{ entity.class_name }}Request {
     private {{ field.java_type }} {{ field.name }};
     {% endfor %}
 
+    {% for rel in entity.relations %}
+    {% if rel.persistence_owner and rel.relation_kind in ['MANY_TO_ONE', 'ONE_TO_ONE'] %}
+    private {{ rel.target_id_type }} {{ rel.name }}Id;
+    {% elif rel.persistence_owner and rel.relation_kind == 'MANY_TO_MANY' %}
+    private List<{{ rel.target_id_type }}> {{ rel.target_entity[:1].lower() + rel.target_entity[1:] }}Ids = new ArrayList<>();
+    {% endif %}
+    {% endfor %}
+
     // Getters and Setters
     {% for field in entity.fields %}
     public {{ field.java_type }} get{{ field.name[:1].upper() + field.name[1:] }}() {
@@ -27,5 +37,25 @@ public class {{ entity.class_name }}Request {
     public void set{{ field.name[:1].upper() + field.name[1:] }}({{ field.java_type }} {{ field.name }}) {
         this.{{ field.name }} = {{ field.name }};
     }
+    {% endfor %}
+
+    {% for rel in entity.relations %}
+    {% if rel.persistence_owner and rel.relation_kind in ['MANY_TO_ONE', 'ONE_TO_ONE'] %}
+    public {{ rel.target_id_type }} get{{ rel.name[:1].upper() + rel.name[1:] }}Id() {
+        return {{ rel.name }}Id;
+    }
+
+    public void set{{ rel.name[:1].upper() + rel.name[1:] }}Id({{ rel.target_id_type }} {{ rel.name }}Id) {
+        this.{{ rel.name }}Id = {{ rel.name }}Id;
+    }
+    {% elif rel.persistence_owner and rel.relation_kind == 'MANY_TO_MANY' %}
+    public List<{{ rel.target_id_type }}> get{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids() {
+        return {{ rel.target_entity[:1].lower() + rel.target_entity[1:] }}Ids;
+    }
+
+    public void set{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids(List<{{ rel.target_id_type }}> {{ rel.target_entity[:1].lower() + rel.target_entity[1:] }}Ids) {
+        this.{{ rel.target_entity[:1].lower() + rel.target_entity[1:] }}Ids = {{ rel.target_entity[:1].lower() + rel.target_entity[1:] }}Ids;
+    }
+    {% endif %}
     {% endfor %}
 }

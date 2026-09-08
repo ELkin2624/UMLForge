@@ -1,9 +1,11 @@
-import json
 from typing import Any
 
 from app.core.canonical_model.model import UMLModel
+from app.modules.generator.domain.domain_analyzer import DomainType
+from app.modules.generator.domain.entity_info import EntityInfo
+from app.modules.generator.domain.synthetic_data_generator import LogicalDataset
 
-from .examples import generate_create_body, generate_update_body
+from .examples import generate_create_body, generate_update_body, serialize_postman_json
 from .identifiers import deterministic_uuid
 from .models import (
     PostmanBody,
@@ -17,7 +19,7 @@ from .models import (
     PostmanUrl,
 )
 from .naming import to_camel_case
-from .resource_mapper import map_model_to_resources
+from .resource_mapper import map_entities_to_resources, map_model_to_resources
 from .test_scripts import (
     generate_create_test_script,
     generate_delete_test_script,
@@ -50,15 +52,24 @@ def _build_request(
     body = None
     if body_dict is not None:
         header.append(PostmanHeader(key="Content-Type", value="application/json"))
-        body = PostmanBody(raw=json.dumps(body_dict, indent=2))
+        # Serializar con soporte de tokens crudos para Postman (números, booleans, colecciones sin comillas)
+        body = PostmanBody(raw=serialize_postman_json(body_dict, indent=2))
 
     return PostmanRequest(method=method, header=header, body=body, url=url)
 
 
 def generate_postman_collection(
-    model: UMLModel, base_url: str = "http://localhost:8080"
+    model: UMLModel,
+    base_url: str = "http://localhost:8080",
+    ordered_entities: list[EntityInfo] | None = None,
+    domain: DomainType = DomainType.GENERIC,
+    dataset: LogicalDataset | None = None,
 ) -> PostmanCollection:
-    resources = map_model_to_resources(model)
+    if ordered_entities is not None:
+        resources = map_entities_to_resources(ordered_entities)
+    else:
+        resources = map_model_to_resources(model)
+
     collection_items = []
 
     for res in resources:
@@ -76,7 +87,7 @@ def generate_postman_collection(
                     )
                 ],
                 request=_build_request(
-                    "POST", _build_url(res.route), generate_create_body(res)
+                    "POST", _build_url(res.route), generate_create_body(res, domain)
                 ),
             )
         )
@@ -105,7 +116,7 @@ def generate_postman_collection(
                 name=f"Update {res.entity_name}",
                 event=[_create_postman_event("test", generate_update_test_script())],
                 request=_build_request(
-                    "PUT", _build_url(res.route, entity_var), generate_update_body(res)
+                    "PUT", _build_url(res.route, entity_var), generate_update_body(res, domain)
                 ),
             )
         )
@@ -124,19 +135,23 @@ def generate_postman_collection(
 
     project_name = model.id
     info = PostmanInfo(name=f"{project_name} API")
-    variables = generate_collection_variables(base_url)
+    postman_defaults = dataset.postman_defaults if dataset else None
+    variables = generate_collection_variables(base_url, postman_defaults)
 
     return PostmanCollection(info=info, item=collection_items, variable=variables)
 
 
 def generate_postman_environment(
-    model: UMLModel, base_url: str = "http://localhost:8080"
+    model: UMLModel,
+    base_url: str = "http://localhost:8080",
+    dataset: LogicalDataset | None = None,
 ) -> PostmanEnvironment:
     project_name = model.id
     key = f"parcial1-sw1:{project_name}:postman:environment"
+    postman_defaults = dataset.postman_defaults if dataset else None
 
     return PostmanEnvironment(
         id=deterministic_uuid(key),
         name=f"{project_name} Environment",
-        values=generate_environment_values(base_url),
+        values=generate_environment_values(base_url, postman_defaults),
     )

@@ -1,6 +1,18 @@
 package {{ package_name }}.service;
 
 import {{ package_name }}.entity.{{ entity.class_name }};
+{% set target_entities = [] %}
+{% for rel in entity.relations %}
+{% if rel.persistence_owner and rel.relation_kind in ['MANY_TO_ONE', 'ONE_TO_ONE', 'MANY_TO_MANY'] %}
+{% if rel.target_entity not in target_entities and rel.target_entity != entity.class_name %}
+{% set _ = target_entities.append(rel.target_entity) %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% for target in target_entities %}
+import {{ package_name }}.entity.{{ target }};
+import {{ package_name }}.repository.{{ target }}Repository;
+{% endfor %}
 import {{ package_name }}.dto.request.{{ entity.class_name }}Request;
 import {{ package_name }}.dto.response.{{ entity.class_name }}Response;
 import {{ package_name }}.repository.{{ entity.class_name }}Repository;
@@ -9,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.UUID;
 
@@ -17,9 +30,18 @@ import java.util.UUID;
 public class {{ entity.class_name }}Service {
 
     private final {{ entity.class_name }}Repository repository;
+    {% for target in target_entities %}
+    private final {{ target }}Repository {{ target[:1].lower() + target[1:] }}Repository;
+    {% endfor %}
 
-    public {{ entity.class_name }}Service({{ entity.class_name }}Repository repository) {
+    public {{ entity.class_name }}Service(
+        {{ entity.class_name }}Repository repository{% for target in target_entities %},
+        {{ target }}Repository {{ target[:1].lower() + target[1:] }}Repository{% endfor %}
+    ) {
         this.repository = repository;
+        {% for target in target_entities %}
+        this.{{ target[:1].lower() + target[1:] }}Repository = {{ target[:1].lower() + target[1:] }}Repository;
+        {% endfor %}
     }
 
     public List<{{ entity.class_name }}Response> findAll() {
@@ -61,12 +83,58 @@ public class {{ entity.class_name }}Service {
         {% for field in entity.fields %}
         response.set{{ field.name[:1].upper() + field.name[1:] }}(entity.get{{ field.name[:1].upper() + field.name[1:] }}());
         {% endfor %}
+        {% for rel in entity.relations %}
+        {% if rel.persistence_owner and rel.relation_kind in ['MANY_TO_ONE', 'ONE_TO_ONE'] %}
+        if (entity.get{{ rel.name[:1].upper() + rel.name[1:] }}() != null) {
+            response.set{{ rel.name[:1].upper() + rel.name[1:] }}Id(entity.get{{ rel.name[:1].upper() + rel.name[1:] }}().get{{ rel.target_id_field_name[:1].upper() + rel.target_id_field_name[1:] }}());
+        }
+        {% elif rel.persistence_owner and rel.relation_kind == 'MANY_TO_MANY' %}
+        if (entity.get{{ rel.name[:1].upper() + rel.name[1:] }}() != null) {
+            response.set{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids(entity.get{{ rel.name[:1].upper() + rel.name[1:] }}().stream()
+                .map({{ rel.target_entity }}::get{{ rel.target_id_field_name[:1].upper() + rel.target_id_field_name[1:] }})
+                .collect(Collectors.toList()));
+        }
+        {% endif %}
+        {% endfor %}
         return response;
     }
 
     private void mapToEntity({{ entity.class_name }}Request request, {{ entity.class_name }} entity) {
         {% for field in entity.fields %}
         entity.set{{ field.name[:1].upper() + field.name[1:] }}(request.get{{ field.name[:1].upper() + field.name[1:] }}());
+        {% endfor %}
+        {% for rel in entity.relations %}
+        {% if rel.persistence_owner and rel.relation_kind in ['MANY_TO_ONE', 'ONE_TO_ONE'] %}
+        if (request.get{{ rel.name[:1].upper() + rel.name[1:] }}Id() != null) {
+            {% if rel.target_entity == entity.class_name %}
+            entity.set{{ rel.name[:1].upper() + rel.name[1:] }}(
+                repository.findById(request.get{{ rel.name[:1].upper() + rel.name[1:] }}Id())
+                    .orElseThrow(() -> new ResourceNotFoundException("{{ rel.target_entity }} not found with id: " + request.get{{ rel.name[:1].upper() + rel.name[1:] }}Id()))
+            );
+            {% else %}
+            entity.set{{ rel.name[:1].upper() + rel.name[1:] }}(
+                {{ rel.target_entity[:1].lower() + rel.target_entity[1:] }}Repository.findById(request.get{{ rel.name[:1].upper() + rel.name[1:] }}Id())
+                    .orElseThrow(() -> new ResourceNotFoundException("{{ rel.target_entity }} not found with id: " + request.get{{ rel.name[:1].upper() + rel.name[1:] }}Id()))
+            );
+            {% endif %}
+        } else {
+            entity.set{{ rel.name[:1].upper() + rel.name[1:] }}(null);
+        }
+        {% elif rel.persistence_owner and rel.relation_kind == 'MANY_TO_MANY' %}
+        if (request.get{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids() != null && !request.get{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids().isEmpty()) {
+            {% if rel.target_entity == entity.class_name %}
+            List<{{ rel.target_entity }}> targets = repository.findAllById(request.get{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids());
+            {% else %}
+            List<{{ rel.target_entity }}> targets = {{ rel.target_entity[:1].lower() + rel.target_entity[1:] }}Repository.findAllById(request.get{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids());
+            {% endif %}
+            if (targets.size() != request.get{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids().size()) {
+                throw new ResourceNotFoundException("One or more {{ rel.target_entity }} entities not found with provided IDs");
+            }
+            entity.set{{ rel.name[:1].upper() + rel.name[1:] }}(targets);
+        } else if (request.get{{ rel.target_entity[:1].upper() + rel.target_entity[1:] }}Ids() != null) {
+            entity.set{{ rel.name[:1].upper() + rel.name[1:] }}(new ArrayList<>());
+        }
+        {% endif %}
         {% endfor %}
     }
 }
