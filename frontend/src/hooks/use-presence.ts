@@ -1,15 +1,6 @@
-import { useModelStore } from '../store/model-store';
-import type { PeerInfo } from '../collaboration/types';
-
 /**
- * Hook para leer el estado de presencia (peers) desde el store.
- *
- * peersCount incluye al propio cliente cuando está conectado.
- * Ver documentación en types.ts para semántica exacta.
+ * usePresence Hook Entry Point
+ * Refactored to follow Feature-Sliced Design (FSD).
+ * Canonical implementation now lives in `src/features/collaboration`.
  */
-export function usePresence(): { peers: PeerInfo[]; peersCount: number; localClientId: number | null } {
-  const peers = useModelStore((s) => s.collaboration.peers);
-  const peersCount = useModelStore((s) => s.collaboration.peersCount);
-  const localClientId = useModelStore((s) => s.collaboration.localClientId);
-  return { peers, peersCount, localClientId };
-}
+export { usePresence } from '../features/collaboration';

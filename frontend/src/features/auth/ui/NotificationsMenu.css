@@ -3,61 +3,92 @@
 }
 
 .notifications-btn {
-  background: transparent;
-  border: none;
+  background: #ffffff;
+  border: 1.5px solid var(--ink-black, #1a1a1a);
   cursor: pointer;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
-  color: #333;
+  padding: 6px;
+  color: var(--ink-black, #1a1a1a);
+  border-radius: 9999px;
+  box-shadow: 1.5px 1.5px 0 var(--ink-black, #1a1a1a);
+  transition: all 0.15s ease;
+}
+
+.notifications-btn:hover {
+  background: var(--btn-peach, #f7c58c);
+  transform: translate(-1px, -1px);
+  box-shadow: 2.5px 2.5px 0 var(--ink-black, #1a1a1a);
 }
 
 .notifications-btn .badge {
   position: absolute;
-  top: 0;
-  right: 0;
-  background: red;
+  top: -2px;
+  right: -2px;
+  background: #ef4444;
   color: white;
-  border-radius: 50%;
-  font-size: 10px;
-  padding: 2px 6px;
+  border: 1.5px solid var(--ink-black, #1a1a1a);
+  border-radius: 9999px;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 1px 4px;
+  min-width: 14px;
+  text-align: center;
+  box-shadow: 1px 1px 0 var(--ink-black, #1a1a1a);
 }
 
 .notifications-dropdown {
   position: absolute;
-  top: 40px;
+  top: calc(100% + 8px);
   right: 0;
-  width: 300px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 1000;
-  max-height: 400px;
+  width: min(340px, calc(100vw - 24px));
+  background: #ffffff;
+  border: 2px solid var(--ink-black, #1a1a1a);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 var(--ink-black, #1a1a1a);
+  z-index: 1100;
+  max-height: 440px;
   display: flex;
   flex-direction: column;
+  animation: fadeIn 0.15s cubic-bezier(0, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .notifications-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--ink-black, #1a1a1a);
+  background: var(--bg-cream, #f8f6f0);
 }
 
 .notifications-header h4 {
   margin: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--ink-black, #1a1a1a);
 }
 
 .notifications-header button {
-  background: none;
-  border: none;
-  color: #0066cc;
+  background: #ffffff;
+  border: 1px solid var(--ink-black, #1a1a1a);
+  color: var(--ink-black, #1a1a1a);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  box-shadow: 1px 1px 0 var(--ink-black, #1a1a1a);
+  transition: all 0.12s ease;
+}
+
+.notifications-header button:hover {
+  background: var(--btn-peach, #f7c58c);
+  transform: translate(-1px, -1px);
+  box-shadow: 1.5px 1.5px 0 var(--ink-black, #1a1a1a);
 }
 
 .notifications-list {
@@ -67,33 +98,161 @@
 }
 
 .notification-item {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
+  padding: 12px 14px;
+  border-bottom: 1.5px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #ffffff;
+  transition: background 0.12s ease;
+}
+
+.notification-item:hover {
+  background: #fffcf8;
 }
 
 .notification-item.unread {
-  background: #f0f8ff;
+  background: #fff8ef;
+  border-left: 3px solid var(--shape-peach, #fcb580);
+}
+
+.notification-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notif-type-icon {
+  color: var(--ink-black, #1a1a1a);
+  flex-shrink: 0;
 }
 
 .notification-item h5 {
-  margin: 0 0 5px 0;
-  font-size: 14px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-black, #1a1a1a);
 }
 
 .notification-item p {
-  margin: 0 0 5px 0;
-  font-size: 13px;
-  color: #555;
+  margin: 0;
+  font-size: 12px;
+  color: #4b5563;
+  line-height: 1.4;
 }
 
 .notification-item small {
-  color: #999;
-  font-size: 11px;
+  color: #888888;
+  font-size: 10.5px;
+}
+
+.notification-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.notif-btn-accept {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: var(--btn-peach, #f7c58c);
+  color: var(--ink-black, #1a1a1a);
+  border: 1.5px solid var(--ink-black, #1a1a1a);
+  border-radius: 8px;
+  box-shadow: 1.5px 1.5px 0 var(--ink-black, #1a1a1a);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.notif-btn-accept:hover:not(:disabled) {
+  background: #fbb46c;
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink-black, #1a1a1a);
+}
+
+.notif-btn-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1.5px solid var(--ink-black, #1a1a1a);
+  border-radius: 8px;
+  box-shadow: 1.5px 1.5px 0 var(--ink-black, #1a1a1a);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.notif-btn-reject:hover:not(:disabled) {
+  background: #fca5a5;
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink-black, #1a1a1a);
+}
+
+.notif-btn-accept:disabled,
+.notif-btn-reject:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.notif-btn-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  background: #f8f6f0;
+  color: var(--ink-black, #1a1a1a);
+  border: 1.5px solid var(--ink-black, #1a1a1a);
+  box-shadow: 1px 1px 0 var(--ink-black, #1a1a1a);
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: auto;
+}
+
+.notif-btn-link:hover {
+  background: var(--pastel-sky, #bae6fd);
+  transform: translate(-1px, -1px);
+}
+
+.notif-feedback-pill {
+  margin-top: 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1.5px solid var(--ink-black, #1a1a1a);
+}
+
+.notif-feedback-pill.success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.notif-feedback-pill.error {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .empty {
-  padding: 20px;
+  padding: 24px 16px;
   text-align: center;
-  color: #888;
+  color: #666666;
+  font-size: 13px;
+  margin: 0;
 }
+
+

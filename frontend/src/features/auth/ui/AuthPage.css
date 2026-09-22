@@ -270,12 +270,28 @@
 .auth-error {
   color: #d93025;
   background: #fce8e6;
+  border: 1px solid #fad2cf;
   padding: 12px 16px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.auth-success {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .slide-down {

@@ -1,0 +1,13 @@
+{
+  "name": "umlforge-mobile-ecosystem",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ecosistema móvil de UMLForge: runtime dinámico, Golden Template e IA On-Device",
+  "workspaces": [
+    "packages/*",
+    "template/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present"
+  }
+}

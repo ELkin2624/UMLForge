@@ -69,35 +69,91 @@ export function generateInviteToken(
 
 /**
  * Construye la URL de invitación completa.
+ * Acepta tanto (roomId, token, role, baseUrl) como (roomId, token, baseUrl).
  */
 export function buildInviteUrl(
   roomId: string,
   token: string,
+  roleOrBaseUrl?: Exclude<Role, 'OWNER'> | string,
   baseUrl?: string
 ): string {
-  const base = baseUrl ?? window.location.origin + window.location.pathname;
-  const url = new URL(base);
+  let role: Exclude<Role, 'OWNER'> | undefined;
+  let base = baseUrl;
+
+  if (roleOrBaseUrl === 'READER' || roleOrBaseUrl === 'EDITOR') {
+    role = roleOrBaseUrl;
+  } else if (typeof roleOrBaseUrl === 'string') {
+    base = roleOrBaseUrl;
+  }
+
+  const defaultOrigin =
+    typeof window !== 'undefined' && window.location
+      ? window.location.origin + window.location.pathname
+      : 'http://localhost:5173/';
+  const finalBase = base ?? defaultOrigin;
+  const url = new URL(finalBase);
   url.searchParams.set('room', roomId);
   url.searchParams.set('token', token);
+  if (role) {
+    url.searchParams.set('role', role);
+  }
   return url.toString();
 }
 
 /**
  * Lee los parámetros de invitación de la URL actual.
- * Devuelve null si no hay parámetros de sala.
+ * Soporta dos formatos:
+ * 1. ?room=<roomId>&token=<token>&role=<role>  (enlace legacy desde ShareDialog)
+ * 2. ?invite=<invitationId>                    (deep-link desde notificaciones)
  */
-export function parseInviteFromUrl(): { roomId: string; token: string } | null {
+export function parseInviteFromUrl(): {
+  roomId: string;
+  token: string;
+  role?: Exclude<Role, 'OWNER'>;
+  invitationId?: number;
+} | null {
   try {
     const params = new URLSearchParams(window.location.search);
+
+    // Formato 2: deep-link ?invite=<invitationId>
+    const inviteIdStr = params.get('invite');
+    if (inviteIdStr) {
+      const invitationId = parseInt(inviteIdStr, 10);
+      if (!isNaN(invitationId)) {
+        return { roomId: '', token: '', invitationId };
+      }
+    }
+
+    // Formato 1: legacy ?room=...&token=...
     const room = params.get('room');
     const token = params.get('token');
+    const rawRole = params.get('role');
+    const role: Exclude<Role, 'OWNER'> | undefined =
+      rawRole === 'READER' || rawRole === 'EDITOR' ? rawRole : undefined;
+
     if (room && token) {
-      return { roomId: room, token };
+      return { roomId: room, token, role };
     }
   } catch {
     // silent fail
   }
   return null;
+}
+
+/**
+ * Construye una URL de deep-link para una invitación específica del backend.
+ * Formato: <origin>/?invite=<invitationId>
+ * El usuario abre esta URL, hace login si es necesario, y la app
+ * llama a /api/v1/invitations/<id>/accept con el JWT del usuario.
+ */
+export function buildInvitationDeepLink(invitationId: number): string {
+  const base =
+    typeof window !== 'undefined' && window.location
+      ? window.location.origin + window.location.pathname
+      : 'http://localhost:5173/';
+  const url = new URL(base);
+  url.searchParams.set('invite', invitationId.toString());
+  return url.toString();
 }
 
 /**
@@ -108,6 +164,8 @@ export function clearInviteParamsFromUrl(): void {
     const url = new URL(window.location.href);
     url.searchParams.delete('room');
     url.searchParams.delete('token');
+    url.searchParams.delete('role');
+    url.searchParams.delete('invite');
     window.history.replaceState({}, '', url.toString());
   } catch {
     // silent fail

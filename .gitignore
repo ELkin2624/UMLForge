@@ -1,57 +1,178 @@
 # =========================================================================
-# Entorno Virtual Python
+# Python & Virtual Environments
 # =========================================================================
 venv/
-env/
-.env/
 .venv/
-
-# =========================================================================
-# Python y Herramientas (Pytest, Ruff, Mypy)
-# =========================================================================
+env/
+ENV/
+env.bak/
+venv.bak/
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-wheel-metadata/
+
+# =========================================================================
+# Testing & Quality Tools (Pytest, Ruff, Mypy, Coverage)
+# =========================================================================
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
+.tox/
+.nox/
+.hypothesis/
 
 # =========================================================================
-# Frontend (Node.js, Vite, React)
+# JavaScript / TypeScript / Frontend (Node, Vite, React, Turbo)
 # =========================================================================
-apps/web/node_modules/
 node_modules/
+*/node_modules/
+**/*/node_modules/
+.pnpm-store/
 dist/
 dist-ssr/
 build/
-*.local
+.output/
+.next/
+out/
+.turbo/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+tsbuildinfo
+
+# Node package manager logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # =========================================================================
-# Archivos Generados por el Proyecto (Resultados, Proyectos Spring, etc.)
+# Mobile (Expo / React Native / Android / iOS)
+# =========================================================================
+.expo/
+.expo-shared/
+web-build/
+android/.gradle/
+android/build/
+android/app/build/
+ios/build/
+ios/Pods/
+*.apk
+*.aab
+*.ipa
+
+# Mobile Signing Keys & Keystores
+*.jks
+*.p8
+*.p12
+*.key
+*.keystore
+*.mobileprovision
+
+# =========================================================================
+# Environment Variables, Secrets & Certificates
+# =========================================================================
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.cert
+*.crt
+secrets/
+
+# =========================================================================
+# Databases & Local Storage
+# =========================================================================
+*.db
+*.sqlite
+*.sqlite3
+*.sql.bak
+*.sql.dump
+data/
+pg_data/
+postgres_data/
+
+# =========================================================================
+# Generated Code, CASE Tool Artifacts & Builds (Spring Boot, Newman, Reports)
 # =========================================================================
 generated/
 generated_test/
-reports/
+generated_projects/
 projects/
+reports/
+temp/
+tmp/
+target/
+*.jar
+*.war
 *.zip
+*.tar.gz
+*.rar
+*.7z
 latest_report.json
 maven_logs*.txt
-newman_report*.txt
-newman_report*.json
-
-# =========================================================================
-# IDEs y Editores
-# =========================================================================
-.vscode/
-.idea/
-*.swp
-*.swo
-.DS_Store
+newman_report*
+allure-results/
+allure-report/
 
 # =========================================================================
 # Logs
 # =========================================================================
 *.log
+logs/
+
+# =========================================================================
+# IDEs, Editors & OS Files
+# =========================================================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/

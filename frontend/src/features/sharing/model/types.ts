@@ -10,12 +10,16 @@
 
 export type Role = 'OWNER' | 'EDITOR' | 'READER';
 
+export type GeneralAccessType = 'RESTRICTED' | 'ANYONE_WITH_LINK';
+
 export interface CollaboratorAccess {
   /** Identificador único del colaborador (Yjs clientId o UUID) */
   id: string;
   /** Nombre visible */
   name: string;
-  /** Color de presencia */
+  /** Correo electrónico (opcional) */
+  email?: string;
+  /** Color de presencia o avatar */
   color: string;
   /** Rol asignado en esta sesión */
   role: Role;
@@ -43,6 +47,12 @@ export interface SharingState {
   localRole: Role;
   /** Colaboradores conectados con sus roles */
   collaborators: CollaboratorAccess[];
+  /** Usuarios invitados explícitamente */
+  invitedUsers: CollaboratorAccess[];
+  /** Configuración de acceso general (Restringido o Cualquier persona con el enlace) */
+  generalAccess: GeneralAccessType;
+  /** Rol asignado al acceso general cuando es ANYONE_WITH_LINK */
+  generalAccessRole: Exclude<Role, 'OWNER'>;
   /** Token de invitación actual (null = no generado aún) */
   inviteToken: InviteTokenConfig | null;
   /** IDs de colaboradores revocados (no pueden participar) */

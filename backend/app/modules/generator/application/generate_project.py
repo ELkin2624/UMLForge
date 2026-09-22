@@ -189,6 +189,52 @@ class ProjectGenerator:
             )
         )
 
+        # Artefactos para el Ecosistema Móvil e IA On-Device
+        from app.modules.generator.domain.mobile_schema_mapper import MobileSchemaMapper
+        from app.modules.generator.domain.ai_tools_mapper import AIToolsMapper
+        from app.modules.generator.domain.manifest_mapper import ManifestMapper
+
+        mobile_schema = MobileSchemaMapper.map_schema(project_name, ordered_entities, domain=domain.value)
+        ai_tools = AIToolsMapper.map_tools(project_name, ordered_entities, domain=domain.value)
+        ai_context = AIToolsMapper.map_context(project_name, ordered_entities, domain=domain.value)
+        mobile_manifest = ManifestMapper.map_manifest(project_name, domain=domain.value)
+
+        files.append(
+            GeneratedFile(
+                path=f"mobile/{project_name}/manifest.json",
+                content=mobile_manifest.model_dump_json(indent=2),
+                media_type="application/json",
+            )
+        )
+        files.append(
+            GeneratedFile(
+                path=f"mobile/{project_name}/schema.json",
+                content=mobile_schema.model_dump_json(indent=2),
+                media_type="application/json",
+            )
+        )
+        files.append(
+            GeneratedFile(
+                path=f"mobile/{project_name}/ai-tools.json",
+                content=ai_tools.model_dump_json(indent=2),
+                media_type="application/json",
+            )
+        )
+        files.append(
+            GeneratedFile(
+                path=f"mobile/{project_name}/ai-context.json",
+                content=ai_context.model_dump_json(indent=2),
+                media_type="application/json",
+            )
+        )
+        files.append(
+            GeneratedFile(
+                path=f"mobile/{project_name}/branding.json",
+                content=mobile_manifest.branding.model_dump_json(indent=2),
+                media_type="application/json",
+            )
+        )
+
         # 5. Renderizar plantillas por entidad
         for entity in entities:
             entity_ctx = {**context, "entity": entity}

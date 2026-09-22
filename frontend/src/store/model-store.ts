@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { UMLModel } from '../types/canonical-model';
 import { E2EResult, E2EUiState } from '../types/api-responses';
-import type { CollaborationStatus, CollaborationUiState, PeerInfo } from '../collaboration/types';
+import type { CollaborationStatus, CollaborationUiState, PeerInfo } from '../features/collaboration';
 
 export type DiagramViewType = 'class' | 'component';
 

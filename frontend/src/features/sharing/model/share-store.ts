@@ -12,8 +12,34 @@
 
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import type { Role, CollaboratorAccess, InviteTokenConfig, SharingState } from './types';
+import type {
+  Role,
+  GeneralAccessType,
+  CollaboratorAccess,
+  InviteTokenConfig,
+  SharingState,
+} from './types';
 import { generateInviteToken } from './invite-utils';
+
+const AVATAR_COLORS = [
+  '#ea4335', // Google Red
+  '#4285f4', // Google Blue
+  '#fbbc05', // Google Yellow
+  '#34a853', // Google Green
+  '#9333ea', // Purple
+  '#ec4899', // Pink
+  '#06b6d4', // Cyan
+  '#f97316', // Orange
+];
+
+function getRandomColor(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+}
 
 interface ShareStore extends SharingState {
   // ─── Acciones del diálogo ────────────────────────────────────────────────
@@ -31,16 +57,27 @@ interface ShareStore extends SharingState {
   // ─── Acciones de colaboradores ───────────────────────────────────────────
   /** Actualiza la lista completa de colaboradores (llamar desde presence). */
   setCollaborators: (collaborators: CollaboratorAccess[]) => void;
-  /** Cambia el rol de un colaborador por ID. Solo OWNER puede hacerlo. */
+  /** Añade un usuario invitado por correo o nombre con un rol específico. */
+  addCollaboratorByEmail: (
+    emailOrName: string,
+    role: Exclude<Role, 'OWNER'>
+  ) => CollaboratorAccess;
+  /** Cambia el rol de un colaborador o invitado por ID. Solo OWNER puede hacerlo. */
   changeCollaboratorRole: (id: string, newRole: Exclude<Role, 'OWNER'>) => void;
-  /** Revoca el acceso de un colaborador. Solo OWNER puede hacerlo. */
+  /** Transfiere la propiedad a otro colaborador. */
+  transferOwnership: (id: string) => void;
+  /** Revoca el acceso de un colaborador o invitado. Solo OWNER puede hacerlo. */
   revokeCollaborator: (id: string) => void;
   /** ¿Está revocado este colaborador? */
   isRevoked: (id: string) => boolean;
 
+  // ─── Acceso General (Google Docs style) ──────────────────────────────────
+  setGeneralAccess: (type: GeneralAccessType) => void;
+  setGeneralAccessRole: (role: Exclude<Role, 'OWNER'>) => void;
+
   // ─── Token de invitación ─────────────────────────────────────────────────
   /** Genera un nuevo token de invitación (o reemplaza el existente). */
-  generateToken: (defaultRole: Exclude<Role, 'OWNER'>) => InviteTokenConfig;
+  generateToken: (defaultRole?: Exclude<Role, 'OWNER'>) => InviteTokenConfig;
   /** Invalida el token actual. */
   revokeToken: () => void;
 
@@ -54,6 +91,9 @@ const DEFAULT_STATE: SharingState = {
   roomId: null,
   localRole: 'OWNER',
   collaborators: [],
+  invitedUsers: [],
+  generalAccess: 'RESTRICTED',
+  generalAccessRole: 'EDITOR',
   inviteToken: null,
   revokedIds: new Set<string>(),
 };
@@ -70,6 +110,9 @@ export const useShareStore = create<ShareStore>()(
         roomId,
         localRole: 'OWNER',
         collaborators: [],
+        invitedUsers: [],
+        generalAccess: 'RESTRICTED',
+        generalAccessRole: 'EDITOR',
         inviteToken: null,
         revokedIds: new Set<string>(),
       }),
@@ -79,6 +122,7 @@ export const useShareStore = create<ShareStore>()(
         roomId,
         localRole: role,
         collaborators: [],
+        invitedUsers: [],
         inviteToken: null,
         revokedIds: new Set<string>(),
       }),
@@ -88,6 +132,9 @@ export const useShareStore = create<ShareStore>()(
         roomId: null,
         localRole: 'OWNER',
         collaborators: [],
+        invitedUsers: [],
+        generalAccess: 'RESTRICTED',
+        generalAccessRole: 'EDITOR',
         inviteToken: null,
         revokedIds: new Set<string>(),
         isDialogOpen: false,
@@ -95,10 +142,47 @@ export const useShareStore = create<ShareStore>()(
 
     setCollaborators: (collaborators) => set({ collaborators }),
 
+    addCollaboratorByEmail: (emailOrName, role) => {
+      const cleanInput = emailOrName.trim();
+      const isEmail = cleanInput.includes('@');
+      const id = `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      const name = isEmail ? cleanInput.split('@')[0] : cleanInput;
+      const email = isEmail ? cleanInput : `${cleanInput.toLowerCase().replace(/\s+/g, '')}@ejemplo.com`;
+
+      const newUser: CollaboratorAccess = {
+        id,
+        name,
+        email,
+        color: getRandomColor(cleanInput),
+        role,
+        isLocalOwner: false,
+      };
+
+      set((s) => ({
+        invitedUsers: [...s.invitedUsers, newUser],
+      }));
+
+      return newUser;
+    },
+
     changeCollaboratorRole: (id, newRole) =>
       set((s) => ({
         collaborators: s.collaborators.map((c) =>
           c.id === id ? { ...c, role: newRole } : c
+        ),
+        invitedUsers: s.invitedUsers.map((u) =>
+          u.id === id ? { ...u, role: newRole } : u
+        ),
+      })),
+
+    transferOwnership: (id) =>
+      set((s) => ({
+        localRole: 'EDITOR',
+        collaborators: s.collaborators.map((c) =>
+          c.id === id ? { ...c, role: 'OWNER' } : c
+        ),
+        invitedUsers: s.invitedUsers.map((u) =>
+          u.id === id ? { ...u, role: 'OWNER' } : u
         ),
       })),
 
@@ -109,14 +193,20 @@ export const useShareStore = create<ShareStore>()(
         return {
           revokedIds,
           collaborators: s.collaborators.filter((c) => c.id !== id),
+          invitedUsers: s.invitedUsers.filter((u) => u.id !== id),
         };
       }),
 
     isRevoked: (id) => get().revokedIds.has(id),
 
+    setGeneralAccess: (generalAccess) => set({ generalAccess }),
+
+    setGeneralAccessRole: (generalAccessRole) => set({ generalAccessRole }),
+
     generateToken: (defaultRole) => {
-      const { roomId } = get();
-      const token = generateInviteToken(roomId ?? 'umlforge-default', defaultRole);
+      const { roomId, generalAccessRole } = get();
+      const roleToUse = defaultRole ?? generalAccessRole ?? 'EDITOR';
+      const token = generateInviteToken(roomId ?? 'umlforge-default', roleToUse);
       set({ inviteToken: token });
       return token;
     },

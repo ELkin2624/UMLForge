@@ -14,8 +14,20 @@ def list_diagrams(current_user: User = Depends(require_authenticated_user), db: 
     # Devuelve los diagramas donde el usuario es owner o tiene permisos
     permissions = db.query(DiagramPermission).filter(DiagramPermission.user_id == current_user.id).all()
     diagram_ids = [p.diagram_id for p in permissions]
+    perm_map = {p.diagram_id: p.role for p in permissions}
     diagrams = db.query(Diagram).filter(Diagram.id.in_(diagram_ids)).all()
-    return diagrams
+    
+    result = []
+    for d in diagrams:
+        result.append(DiagramResponse(
+            id=d.id,
+            name=d.name,
+            owner_id=d.owner_id,
+            created_at=d.created_at,
+            updated_at=d.updated_at,
+            my_role=perm_map.get(d.id, "READER")
+        ))
+    return result
 
 @router.post("", response_model=DiagramDetailResponse)
 def create_diagram(diagram_in: DiagramCreate, current_user: User = Depends(require_authenticated_user), db: Session = Depends(get_db)):
@@ -35,21 +47,41 @@ def create_diagram(diagram_in: DiagramCreate, current_user: User = Depends(requi
     db.add(permission)
     db.commit()
     db.refresh(db_diagram)
-    return db_diagram
+    return DiagramDetailResponse(
+        id=db_diagram.id,
+        name=db_diagram.name,
+        owner_id=db_diagram.owner_id,
+        created_at=db_diagram.created_at,
+        updated_at=db_diagram.updated_at,
+        data=db_diagram.data or {},
+        my_role="OWNER"
+    )
 
-@router.get("/{id}", response_model=DiagramDetailResponse)
-def get_diagram(id: int, diagram: Diagram = Depends(require_diagram_access)):
-    return diagram
+@router.get("/{diagram_id}", response_model=DiagramDetailResponse)
+def get_diagram(diagram_id: int, diagram: Diagram = Depends(require_diagram_access), current_user: User = Depends(require_authenticated_user), db: Session = Depends(get_db)):
+    perm = db.query(DiagramPermission).filter(
+        DiagramPermission.diagram_id == diagram_id,
+        DiagramPermission.user_id == current_user.id
+    ).first()
+    return DiagramDetailResponse(
+        id=diagram.id,
+        name=diagram.name,
+        owner_id=diagram.owner_id,
+        created_at=diagram.created_at,
+        updated_at=diagram.updated_at,
+        data=diagram.data or {},
+        my_role=perm.role if perm else "READER"
+    )
 
-@router.put("/{id}", response_model=DiagramDetailResponse)
-def update_diagram(id: int, diagram_in: DiagramUpdate, diagram: Diagram = Depends(require_diagram_access), current_user: User = Depends(require_authenticated_user), db: Session = Depends(get_db)):
+@router.put("/{diagram_id}", response_model=DiagramDetailResponse)
+def update_diagram(diagram_id: int, diagram_in: DiagramUpdate, diagram: Diagram = Depends(require_diagram_access), current_user: User = Depends(require_authenticated_user), db: Session = Depends(get_db)):
     # Requerir EDITOR o OWNER
     permission = db.query(DiagramPermission).filter(
-        DiagramPermission.diagram_id == id,
+        DiagramPermission.diagram_id == diagram_id,
         DiagramPermission.user_id == current_user.id
     ).first()
     
-    if permission.role not in ["OWNER", "EDITOR"]:
+    if not permission or permission.role not in ["OWNER", "EDITOR"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permiso para editar este diagrama")
         
     if diagram_in.name is not None:
@@ -61,15 +93,15 @@ def update_diagram(id: int, diagram_in: DiagramUpdate, diagram: Diagram = Depend
     db.refresh(diagram)
     return diagram
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_diagram(id: int, diagram: Diagram = Depends(require_diagram_access), current_user: User = Depends(require_authenticated_user), db: Session = Depends(get_db)):
+@router.delete("/{diagram_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_diagram(diagram_id: int, diagram: Diagram = Depends(require_diagram_access), current_user: User = Depends(require_authenticated_user), db: Session = Depends(get_db)):
     # Requiere OWNER
     permission = db.query(DiagramPermission).filter(
-        DiagramPermission.diagram_id == id,
+        DiagramPermission.diagram_id == diagram_id,
         DiagramPermission.user_id == current_user.id
     ).first()
     
-    if permission.role != "OWNER":
+    if not permission or permission.role != "OWNER":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo el propietario puede eliminar el diagrama")
         
     db.delete(diagram)

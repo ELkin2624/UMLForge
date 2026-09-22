@@ -1,0 +1,67 @@
+{
+  "success": false,
+  "project_name": "imported_model",
+  "total_duration_ms": 31793,
+  "stages": [
+    {
+      "name": "validation",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "generation",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "extraction",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "postgres",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "maven",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "spring",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "health",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "newman",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    }
+  ],
+  "test_summary": null,
+  "zip_path": null,
+  "report_path": "e2e_report_imported_model_20260922_032543.json",
+  "error": "Newman no está disponible en el host."
+}

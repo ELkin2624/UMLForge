@@ -45,14 +45,18 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
   }
 
   if (!response.ok) {
-    let errorDetail = 'Error desconocido';
+    const rawText = await response.text();
+    let errorDetail = rawText;
     try {
-      const errorData = await response.json();
-      errorDetail = errorData.detail?.message || errorData.detail || JSON.stringify(errorData);
-    } catch {
-      errorDetail = await response.text();
-    }
+      const errorData = JSON.parse(rawText);
+      errorDetail = errorData.detail?.message || errorData.detail || rawText;
+    } catch {}
     throw new Error(errorDetail || `HTTP error! status: ${response.status}`);
+  }
+
+  // Si la respuesta es 204 No Content, no tiene body JSON
+  if (response.status === 204) {
+    return null as unknown as T;
   }
 
   // Si esperamos un Blob (ej. descarga de ZIP), no parseamos JSON. 

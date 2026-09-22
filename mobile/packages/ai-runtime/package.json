@@ -1,0 +1,9 @@
+{
+  "name": "@umlforge/ai-runtime",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@umlforge/api-client": "workspace:*"
+  }
+}

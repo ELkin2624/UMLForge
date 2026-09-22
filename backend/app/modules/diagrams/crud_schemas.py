@@ -16,6 +16,7 @@ class DiagramResponse(BaseModel):
     owner_id: int
     created_at: datetime
     updated_at: datetime
+    my_role: str | None = None
     
     model_config = ConfigDict(from_attributes=True)
 

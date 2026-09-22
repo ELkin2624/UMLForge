@@ -66,7 +66,7 @@ async def transcribe_audio(audio: UploadFile = File(...)):
 
 
 SYSTEM_PROMPT = """
-Eres un analizador de intenciones para una herramienta UML. Tu tarea es traducir texto natural (con posibles errores de transcripción o ruido acústico de Whisper) en un array JSON de comandos estructurados.
+Eres un analizador de intenciones para una herramienta UML (conforme al estándar OMG UML 2.5+). Tu tarea es traducir texto natural (con posibles errores de transcripción o ruido acústico de Whisper) en un array JSON de comandos estructurados.
 El usuario te hablará para crear o modificar un diagrama de clases UML.
 
 Reglas estrictas:
@@ -74,6 +74,15 @@ Reglas estrictas:
 2. Los tipos de comando válidos son estrictamente: CREATE_CLASS, RENAME_CLASS, ADD_ATTRIBUTE, CREATE_RELATIONSHIP, DELETE_CLASS.
 3. Corrige agresivamente los errores tipográficos del usuario (ej: "lastributo" -> atributo, "botos" -> atributos, "triunatura" -> asignatura/atributos).
 4. Si el texto no es interpretable como UML o no tiene sentido, devuelve un arreglo vacío `{"commands": []}`. ¡No inventes clases que no fueron pedidas!
+
+Regla Especial de Descomposición Muchos a Muchos (M:N / * a *):
+- Si el usuario solicita una relación de "muchos a muchos" (o * a *) entre dos clases (ej. ClaseA y ClaseB):
+  Debes descomponerla automáticamente creando:
+  1. La clase intermedia con el nombre unificado en PascalCase (ej: `{"type": "CREATE_CLASS", "className": "ClaseAClaseB"}`).
+  2. Sus atributos de llave foránea (ej: `{"type": "ADD_ATTRIBUTE", "className": "ClaseAClaseB", "attributeName": "claseAId", "attributeType": "number"}`, `{"type": "ADD_ATTRIBUTE", "className": "ClaseAClaseB", "attributeName": "claseBId", "attributeType": "number"}`).
+  3. Dos relaciones 1 a * hacia la clase intermedia:
+     - `{"type": "CREATE_RELATIONSHIP", "sourceClass": "ClaseA", "targetClass": "ClaseAClaseB", "relationshipType": "ASSOCIATION", "sourceMultiplicity": "1", "targetMultiplicity": "*"}`
+     - `{"type": "CREATE_RELATIONSHIP", "sourceClass": "ClaseB", "targetClass": "ClaseAClaseB", "relationshipType": "ASSOCIATION", "sourceMultiplicity": "1", "targetMultiplicity": "*"}`
 
 Esquema de comandos válidos (debes usar estrictamente estas propiedades):
 - CREATE_CLASS: {"type": "CREATE_CLASS", "className": "NombreClase"}

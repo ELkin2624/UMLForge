@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ApollonEditor } from './components/ApollonEditor';
 import { TopMenuBar } from './components/TopMenuBar';
-import { ValidationPanel } from './components/ValidationPanel';
-import { DeploymentResultPanel } from './components/DeploymentResultPanel';
-import { E2EResultPanel } from './components/E2EResultPanel';
-import { LoadingOverlay } from './components/LoadingOverlay';
-import { Notification } from './components/Notification';
+import { ValidationPanel, E2EResultPanel, LoadingOverlay } from './features/model-validation';
+import { DeploymentResultPanel } from './features/project-deployment';
+import { Notification } from './shared/ui';
 import { CollaborationPanel } from './components/CollaborationPanel';
 import { PresenceToasts } from './components/presence/PresenceToasts';
 import { VoiceAssistantChat } from './components/VoiceAssistantChat';
@@ -30,36 +28,165 @@ function App() {
   const setE2EError = useModelStore(s => s.setE2EError);
 
   const { connect } = useCollaboration();
-  const { joinSession } = useShareStore();
+  const { startSession, joinSession } = useShareStore();
 
   const token = useAuthStore(s => s.token);
 
   useEffect(() => {
     const invite = parseInviteFromUrl();
-    if (invite) {
-      joinSession(invite.roomId, 'EDITOR');
-      connect(invite.roomId);
-      clearInviteParamsFromUrl();
-    } else if (token) {
-      const loadDiagrams = async () => {
+    if (!token) {
+      if (invite) {
         try {
-          const { request } = await import('./api/client');
-          const diagrams = await request<any[]>('/diagrams');
-          if (diagrams && diagrams.length > 0) {
-            const first = diagrams[0];
-            const role = first.owner_id === useAuthStore.getState().user?.id ? 'OWNER' : 'EDITOR';
-            joinSession(first.id.toString(), role as any);
-            
-            if (first.data && Object.keys(first.data).length > 0) {
-               useModelStore.getState().setModel(first.data as any);
+          // Usar localStorage para persistir entre sesiones (no sessionStorage)
+          localStorage.setItem('umlforge-pending-invite', JSON.stringify(invite));
+        } catch {}
+      }
+      return;
+    }
+
+    let activeInvite = invite;
+    if (!activeInvite) {
+      try {
+        const stored = localStorage.getItem('umlforge-pending-invite');
+        if (stored) {
+          activeInvite = JSON.parse(stored);
+        }
+      } catch {}
+    }
+
+    if (activeInvite) {
+      try {
+        localStorage.removeItem('umlforge-pending-invite');
+      } catch {}
+
+      // Formato deep-link: ?invite=<invitationId> → llamar API y unirse
+      if (activeInvite.invitationId) {
+        const acceptAndJoin = async () => {
+          try {
+            const { request } = await import('./api/client');
+            const res = await request<{ success: boolean; diagram_id: number; diagram_name: string; role: string }>(
+              `/invitations/${activeInvite!.invitationId}/accept`,
+              { method: 'POST' }
+            );
+            if (res && res.diagram_id) {
+              const roomStr = res.diagram_id.toString();
+              try {
+                sessionStorage.setItem('umlforge-active-diagram', roomStr);
+                sessionStorage.setItem('umlforge-collab-active', 'true');
+                const url = new URL(window.location.href);
+                url.searchParams.set('diagram', roomStr);
+                window.history.replaceState({}, '', url.toString());
+              } catch {}
+
+              joinSession(roomStr, res.role as any);
+              connect(roomStr);
+              // Cargar datos del diagrama
+              try {
+                const diagramData = await request<any>(`/diagrams/${res.diagram_id}`);
+                if (diagramData?.data && (diagramData.data.classes?.length || diagramData.data.components?.length)) {
+                  useModelStore.getState().setModel(diagramData.data);
+                }
+              } catch (e) {
+                console.warn('Invitación aceptada pero no se pudo cargar el diagrama:', e);
+              }
+            }
+          } catch (e: any) {
+            console.warn('No se pudo aceptar la invitación automáticamente:', e.message);
+          } finally {
+            clearInviteParamsFromUrl();
+          }
+        };
+        acceptAndJoin();
+        return;
+      }
+
+      // Formato legacy: ?room=...&token=...
+      if (activeInvite.roomId) {
+        const assignedRole = activeInvite.role || 'EDITOR';
+        try {
+          sessionStorage.setItem('umlforge-active-diagram', activeInvite.roomId);
+          sessionStorage.setItem('umlforge-collab-active', 'true');
+        } catch {}
+        joinSession(activeInvite.roomId, assignedRole);
+        connect(activeInvite.roomId);
+        clearInviteParamsFromUrl();
+        return;
+      }
+    }
+
+    // Sin invite pendiente: cargar diagrama del usuario respetando el activo y sin auto-conectar
+    const loadDiagrams = async () => {
+      try {
+        const { request } = await import('./api/client');
+        const diagrams = await request<any[]>('/diagrams');
+        if (diagrams && diagrams.length > 0) {
+          const currentUserId = useAuthStore.getState().user?.id;
+          const urlParams = new URLSearchParams(window.location.search);
+          const diagramParam = urlParams.get('diagram');
+          const storedDiagramId = diagramParam || sessionStorage.getItem('umlforge-active-diagram');
+
+          // Seleccionar diagrama:
+          // 1. Si hay uno específico en URL o sessionStorage al que tenga acceso
+          // 2. Si no, su propio diagrama (owner)
+          // 3. Si no, el primero de la lista
+          let target = diagrams.find(d => storedDiagramId && d.id.toString() === storedDiagramId);
+          if (!target) {
+            target = diagrams.find(d => d.owner_id === currentUserId) || diagrams[0];
+          }
+
+          const isOwner = target.owner_id === currentUserId;
+          const role = isOwner ? 'OWNER' : (target.my_role || 'EDITOR');
+          const roomStr = target.id.toString();
+
+          try {
+            sessionStorage.setItem('umlforge-active-diagram', roomStr);
+          } catch {}
+
+          useShareStore.getState().setRoomId(roomStr);
+          useShareStore.getState().setLocalRole(role);
+
+          // Cargar datos completos del diagrama en Zustand
+          try {
+            const fullDiagram = await request<any>(`/diagrams/${target.id}`);
+            if (fullDiagram?.data && (fullDiagram.data.classes?.length || fullDiagram.data.components?.length)) {
+              useModelStore.getState().setModel(fullDiagram.data as any);
+            }
+          } catch {
+            if (target.data && (target.data.classes?.length || target.data.components?.length)) {
+              useModelStore.getState().setModel(target.data as any);
             }
           }
-        } catch (e) {
-          console.error('Error loading diagrams:', e);
+
+          // Solo conectar WebSocket si el usuario estaba activamente en una sesión colaborativa
+          const isCollabActive = sessionStorage.getItem('umlforge-collab-active') === 'true';
+          if (isCollabActive) {
+            if (isOwner) {
+              startSession(roomStr);
+            } else {
+              joinSession(roomStr, role);
+            }
+            connect(roomStr);
+          }
+        } else {
+          // Si el usuario no tiene ningún diagrama, inicializar uno en PostgreSQL
+          const newDiag = await request<any>('/diagrams', {
+            method: 'POST',
+            body: JSON.stringify({ name: 'Parcial1-SW1', data: {} })
+          });
+          if (newDiag && newDiag.id) {
+            const roomStr = newDiag.id.toString();
+            try {
+              sessionStorage.setItem('umlforge-active-diagram', roomStr);
+            } catch {}
+            useShareStore.getState().setRoomId(roomStr);
+            useShareStore.getState().setLocalRole('OWNER');
+          }
         }
-      };
-      loadDiagrams();
-    }
+      } catch (e) {
+        console.error('Error loading diagrams:', e);
+      }
+    };
+    loadDiagrams();
   }, [token]);
 
   if (!token) {

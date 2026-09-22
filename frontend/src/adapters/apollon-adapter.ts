@@ -308,11 +308,148 @@ export function applyCanonicalModelToApollon(
     nodes: mergedNodes,
   };
 
-  // 5. Aplicar layout automático a todo el diagrama de forma obligatoria
-  // Esto asegura que nunca se superpongan las tablas cuando la IA hace cambios
-  autoLayoutApollonModel(finalApollon.nodes, finalApollon.edges);
+  // 5. Aplicar layout automático solo si el diagrama no tiene nodos previos ni posiciones guardadas
+  const hasCustomPositions = visualState && Object.keys(visualState).length > 0;
+  if (existingNodesMap.size === 0 && !hasCustomPositions) {
+    autoLayoutApollonModel(finalApollon.nodes, finalApollon.edges);
+  }
 
   editor.model = finalApollon;
+}
+
+/**
+ * Normaliza y descompone automáticamente relaciones Muchos a Muchos (* a *)
+ * en clases intermedias con relaciones 1 -> *.
+ */
+export function autoDecomposeManyToMany(
+  canonical: CanonicalModel,
+  visualState?: Record<string, { x: number; y: number }>
+): {
+  canonical: CanonicalModel;
+  visualState: Record<string, { x: number; y: number }>;
+  decomposed: boolean;
+} {
+  const isMany = (m?: string) => {
+    if (!m) return false;
+    const cleaned = m.trim().toLowerCase();
+    return (
+      cleaned === '*' ||
+      cleaned === '0..*' ||
+      cleaned === '1..*' ||
+      cleaned === 'n' ||
+      cleaned === 'm' ||
+      cleaned === '0..n' ||
+      cleaned === '1..n'
+    );
+  };
+
+  const newVisualState = { ...(visualState || {}) };
+  let decomposed = false;
+  const newClasses = [...canonical.classes];
+  const newRelationships: typeof canonical.relationships = [];
+
+  for (const rel of canonical.relationships) {
+    const isM2M =
+      isMany(rel.source_multiplicity) &&
+      isMany(rel.target_multiplicity) &&
+      !['generalization', 'inheritance', 'realization'].includes((rel.type || '').toLowerCase());
+
+    if (!isM2M) {
+      newRelationships.push(rel);
+      continue;
+    }
+
+    const srcClass = newClasses.find((c) => c.id === rel.source_id);
+    const tgtClass = newClasses.find((c) => c.id === rel.target_id);
+
+    if (!srcClass || !tgtClass) {
+      newRelationships.push(rel);
+      continue;
+    }
+
+    decomposed = true;
+    const intermediateName = `${srcClass.name}${tgtClass.name}`;
+    let intermediateCls = newClasses.find(
+      (c) => c.name.toLowerCase() === intermediateName.toLowerCase()
+    );
+
+    if (!intermediateCls) {
+      const intermediateId = crypto.randomUUID();
+      intermediateCls = {
+        id: intermediateId,
+        name: intermediateName,
+        attributes: [
+          {
+            id: crypto.randomUUID(),
+            name: 'id',
+            type: 'number',
+            visibility: 'public',
+          },
+          {
+            id: crypto.randomUUID(),
+            name: `${srcClass.name.charAt(0).toLowerCase() + srcClass.name.slice(1)}Id`,
+            type: 'number',
+            visibility: 'private',
+          },
+          {
+            id: crypto.randomUUID(),
+            name: `${tgtClass.name.charAt(0).toLowerCase() + tgtClass.name.slice(1)}Id`,
+            type: 'number',
+            visibility: 'private',
+          },
+        ],
+        operations: [],
+      };
+      newClasses.push(intermediateCls);
+
+      // Calcular posición intermedia en el lienzo
+      const srcPos = newVisualState[srcClass.id] || { x: 100, y: 100 };
+      const tgtPos = newVisualState[tgtClass.id] || { x: 400, y: 100 };
+      newVisualState[intermediateId] = {
+        x: Math.round((srcPos.x + tgtPos.x) / 2),
+        y: Math.round((srcPos.y + tgtPos.y) / 2) + 60,
+      };
+    }
+
+    // Agregar relaciones 1 -> *
+    const rel1Exists = newRelationships.some(
+      (r) => r.source_id === srcClass.id && r.target_id === intermediateCls!.id
+    );
+    if (!rel1Exists) {
+      newRelationships.push({
+        id: crypto.randomUUID(),
+        source_id: srcClass.id,
+        target_id: intermediateCls.id,
+        type: 'Association',
+        source_multiplicity: '1',
+        target_multiplicity: '*',
+      });
+    }
+
+    const rel2Exists = newRelationships.some(
+      (r) => r.source_id === tgtClass.id && r.target_id === intermediateCls!.id
+    );
+    if (!rel2Exists) {
+      newRelationships.push({
+        id: crypto.randomUUID(),
+        source_id: tgtClass.id,
+        target_id: intermediateCls.id,
+        type: 'Association',
+        source_multiplicity: '1',
+        target_multiplicity: '*',
+      });
+    }
+  }
+
+  return {
+    canonical: {
+      ...canonical,
+      classes: newClasses,
+      relationships: newRelationships,
+    },
+    visualState: newVisualState,
+    decomposed,
+  };
 }
 
 

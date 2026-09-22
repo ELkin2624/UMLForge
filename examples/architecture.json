@@ -1,0 +1,147 @@
+{
+  "id": "architecture-system-v1",
+  "uml_version": "2.5.1",
+  "classes": [],
+  "relationships": [],
+  "components": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Frontend",
+      "description": "Capa de presentación de usuario"
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": "Backend",
+      "description": "Capa de lógica de negocio y servicios"
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "name": "DatabaseAdapter",
+      "description": "Adaptador de persistencia de datos"
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "name": "IAuthService",
+      "description": "Contrato de autenticación y autorización",
+      "operations": [
+        {
+          "id": "a1111111-1111-1111-1111-111111111111",
+          "name": "login",
+          "return_type": "Token",
+          "visibility": "public",
+          "parameters": [
+            {
+              "id": "a1111111-1111-1111-1111-111111111112",
+              "name": "credentials",
+              "type": "Credentials",
+              "visibility": "private"
+            }
+          ]
+        },
+        {
+          "id": "a1111111-1111-1111-1111-111111111113",
+          "name": "logout",
+          "return_type": "void",
+          "visibility": "public",
+          "parameters": []
+        }
+      ]
+    },
+    {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "name": "IDatabase",
+      "description": "Contrato de acceso a base de datos",
+      "operations": [
+        {
+          "id": "b1111111-1111-1111-1111-111111111111",
+          "name": "query",
+          "return_type": "ResultSet",
+          "visibility": "public",
+          "parameters": [
+            {
+              "id": "b1111111-1111-1111-1111-111111111112",
+              "name": "sql",
+              "type": "String",
+              "visibility": "private"
+            }
+          ]
+        },
+        {
+          "id": "b1111111-1111-1111-1111-111111111113",
+          "name": "execute",
+          "return_type": "int",
+          "visibility": "public",
+          "parameters": [
+            {
+              "id": "b1111111-1111-1111-1111-111111111114",
+              "name": "sql",
+              "type": "String",
+              "visibility": "private"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ports": [
+    {
+      "id": "66666666-6666-6666-6666-666666666661",
+      "name": "authRequiredPort",
+      "component_id": "11111111-1111-1111-1111-111111111111",
+      "interface_id": "44444444-4444-4444-4444-444444444444",
+      "kind": "required"
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666662",
+      "name": "authProvidedPort",
+      "component_id": "22222222-2222-2222-2222-222222222222",
+      "interface_id": "44444444-4444-4444-4444-444444444444",
+      "kind": "provided"
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666663",
+      "name": "dbRequiredPort",
+      "component_id": "22222222-2222-2222-2222-222222222222",
+      "interface_id": "55555555-5555-5555-5555-555555555555",
+      "kind": "required"
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666664",
+      "name": "dbProvidedPort",
+      "component_id": "33333333-3333-3333-3333-333333333333",
+      "interface_id": "55555555-5555-5555-5555-555555555555",
+      "kind": "provided"
+    }
+  ],
+  "connectors": [
+    {
+      "id": "77777777-7777-7777-7777-777777777771",
+      "name": "AuthConnector",
+      "source_port_id": "66666666-6666-6666-6666-666666666661",
+      "target_port_id": "66666666-6666-6666-6666-666666666662"
+    },
+    {
+      "id": "77777777-7777-7777-7777-777777777772",
+      "name": "DbConnector",
+      "source_port_id": "66666666-6666-6666-6666-666666666663",
+      "target_port_id": "66666666-6666-6666-6666-666666666664"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "88888888-8888-8888-8888-888888888881",
+      "source_id": "11111111-1111-1111-1111-111111111111",
+      "target_id": "44444444-4444-4444-4444-444444444444",
+      "type": "dependency"
+    },
+    {
+      "id": "88888888-8888-8888-8888-888888888882",
+      "source_id": "22222222-2222-2222-2222-222222222222",
+      "target_id": "55555555-5555-5555-5555-555555555555",
+      "type": "dependency"
+    }
+  ],
+  "diagrams": []
+}

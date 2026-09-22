@@ -1,9 +1,12 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
+from app.core.database.models import Base
+from app.core.database.session import engine
 from app.core.errors import APIError, ComponentDiagramUnsupportedError
 from app.modules.deployment.router import router as deployment_router
 from app.modules.diagrams.router import router as diagrams_router
@@ -11,15 +14,28 @@ from app.modules.e2e.router import router as e2e_router
 from app.modules.health.router import router as health_router
 from app.modules.xmi.router import router as xmi_router
 from app.modules.auth.router import router as auth_router
+from app.modules.auth.users_router import router as users_router
 from app.modules.diagrams.crud_router import router as diagram_crud_router
 from app.modules.sharing.router import router as sharing_router
+from app.modules.sharing.invitations_router import router as invitations_router
 from app.modules.notifications.router import router as notifications_router
 from app.modules.voice.router import router as voice_router
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Asegurar que todas las tablas, índices e índices parciales existan en PostgreSQL
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        import logging
+        logging.getLogger("uvicorn").error(f"Error inicializando tablas en PostgreSQL: {e}")
+    yield
 
 app = FastAPI(
     title="Herramienta CASE API",
     description="API para validación y generación de proyectos Spring Boot desde modelos UML",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # CORS Middleware
@@ -34,8 +50,10 @@ app.add_middleware(
 # Routers
 app.include_router(health_router)
 app.include_router(auth_router)
+app.include_router(users_router)
 app.include_router(diagram_crud_router)
 app.include_router(sharing_router)
+app.include_router(invitations_router)
 app.include_router(notifications_router)
 app.include_router(diagrams_router)
 app.include_router(deployment_router)

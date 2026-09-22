@@ -25,3 +25,13 @@ class UserResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+class UserSearchResult(BaseModel):
+    id: int
+    username: str
+    display_name: str | None = None
+    avatar_url: str | None = None
+
+    class Config:
+        from_attributes = True
+

@@ -5,26 +5,54 @@ import { ValidationResult, DeploymentResult, E2EResult } from '../types/api-resp
 const API_BASE_URL = '/api/v1';
 
 /** Mapea el CanonicalModel del frontend al DTO esperado por FastAPI,
- * reemplazando source_id -> source, target_id -> target, y normalizando rel.type a minúsculas.
+ * sanitizando el ID del modelo, normalizando relaciones y campos para evitar fallos de validación.
  */
 function mapToBackendDTO(model: UMLModel): any {
+  const sanitizeId = (id?: string) => {
+    if (!id || id.trim() === '') return 'uml_model';
+    return id.replace(/[^a-zA-Z0-9_-]/g, '_');
+  };
+
   return {
     ...model,
-    relationships: model.relationships.map(rel => ({
-      id: rel.id,
-      name: (rel as any).name || `rel_${rel.source_id.substring(0,4)}`,
-      source: rel.source_id,
-      target: rel.target_id,
-      type: rel.type.toLowerCase(),
-      source_multiplicity: rel.source_multiplicity,
-      target_multiplicity: rel.target_multiplicity,
+    id: sanitizeId(model.id),
+    name: model.name || 'UML Model',
+    classes: (model.classes || []).map(cls => ({
+      id: cls.id,
+      name: cls.name,
+      attributes: (cls.attributes || []).map(attr => ({
+        id: attr.id,
+        name: attr.name,
+        type: attr.type || 'String',
+        visibility: attr.visibility || 'private',
+      })),
+      operations: (cls.operations || []).map(op => ({
+        id: op.id,
+        name: op.name,
+        return_type: op.return_type || 'void',
+        visibility: op.visibility || 'public',
+      })),
     })),
-    dependencies: model.dependencies?.map(dep => ({
+    relationships: (model.relationships || []).map(rel => {
+      const srcId = rel.source_id || (rel as any).source || '';
+      const tgtId = rel.target_id || (rel as any).target || '';
+      return {
+        id: rel.id,
+        name: (rel as any).name || `rel_${srcId.substring(0, 4)}`,
+        source: srcId,
+        target: tgtId,
+        type: (rel.type || 'association').toLowerCase(),
+        source_multiplicity: rel.source_multiplicity || '1',
+        target_multiplicity: rel.target_multiplicity || '1',
+      };
+    }),
+    dependencies: (model.dependencies || []).map(dep => ({
       id: dep.id,
-      source: dep.source_id,
-      target: dep.target_id,
-      type: dep.type?.toLowerCase() || 'dependency',
+      source: dep.source_id || (dep as any).source,
+      target: dep.target_id || (dep as any).target,
+      type: (dep.type || 'dependency').toLowerCase(),
     })),
+    diagrams: [],
   };
 }
 

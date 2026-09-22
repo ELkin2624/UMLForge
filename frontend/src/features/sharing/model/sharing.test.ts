@@ -167,4 +167,46 @@ describe('useShareStore', () => {
     useShareStore.getState().closeShareDialog();
     expect(useShareStore.getState().isDialogOpen).toBe(false);
   });
+
+  it('addCollaboratorByEmail adds an invited user with chosen role', () => {
+    useShareStore.getState().startSession('umlforge-test');
+    const user = useShareStore
+      .getState()
+      .addCollaboratorByEmail('colaborador@ejemplo.com', 'READER');
+    expect(user.email).toBe('colaborador@ejemplo.com');
+    expect(user.role).toBe('READER');
+    expect(useShareStore.getState().invitedUsers).toHaveLength(1);
+    expect(useShareStore.getState().invitedUsers[0].role).toBe('READER');
+  });
+
+  it('setGeneralAccess and setGeneralAccessRole update access configuration', () => {
+    useShareStore.getState().startSession('umlforge-test');
+    expect(useShareStore.getState().generalAccess).toBe('RESTRICTED');
+    useShareStore.getState().setGeneralAccess('ANYONE_WITH_LINK');
+    expect(useShareStore.getState().generalAccess).toBe('ANYONE_WITH_LINK');
+
+    useShareStore.getState().setGeneralAccessRole('READER');
+    expect(useShareStore.getState().generalAccessRole).toBe('READER');
+  });
+
+  it('transferOwnership gives OWNER role to collaborator and makes local user EDITOR', () => {
+    useShareStore.getState().startSession('umlforge-test');
+    useShareStore.getState().setCollaborators([
+      { id: 'user-bob', name: 'Bob', color: '#00f', role: 'EDITOR' },
+    ]);
+    expect(useShareStore.getState().localRole).toBe('OWNER');
+    useShareStore.getState().transferOwnership('user-bob');
+    expect(useShareStore.getState().localRole).toBe('EDITOR');
+    const bob = useShareStore.getState().collaborators.find((c) => c.id === 'user-bob');
+    expect(bob?.role).toBe('OWNER');
+  });
+});
+
+describe('buildInviteUrl with role', () => {
+  it('includes role query parameter when specified', () => {
+    const urlReader = buildInviteUrl('room-1', 'tok-1', 'READER', 'http://localhost:5173/');
+    expect(urlReader).toContain('role=READER');
+    const urlEditor = buildInviteUrl('room-1', 'tok-1', 'EDITOR', 'http://localhost:5173/');
+    expect(urlEditor).toContain('role=EDITOR');
+  });
 });

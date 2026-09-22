@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { request } from '../../../api/client';
 import { useAuthStore } from '../store';
-import { Eye, EyeOff, Mail, User, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, User, Lock, CheckCircle2 } from 'lucide-react';
 import './AuthPage.css';
 
 export function AuthPage() {
@@ -11,6 +11,7 @@ export function AuthPage() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -18,6 +19,7 @@ export function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
     try {
       if (isLogin) {
         const tokenRes = await request<{access_token: string}>('/auth/login', {
@@ -35,8 +37,13 @@ export function AuthPage() {
           body: JSON.stringify({ email, username, password }),
         });
         
+        const registeredUser = username || email;
         setIsLogin(true);
-        setError("Registro exitoso. Por favor inicia sesión.");
+        setIdentifier(registeredUser);
+        setPassword('');
+        setEmail('');
+        setUsername('');
+        setSuccess("¡Cuenta creada con éxito! Por favor inicia sesión.");
       }
     } catch (err: any) {
       setError(err.message);
@@ -60,6 +67,12 @@ export function AuthPage() {
         </div>
         
         {error && <div className="auth-error slide-down">{error}</div>}
+        {success && (
+          <div className="auth-success slide-down">
+            <CheckCircle2 size={16} />
+            <span>{success}</span>
+          </div>
+        )}
         
         <form onSubmit={handleSubmit} className="auth-form">
           {isLogin ? (
@@ -135,9 +148,9 @@ export function AuthPage() {
 
         <div className="auth-footer">
           {isLogin ? (
-            <p>¿No tienes una cuenta?<button type="button" onClick={() => { setIsLogin(false); setError(null); }}>Regístrate</button></p>
+            <p>¿No tienes una cuenta?<button type="button" onClick={() => { setIsLogin(false); setError(null); setSuccess(null); }}>Regístrate</button></p>
           ) : (
-            <p>¿Ya tienes una cuenta? <button type="button" onClick={() => { setIsLogin(true); setError(null); }}>Iniciar sesión</button></p>
+            <p>¿Ya tienes una cuenta? <button type="button" onClick={() => { setIsLogin(true); setError(null); setSuccess(null); }}>Iniciar sesión</button></p>
           )}
         </div>
       </div>
