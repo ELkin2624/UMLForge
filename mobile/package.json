@@ -9,5 +9,9 @@
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~4.0.1",
+    "query-string": "7.1.3"
   }
 }

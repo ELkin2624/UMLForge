@@ -47,9 +47,12 @@ class ProjectGenerator:
 
         has_seed_data = bool(dataset.sql_statements)
 
+        db_name = project_name.lower().replace(" ", "_").replace("-", "_") + "_db"
+
         # 3. Contexto base para las plantillas
         context = {
             "app_name": project_name,
+            "db_name": db_name,
             "package_name": package_name,
             "entities": ordered_entities,
             "schema": schema_info,

@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0",
   "project_name": "barberia",
-  "domain": "barberia",
+  "domain": "E_COMMERCE",
   "entities": [
     {
       "name": "Cliente",
       "plural_name": "Clientes",
       "table_name": "clientes",
-      "resource_path": "/api/clientes",
+      "resource_path": "/clientes",
       "icon": "user",
       "id_field_name": "id",
       "fields": [
@@ -28,32 +28,6 @@
           "name": "nombre",
           "label": "Nombre",
           "ui_type": "text",
-          "required": true,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "telefono",
-          "label": "Telefono",
-          "ui_type": "phone",
-          "required": false,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "email",
-          "label": "Email",
-          "ui_type": "email",
           "required": false,
           "is_primary_key": false,
           "is_list_visible": true,
@@ -65,204 +39,6 @@
         }
       ],
       "relations": []
-    },
-    {
-      "name": "Barbero",
-      "plural_name": "Barberos",
-      "table_name": "barberos",
-      "resource_path": "/api/barberos",
-      "icon": "user",
-      "id_field_name": "id",
-      "fields": [
-        {
-          "name": "id",
-          "label": "ID",
-          "ui_type": "number",
-          "required": true,
-          "is_primary_key": true,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "nombre",
-          "label": "Nombre",
-          "ui_type": "text",
-          "required": true,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "especialidad",
-          "label": "Especialidad",
-          "ui_type": "text",
-          "required": false,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "experiencia_anios",
-          "label": "Experiencia Anios",
-          "ui_type": "number",
-          "required": false,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": false,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        }
-      ],
-      "relations": []
-    },
-    {
-      "name": "Corte",
-      "plural_name": "Cortes",
-      "table_name": "cortes",
-      "resource_path": "/api/cortes",
-      "icon": "scissors",
-      "id_field_name": "id",
-      "fields": [
-        {
-          "name": "id",
-          "label": "ID",
-          "ui_type": "number",
-          "required": true,
-          "is_primary_key": true,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "nombre",
-          "label": "Nombre",
-          "ui_type": "text",
-          "required": true,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "precio",
-          "label": "Precio",
-          "ui_type": "currency",
-          "required": true,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": false,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "duracion_minutos",
-          "label": "Duracion Minutos",
-          "ui_type": "number",
-          "required": false,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": false,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        }
-      ],
-      "relations": []
-    },
-    {
-      "name": "Cita",
-      "plural_name": "Citas",
-      "table_name": "citas",
-      "resource_path": "/api/citas",
-      "icon": "calendar",
-      "id_field_name": "id",
-      "fields": [
-        {
-          "name": "id",
-          "label": "ID",
-          "ui_type": "number",
-          "required": true,
-          "is_primary_key": true,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "fecha_hora",
-          "label": "Fecha Hora",
-          "ui_type": "datetime",
-          "required": true,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": false,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        },
-        {
-          "name": "estado",
-          "label": "Estado",
-          "ui_type": "text",
-          "required": true,
-          "is_primary_key": false,
-          "is_list_visible": true,
-          "is_searchable": true,
-          "min_length": null,
-          "max_length": null,
-          "min_value": null,
-          "max_value": null
-        }
-      ],
-      "relations": [
-        {
-          "name": "cliente",
-          "target_entity": "Cliente",
-          "relation_kind": "MANY_TO_ONE",
-          "join_column": "cliente_id",
-          "is_collection": false
-        },
-        {
-          "name": "barbero",
-          "target_entity": "Barbero",
-          "relation_kind": "MANY_TO_ONE",
-          "join_column": "barbero_id",
-          "is_collection": false
-        },
-        {
-          "name": "corte",
-          "target_entity": "Corte",
-          "relation_kind": "MANY_TO_ONE",
-          "join_column": "corte_id",
-          "is_collection": false
-        }
-      ]
     }
   ]
 }

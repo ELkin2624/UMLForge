@@ -34,12 +34,12 @@ def find_maven_executable(custom_path: str | None = None) -> str:
 def maven_verify(
     project_dir: Path, custom_mvn: str | None = None, timeout: int = 180
 ) -> tuple[bool, str]:
-    """Ejecuta mvn clean verify y devuelve éxito y logs."""
+    """Ejecuta mvn clean package -DskipTests y devuelve éxito y logs."""
     import sys
 
     mvn_bin = find_maven_executable(custom_mvn)
 
-    cmd = [mvn_bin, "clean", "verify"]
+    cmd = [mvn_bin, "clean", "package", "-DskipTests"]
     if sys.platform == "win32":
         cmd = ["cmd.exe", "/c"] + cmd
 

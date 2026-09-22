@@ -11,14 +11,14 @@ export interface FileSystemAdapter {
   ): Promise<void>;
 }
 
-// Adaptador básico para entornos Node / pruebas
-export class DefaultNodeFileSystemAdapter implements FileSystemAdapter {
+// Adaptador para React Native / Expo
+export class DefaultExpoFileSystemAdapter implements FileSystemAdapter {
   async exists(path: string): Promise<boolean> {
     try {
       // @ts-ignore
-      const fs = await import('node:fs/promises');
-      await fs.access(path);
-      return true;
+      const FileSystem = await import('expo-file-system');
+      const info = await FileSystem.getInfoAsync(path);
+      return info.exists;
     } catch {
       return false;
     }
@@ -27,9 +27,9 @@ export class DefaultNodeFileSystemAdapter implements FileSystemAdapter {
   async getFileSize(path: string): Promise<number> {
     try {
       // @ts-ignore
-      const fs = await import('node:fs/promises');
-      const stats = await fs.stat(path);
-      return stats.size;
+      const FileSystem = await import('expo-file-system');
+      const info = await FileSystem.getInfoAsync(path);
+      return info.exists && 'size' in info ? ((info as any).size || 0) : 0;
     } catch {
       return 0;
     }
@@ -38,8 +38,8 @@ export class DefaultNodeFileSystemAdapter implements FileSystemAdapter {
   async deleteFile(path: string): Promise<void> {
     try {
       // @ts-ignore
-      const fs = await import('node:fs/promises');
-      await fs.unlink(path);
+      const FileSystem = await import('expo-file-system');
+      await FileSystem.deleteAsync(path, { idempotent: true });
     } catch {
       // Si no existe, nada que borrar
     }
@@ -50,30 +50,23 @@ export class DefaultNodeFileSystemAdapter implements FileSystemAdapter {
     destPath: string,
     onProgress?: (progress: { loaded: number; total: number }) => void
   ): Promise<void> {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error(`Error descargando modelo HTTP ${res.status}: ${res.statusText}`);
-    }
-
-    const total = Number(res.headers.get('content-length') || 0);
-    // @ts-ignore
-    const fs = await import('node:fs');
-    // @ts-ignore
-    const { Readable } = await import('node:stream');
-    // @ts-ignore
-    const { finished } = await import('node:stream/promises');
-
-    let loaded = 0;
-    const fileStream = fs.createWriteStream(destPath);
-
-    if (res.body) {
+    try {
       // @ts-ignore
-      const nodeStream = Readable.fromWeb(res.body);
-      nodeStream.on('data', (chunk: any) => {
-        loaded += chunk.length;
-        onProgress?.({ loaded, total: total || loaded });
-      });
-      await finished(nodeStream.pipe(fileStream));
+      const FileSystem = await import('expo-file-system');
+      const downloadResumable = FileSystem.createDownloadResumable(
+        url,
+        destPath,
+        {},
+        (downloadProgress: any) => {
+          onProgress?.({
+            loaded: downloadProgress.totalBytesWritten,
+            total: downloadProgress.totalBytesExpectedToWrite,
+          });
+        }
+      );
+      await downloadResumable.downloadAsync();
+    } catch (err: any) {
+      throw new Error(`Error descargando modelo: ${err.message}`);
     }
   }
 }
@@ -115,7 +108,7 @@ export class ModelManager {
     },
   ];
 
-  private static fsAdapter: FileSystemAdapter = new DefaultNodeFileSystemAdapter();
+  private static fsAdapter: FileSystemAdapter = new DefaultExpoFileSystemAdapter();
   private static storageDir = 'models';
 
   static setFileSystemAdapter(adapter: FileSystemAdapter) {

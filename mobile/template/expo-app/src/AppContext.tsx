@@ -12,10 +12,10 @@ import {
   ModelManager,
 } from '@umlforge/ai-runtime';
 
-// Cargar el proyecto generado por defecto (ej. barbería)
-import defaultManifest from '../../../apps/barberia/manifest.json';
-import defaultSchema from '../../../apps/barberia/schema.json';
-import defaultTools from '../../../apps/barberia/ai-tools.json';
+// Cargar el proyecto activo generado por UMLForge
+import defaultManifest from '../../../apps/current/manifest.json';
+import defaultSchema from '../../../apps/current/schema.json';
+import defaultTools from '../../../apps/current/ai-tools.json';
 
 interface AppContextValue {
   manifest: ManifestInfo;

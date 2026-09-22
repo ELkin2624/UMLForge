@@ -50,7 +50,17 @@ export function applyCommands(currentModel: UMLModel, commands: UMLCommand[]): C
 
 function findClass(model: UMLModel, name: string): UMLClass | undefined {
   const normalizedTarget = name.toLowerCase();
-  return model.classes.find(c => c.name.toLowerCase() === normalizedTarget);
+  const direct = model.classes.find(c => c.name.toLowerCase() === normalizedTarget);
+  if (direct) return direct;
+  // Fuzzy match para pequeñas variaciones fonéticas, plurales o concordancia de género (ej. "usuaria" o "usuarios" -> "Usuario")
+  return model.classes.find(c => {
+    const cName = c.name.toLowerCase();
+    const lenDiff = Math.abs(cName.length - normalizedTarget.length);
+    if (lenDiff <= 2 && normalizedTarget.length >= 4 && cName.length >= 4) {
+      return cName.slice(0, -2) === normalizedTarget.slice(0, -2);
+    }
+    return false;
+  });
 }
 
 function applyCommand(model: UMLModel, cmd: UMLCommand, warnings: string[]): void {
@@ -189,19 +199,19 @@ function applyCommand(model: UMLModel, cmd: UMLCommand, warnings: string[]): voi
               {
                 id: generateId(),
                 name: 'id',
-                type: 'number',
+                type: 'Integer',
                 visibility: 'public'
               },
               {
                 id: generateId(),
                 name: `${src.name.charAt(0).toLowerCase() + src.name.slice(1)}Id`,
-                type: 'number',
+                type: 'Integer',
                 visibility: 'private'
               },
               {
                 id: generateId(),
                 name: `${tgt.name.charAt(0).toLowerCase() + tgt.name.slice(1)}Id`,
-                type: 'number',
+                type: 'Integer',
                 visibility: 'private'
               }
             ],

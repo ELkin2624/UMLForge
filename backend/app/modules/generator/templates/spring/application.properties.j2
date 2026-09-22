@@ -1,7 +1,7 @@
 spring.application.name={{ app_name }}
 
 # DataSource
-spring.datasource.url=jdbc:postgresql://localhost:5432/{{ app_name.lower() }}_db
+spring.datasource.url=jdbc:postgresql://localhost:5432/{{ db_name }}
 spring.datasource.username=postgres
 spring.datasource.password=postgres
 spring.datasource.driver-class-name=org.postgresql.Driver
@@ -23,6 +23,10 @@ spring.jpa.defer-datasource-initialization=true
 # Desactivar auto-carga de data.sql vacío por defecto
 spring.sql.init.data-locations=
 {% endif %}
+
+# Actuator
+management.endpoints.web.exposure.include=health,info
+management.endpoint.health.show-details=always
 
 # OpenAPI / Swagger
 springdoc.api-docs.path=/v3/api-docs

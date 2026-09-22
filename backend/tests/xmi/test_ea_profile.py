@@ -154,3 +154,99 @@ def test_missing_reference_raises_exception() -> None:
 
     with pytest.raises(XMIReferenceNotFoundError):
         map_intermediate_to_canonical(doc)
+
+
+def test_association_class_and_ea_types() -> None:
+    doc = XMIModelDocument(
+        doc_fingerprint="fp_assoc_class",
+        model_id="M_TEST",
+        model_name="TestAssocClass",
+        root_elements=[
+            XMIElement(
+                xmi_id="C_PROD",
+                xmi_type="uml:Class",
+                tag_name="packagedElement",
+                name="Producto",
+                children=[
+                    XMIElement(
+                        xmi_id="ATTR_PROD_ID",
+                        xmi_type="uml:Property",
+                        tag_name="ownedAttribute",
+                        name="id",
+                        type_ref="EAJava_int",
+                    ),
+                    XMIElement(
+                        xmi_id="ATTR_PROD_NAME",
+                        xmi_type="uml:Property",
+                        tag_name="ownedAttribute",
+                        name="nombre",
+                        type_ref="EAJava_varchar",
+                    ),
+                ],
+            ),
+            XMIElement(
+                xmi_id="C_FACT",
+                xmi_type="uml:Class",
+                tag_name="packagedElement",
+                name="Factura",
+                children=[
+                    XMIElement(
+                        xmi_id="ATTR_FACT_FECHA",
+                        xmi_type="uml:Property",
+                        tag_name="ownedAttribute",
+                        name="fecha",
+                        type_ref="EAJava_date",
+                    ),
+                ],
+            ),
+            XMIElement(
+                xmi_id="AC_DETALLE",
+                xmi_type="uml:AssociationClass",
+                tag_name="packagedElement",
+                name="DetalleFactura",
+                children=[
+                    XMIElement(
+                        xmi_id="END_PROD",
+                        xmi_type="uml:Property",
+                        tag_name="ownedEnd",
+                        type_ref="C_PROD",
+                    ),
+                    XMIElement(
+                        xmi_id="END_FACT",
+                        xmi_type="uml:Property",
+                        tag_name="ownedEnd",
+                        type_ref="C_FACT",
+                    ),
+                    XMIElement(
+                        xmi_id="ATTR_CANT",
+                        xmi_type="uml:Property",
+                        tag_name="ownedAttribute",
+                        name="cantidad",
+                        type_ref="EAJava_int",
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    model, warnings = map_intermediate_to_canonical(doc)
+    assert len(model.classes) == 3
+
+    detalle = next(c for c in model.classes if c.name == "DetalleFactura")
+    # Must NOT contain ownedEnd as fake attributes
+    assert len(detalle.attributes) == 1
+    assert detalle.attributes[0].name == "cantidad"
+    assert detalle.attributes[0].type == "Integer"
+
+    prod = next(c for c in model.classes if c.name == "Producto")
+    assert prod.attributes[0].type == "Integer"
+    assert prod.attributes[1].type == "String"
+
+    fact = next(c for c in model.classes if c.name == "Factura")
+    assert fact.attributes[0].type == "LocalDate"
+
+    # Must have 2 relationships connecting DetalleFactura to Factura and Producto
+    assert len(model.relationships) == 2
+    rel_targets = {r.target for r in model.relationships}
+    assert rel_targets == {str(detalle.id)}
+

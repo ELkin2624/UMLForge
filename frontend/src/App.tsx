@@ -31,6 +31,38 @@ function App() {
   const { startSession, joinSession } = useShareStore();
 
   const token = useAuthStore(s => s.token);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  // Inicialización de sesión: verificar cookies activas o hidratar perfil si token existe
+  useEffect(() => {
+    let isMounted = true;
+    const initSession = async () => {
+      const currentToken = useAuthStore.getState().token;
+      const currentUser = useAuthStore.getState().user;
+      if (!currentToken) {
+        // Intentar refresco silencioso en segundo plano con la cookie HttpOnly
+        try {
+          const { refreshToken } = await import('./api/client');
+          await refreshToken();
+        } catch {}
+      } else if (!currentUser || !currentUser.email) {
+        try {
+          const { request } = await import('./api/client');
+          const userData = await request<any>('/auth/me');
+          if (isMounted && userData?.id) {
+            useAuthStore.getState().setUser(userData);
+          }
+        } catch {}
+      }
+      if (isMounted) {
+        setAuthChecked(true);
+      }
+    };
+    initSession();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const invite = parseInviteFromUrl();
@@ -188,6 +220,17 @@ function App() {
     };
     loadDiagrams();
   }, [token]);
+
+  if (!authChecked && !token) {
+    return (
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0d14', color: '#94a3b8' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#e8b84a', marginBottom: '8px' }}>UMLForge</div>
+          <div style={{ fontSize: '13px' }}>Cargando sesión...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!token) {
     return <AuthPage />;

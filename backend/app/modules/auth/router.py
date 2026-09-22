@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Response, Cookie
 from sqlalchemy.orm import Session
 from app.core.database.session import get_db
+from app.core.database.models import User
+from app.core.auth_deps import get_current_user
 from app.core.errors import APIError
 from app.core.security import decode_token
 from app.modules.auth.schemas import UserCreate, UserLogin, UserResponse, Token
@@ -15,7 +17,8 @@ def set_refresh_cookie(response: Response, refresh_token: str):
         httponly=True,
         secure=False, # En desarrollo
         samesite="lax",
-        max_age=7 * 24 * 60 * 60
+        max_age=7 * 24 * 60 * 60,
+        path="/"
     )
 
 @router.post("/register", response_model=UserResponse)
@@ -31,7 +34,7 @@ def login(login_data: UserLogin, response: Response, db: Session = Depends(get_d
     access_token, refresh_token = create_session_for_user(db, user)
     set_refresh_cookie(response, refresh_token)
     
-    return Token(access_token=access_token)
+    return Token(access_token=access_token, user=UserResponse.model_validate(user))
 
 @router.post("/refresh", response_model=Token)
 def refresh(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
@@ -44,7 +47,9 @@ def refresh(response: Response, refresh_token: str | None = Cookie(None), db: Se
     access_token, new_refresh_token = rotate_refresh_token(db, refresh_token, user_id)
     set_refresh_cookie(response, new_refresh_token)
     
-    return Token(access_token=access_token)
+    user = db.get(User, user_id)
+    return Token(access_token=access_token, user=UserResponse.model_validate(user) if user else None)
+
 
 @router.post("/logout")
 def logout(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
@@ -53,13 +58,13 @@ def logout(response: Response, refresh_token: str | None = Cookie(None), db: Ses
             payload = decode_token(refresh_token)
             user_id = int(payload.get("sub"))
             revoke_token(db, refresh_token, user_id)
-        except:
+        except Exception:
             pass # Si el token es inválido, igual borramos la cookie
             
-    response.delete_cookie("refresh_token")
-from app.core.auth_deps import get_current_user
-from app.core.database.models import User
+    response.delete_cookie("refresh_token", path="/")
+    return {"message": "Sesión cerrada correctamente."}
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+

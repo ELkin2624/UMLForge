@@ -22,15 +22,19 @@ export function AuthPage() {
     setSuccess(null);
     try {
       if (isLogin) {
-        const tokenRes = await request<{access_token: string}>('/auth/login', {
+        const tokenRes = await request<{ access_token: string; user?: any }>('/auth/login', {
           method: 'POST',
           body: JSON.stringify({ identifier, password }),
         });
         
-        useAuthStore.getState().setAuth(tokenRes.access_token, null as any);
-        const userRes = await request<any>('/auth/me');
+        let userData = tokenRes.user;
+        if (!userData) {
+          try {
+            userData = await request<any>('/auth/me');
+          } catch {}
+        }
         
-        setAuth(tokenRes.access_token, userRes);
+        setAuth(tokenRes.access_token, userData);
       } else {
         await request('/auth/register', {
           method: 'POST',

@@ -30,10 +30,14 @@ class FilesystemExporter:
             if workspace_mobile_apps.exists():
                 target_app_dir = workspace_mobile_apps / project.name
                 target_app_dir.mkdir(parents=True, exist_ok=True)
+                current_app_dir = workspace_mobile_apps / "current"
+                current_app_dir.mkdir(parents=True, exist_ok=True)
                 for file in project.files:
                     if file.path.startswith(f"mobile/{project.name}/"):
                         filename = Path(file.path).name
                         with open(target_app_dir / filename, "w", encoding="utf-8") as f:
+                            f.write(file.content)
+                        with open(current_app_dir / filename, "w", encoding="utf-8") as f:
                             f.write(file.content)
         except Exception:
             pass

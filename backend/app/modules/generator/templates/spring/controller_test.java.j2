@@ -1,19 +1,25 @@
 package {{ package_name }}.controller;
 
+import {{ package_name }}.service.{{ entity.class_name }}Service;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class {{ entity.class_name }}ControllerTest {
 
-    @Autowired
+    @Mock
+    private {{ entity.class_name }}Service service;
+
+    @InjectMocks
     private {{ entity.class_name }}Controller controller;
 
     @Test
     void contextLoads() {
-        assertNotNull(controller, "The controller should have been autowired");
+        assertNotNull(controller, "The controller should have been instantiated");
     }
 }

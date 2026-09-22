@@ -8,6 +8,7 @@ from app.modules.generator.domain.dependency_graph import DependencyGraph
 from app.modules.generator.domain.schema_mapper import SchemaMapper
 from app.modules.generator.domain.synthetic_data_generator import SyntheticDataGenerator
 from app.modules.postman.generator import generate_postman_collection
+from app.modules.generator.application.generate_project import ProjectGenerator
 
 def _uid() -> str:
     return str(uuid.uuid4())
@@ -149,3 +150,77 @@ def test_new_real_domain_generation_e2e():
     assert "topicTrackId" in var_dict
     assert var_dict["conferenceId"] == "1"
     assert var_dict["topicTrackId"] == "1"
+
+
+def test_self_referencing_category_generation_e2e():
+    """
+    Verifica que la generación de una entidad auto-referenciada (como Categoria
+    que puede o no tener una categoria padre) funcione de extremo a extremo:
+    - schema.sql con FK nullable hacia sí misma
+    - data.sql con categoria raíz con categoria_id = NULL y subcategoría con categoria_id = 1
+    - CategoriaRequest sin @NotNull en categoriaId
+    - CategoriaService con manejo de null y asignación de padre
+    - Postman collection con Create Categoria sin auto-referencia para crear la raíz
+    """
+    cat_id = _uid()
+    categoria = UMLClass(
+        id=cat_id,
+        name="Categoria",
+        attributes=[
+            UMLAttribute(id=_uid(), name="id", type="Long", is_primary_key=True),
+            UMLAttribute(id=_uid(), name="nombre", type="String", is_nullable=False),
+            UMLAttribute(id=_uid(), name="descripcion", type="String"),
+        ],
+    )
+
+    # Relación Categoria (*) -> Categoria (0..1) (subcategorías apuntan a su categoría padre)
+    rel_self = UMLRelationship(
+        id=_uid(),
+        name="categoriaPadre",
+        source=cat_id,
+        target=cat_id,
+        source_multiplicity="*",
+        target_multiplicity="0..1",
+        type=RelationshipKind.ASSOCIATION,
+    )
+
+    model = UMLModel(
+        id=_uid(),
+        name="Store Management",
+        classes=[categoria],
+        relationships=[rel_self],
+    )
+
+    from pathlib import Path
+    templates_dir = Path(__file__).parents[2] / "app" / "modules" / "generator" / "templates"
+    generator = ProjectGenerator(templates_dir=templates_dir)
+    generated = generator.generate(model, "store", "com.example.store")
+
+    file_map = {f.path: f.content for f in generated.files}
+
+    # 1. schema.sql debe tener columna categoria_id y FOREIGN KEY
+    schema_sql = file_map["src/main/resources/schema.sql"]
+    assert "categoria_id" in schema_sql
+    assert "FOREIGN KEY (categoria_id) REFERENCES categorias(id)" in schema_sql
+
+    # 2. data.sql: la fila 0 (raíz) DEBE tener categoria_id NULL y la fila 1 DEBE tener categoria_id 1
+    data_sql = file_map["src/main/resources/data.sql"]
+    lines = [l for l in data_sql.splitlines() if l.startswith("INSERT INTO categorias")]
+    assert len(lines) >= 2
+    assert "NULL" in lines[0]  # Raíz no tiene padre
+    assert "1" in lines[1]     # Subcategoría tiene como padre la categoría 1
+
+    # 3. CategoriaRequest.java: categoriaId es opcional (no lleva @NotNull)
+    req_java = file_map["src/main/java/com/example/store/dto/request/CategoriaRequest.java"]
+    assert "private Long categoriaId;" in req_java
+    assert "@NotNull\n    private Long categoriaId;" not in req_java
+
+    # 4. CategoriaService.java: manejo de null para categoría padre
+    svc_java = file_map["src/main/java/com/example/store/service/CategoriaService.java"]
+    assert "if (request.getCategoriaId() != null)" in svc_java
+    assert "entity.setCategoria(null);" in svc_java
+
+    # 5. Postman: Create Categoria no envía categoriaId para crear la raíz sin problemas
+    postman_coll = file_map["postman/store.postman_collection.json"]
+    assert '"categoriaId":' not in postman_coll
+

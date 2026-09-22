@@ -47,9 +47,8 @@ class DependencyGraph:
                 if target_name not in entity_names:
                     continue
 
-                # Auto-referencia siempre es soft
+                # Auto-referencia no afecta el orden relativo entre tablas distintas
                 if target_name == owner_name:
-                    soft_adj[target_name].add(owner_name)
                     continue
 
                 # Composición o multiplicidad estricta es hard

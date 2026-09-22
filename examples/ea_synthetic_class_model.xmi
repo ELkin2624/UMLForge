@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  =============================================================================
+  FIXTURE SINTÉTICO — NO REAL / PROFILE SIMULADO
+  =============================================================================
+  Basado en la especificación OMG UML 2.5.1 / XMI 2.5.1 y documentación de Sparx EA.
+  Este archivo NO constituye evidencia de interoperabilidad con una instalación
+  física de Enterprise Architect y se utiliza con fines de prueba y validación.
+  =============================================================================
+-->
+<xmi:XMI xmlns:xmi="http://www.omg.org/spec/XMI/20131001"
+         xmlns:uml="http://www.omg.org/spec/UML/20131001"
+         xmi:version="2.5">
+  <uml:Model xmi:type="uml:Model" xmi:id="EAID_Model_Barberia" name="BarberiaModel">
+    
+    <!-- Clase Cliente -->
+    <packagedElement xmi:type="uml:Class" xmi:id="EAID_Class_Cliente" name="Cliente" visibility="public" isAbstract="false">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_Attr_Cliente_id" name="id" visibility="private" isStatic="false">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="EAID_LV_1" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="EAID_UV_1" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_Attr_Cliente_nombre" name="nombre" visibility="private" isStatic="false">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="EAID_LV_2" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="EAID_UV_2" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_Attr_Cliente_telefono" name="telefono" visibility="private" isStatic="false">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#String"/>
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="EAID_LV_3" value="0"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="EAID_UV_3" value="1"/>
+      </ownedAttribute>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="EAID_Op_Cliente_registrar" name="registrar" visibility="public" isAbstract="false" isStatic="false">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="EAID_Param_ret_1" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#Boolean"/>
+        </ownedParameter>
+      </ownedOperation>
+    </packagedElement>
+
+    <!-- Clase Cita -->
+    <packagedElement xmi:type="uml:Class" xmi:id="EAID_Class_Cita" name="Cita" visibility="public" isAbstract="false">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_Attr_Cita_id" name="id" visibility="private" isStatic="false">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_Attr_Cita_fecha" name="fecha" visibility="private" isStatic="false">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#String"/>
+      </ownedAttribute>
+    </packagedElement>
+
+    <!-- Asociación Cliente - Cita -->
+    <packagedElement xmi:type="uml:Association" xmi:id="EAID_Assoc_Cliente_Cita" name="Cliente_Citas">
+      <memberEnd xmi:idref="EAID_End_Cliente"/>
+      <memberEnd xmi:idref="EAID_End_Cita"/>
+      <ownedEnd xmi:type="uml:Property" xmi:id="EAID_End_Cliente" name="cliente" type="EAID_Class_Cliente" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="EAID_LV_End1" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="EAID_UV_End1" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:type="uml:Property" xmi:id="EAID_End_Cita" name="citas" type="EAID_Class_Cita" aggregation="none">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="EAID_LV_End2" value="0"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="EAID_UV_End2" value="*"/>
+      </ownedEnd>
+    </packagedElement>
+
+  </uml:Model>
+</xmi:XMI>

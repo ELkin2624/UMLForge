@@ -41,6 +41,8 @@ class EntityMapper:
                 if attr.is_primary_key or attr.name.lower() == "id":
                     if not id_field:
                         field_info.is_primary_key = True
+                        if attr.name.lower() == "id":
+                            field_info.name = "id"
                         id_field = field_info
                     else:
                         fields.append(field_info)

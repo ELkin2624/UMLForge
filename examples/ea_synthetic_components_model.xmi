@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  =============================================================================
+  FIXTURE SINTÉTICO — NO REAL / PROFILE SIMULADO
+  =============================================================================
+  Basado en la especificación OMG UML 2.5.1 / XMI 2.5.1 y documentación de Sparx EA.
+  Este archivo NO constituye evidencia de interoperabilidad con una instalación
+  física de Enterprise Architect y se utiliza con fines de prueba y validación.
+  =============================================================================
+-->
+<xmi:XMI xmlns:xmi="http://www.omg.org/spec/XMI/20131001"
+         xmlns:uml="http://www.omg.org/spec/UML/20131001"
+         xmi:version="2.5">
+  <uml:Model xmi:type="uml:Model" xmi:id="EAID_Model_Architecture" name="ArchitectureSystem">
+
+    <!-- Interfaz IAuthService -->
+    <packagedElement xmi:type="uml:Interface" xmi:id="EAID_If_IAuthService" name="IAuthService" visibility="public">
+      <ownedOperation xmi:type="uml:Operation" xmi:id="EAID_Op_login" name="login" visibility="public">
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="EAID_Param_cred" name="credentials" direction="in">
+          <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#String"/>
+        </ownedParameter>
+        <ownedParameter xmi:type="uml:Parameter" xmi:id="EAID_Param_ret_tok" direction="return">
+          <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#String"/>
+        </ownedParameter>
+      </ownedOperation>
+    </packagedElement>
+
+    <!-- Componente Frontend -->
+    <packagedElement xmi:type="uml:Component" xmi:id="EAID_Comp_Frontend" name="Frontend" visibility="public">
+      <ownedPort xmi:type="uml:Port" xmi:id="EAID_Port_Frontend_authReq" name="authRequiredPort" type="EAID_If_IAuthService"/>
+    </packagedElement>
+
+    <!-- Componente Backend -->
+    <packagedElement xmi:type="uml:Component" xmi:id="EAID_Comp_Backend" name="Backend" visibility="public">
+      <ownedPort xmi:type="uml:Port" xmi:id="EAID_Port_Backend_authProv" name="authProvidedPort" type="EAID_If_IAuthService"/>
+    </packagedElement>
+
+    <!-- Conector entre Puertos -->
+    <packagedElement xmi:type="uml:Connector" xmi:id="EAID_Conn_Auth" name="AuthConnector">
+      <end xmi:type="uml:ConnectorEnd" xmi:id="EAID_ConnEnd_1" role="EAID_Port_Frontend_authReq"/>
+      <end xmi:type="uml:ConnectorEnd" xmi:id="EAID_ConnEnd_2" role="EAID_Port_Backend_authProv"/>
+    </packagedElement>
+
+    <!-- Dependencia de Componente a Interfaz -->
+    <packagedElement xmi:type="uml:Dependency" xmi:id="EAID_Dep_Front_Auth" client="EAID_Comp_Frontend" supplier="EAID_If_IAuthService"/>
+
+  </uml:Model>
+</xmi:XMI>

@@ -42,6 +42,7 @@ export function useModelSync({
 
   // Ref con el último JSON canónico que ya fue aplicado o emitido por el editor
   const lastAppliedModelJsonRef = useRef<string | null>(null);
+  const lastModelIdRef = useRef<string | null>(null);
 
   const lastSelectedNodeRef = useRef<string | null>(null);
 
@@ -62,6 +63,7 @@ export function useModelSync({
 
       if (hasElements && currentModel) {
         lastAppliedModelJsonRef.current = JSON.stringify(currentModel);
+        lastModelIdRef.current = currentModel.id || null;
         applyingExternalModelRef.current = true;
         applyCanonicalModelToApollon(
           editor,
@@ -87,23 +89,31 @@ export function useModelSync({
           const currentModelJson = JSON.stringify(newModel);
           if (currentModelJson === lastAppliedModelJsonRef.current) return;
 
+          const isNewModelInstance =
+            lastModelIdRef.current !== null && lastModelIdRef.current !== newModel.id;
+          lastModelIdRef.current = newModel.id || null;
+
           // Origen remoto o importación. Aplicar a Apollon sin destruirlo.
           lastAppliedModelJsonRef.current = currentModelJson;
 
           applyingExternalModelRef.current = true;
           const freshVisualState = getVisualState();
-          if (freshVisualState) {
+          if (freshVisualState && !isNewModelInstance) {
             lastVisualStateRef.current = {
               ...lastVisualStateRef.current,
               ...freshVisualState,
             };
+          } else if (isNewModelInstance) {
+            lastVisualStateRef.current = {};
           }
+
           try {
             applyCanonicalModelToApollon(
               editor,
               newModel,
               diagramType,
-              lastVisualStateRef.current
+              isNewModelInstance ? undefined : lastVisualStateRef.current,
+              isNewModelInstance
             );
           } catch (e) {
             console.error('[ApollonEditor] Error applying remote model to Apollon:', e);

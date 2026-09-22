@@ -9,6 +9,9 @@ export function normalizeCommandText(text: string): string {
   // Remover puntuación innecesaria al final/inicio, pero mantenemos los puntos intermedios
   normalized = normalized.replace(/^[¡¿!?]+/, '').replace(/[¡¿!?]+$/, '').trim();
 
+  // 0. Limpiar comillas simples, dobles o angulares que envuelven nombres
+  normalized = normalized.replace(/['"«»]/g, ' ');
+
   // 1a. Eliminar frases de cortesía/subordinación ANTES de verbos de acción
   //     Ej: "quiero que crees" → "crees", "me gustaría que agregues" → "agregues"
   //     "para que tengas" → "tengas", "necesito que pongas" → "pongas"
@@ -47,9 +50,11 @@ export function normalizeCommandText(text: string): string {
   normalized = normalized.replace(/\b(ire|idea|ide)\b/g, 'id');
   normalized = normalized.replace(/\b(intero|interro|intel|int|integro)\b/g, 'entero');
   normalized = normalized.replace(/\b(volviano|boliano|boleano|boolean)\b/g, 'booleano');
-  normalized = normalized.replace(/\b(caden[ae]|cadena|string|cadenas)\b/g, 'cadena');
+  normalized = normalized.replace(/\b(caden[ae]|cadena|string|cadenas|char|caracter|carácter)\b/g, 'cadena');
   normalized = normalized.replace(/\b(doble|double|flota|flotante|flotación)\b/g, 'double');
   normalized = normalized.replace(/\b(flotante|float)\b/g, 'float');
+  // Variaciones fonéticas y de concordancia de género
+  normalized = normalized.replace(/\busuaria\b/g, 'usuario');
 
   // 3. Normalizar verbos de acción y pronombres enclíticos
   normalized = normalized.replace(
@@ -68,13 +73,14 @@ export function normalizeCommandText(text: string): string {
     /\b(renombrar|cambia\s+el\s+nombre\s+de|renómbrala|renombrala|cambiale\s+el\s+nombre|cámbiale\s+el\s+nombre|renombren)\b/gi,
     'renombra'
   );
+  // Predicados verbales y participios de relación
   normalized = normalized.replace(
-    /\b(relacionar|relaciónalos|relacionalos|relaciónala|relacionala|relaciónalo|relacionalo|conecta|conéctala|conectala|conéctalo|conectalo|asocia|asóciala|asociala|vincula|vincúlala|vinculala|relacionen|conecten)\b/gi,
+    /\b(tengo\s+una\s+conexi[oó]n|tiene\s+una\s+conexi[oó]n|con\s+conexi[oó]n|est[eé]\s+conectad[oa]|est[aá]\s+conectad[oa]|conectad[oa]|est[eé]\s+relacionad[oa]|est[aá]\s+relacionad[oa]|relacionad[oa]|est[eé]\s+asociad[oa]|est[aá]\s+asociad[oa]|asociad[oa]|est[eé]\s+vinculad[oa]|est[aá]\s+vinculad[oa]|vinculad[oa]|relacionar|relaciónalos|relacionalos|relaciónala|relacionala|relaciónalo|relacionalo|conecta|conéctala|conectala|conéctalo|conectalo|asocia|asóciala|asociala|vincula|vincúlala|vinculala|relacionen|conecten)\b/gi,
     'relaciona'
   );
 
-  // 4. Normalizar multiplicidades (relaciones)
-  normalized = normalized.replace(/\b(n a m|n:m|n a n|n:n|m a m|m:m|muchos a muchos|muchos con muchos)\b/g, '* a *');
+  // 4. Normalizar multiplicidades (relaciones y errores fonéticos de Whisper)
+  normalized = normalized.replace(/\b(n a m|n:m|n a n|n:n|m a m|m:m|muchos a muchos|muchos con muchos|mucho\s+jamucho|muchos\s+jamuchos|mucho\s+a\s+mucho|mucho\s+con\s+mucho|mucho\s+mucho|muchos\s+muchos)\b/g, '* a *');
   normalized = normalized.replace(/\b(uno a uno|1 a 1|1:1|uno con uno|cada uno tiene uno)\b/g, '1 a 1');
   normalized = normalized.replace(/\b(uno a muchos|1 a n|1:n|uno con muchos)\b/g, '1 a *');
   normalized = normalized.replace(/\b(muchos a uno|n a 1|n:1)\b/g, '* a 1');
@@ -96,5 +102,7 @@ export function normalizeCommandText(text: string): string {
  */
 export function capitalizeClassName(name: string): string {
   if (!name) return '';
-  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  const clean = name.replace(/['"«»\s]/g, '');
+  if (!clean) return '';
+  return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
 }

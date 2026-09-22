@@ -96,7 +96,7 @@ export default function DynamicEntityScreen() {
     <View style={styles.container}>
       {/* Barra de cabecera */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)'))} style={styles.backButton}>
           <Text style={styles.backButtonText}>← Volver</Text>
         </TouchableOpacity>
         <Text style={styles.title}>{entityConfig.plural_name}</Text>

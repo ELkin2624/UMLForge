@@ -17,30 +17,57 @@ export {
 };
 
 export function autoLayoutApollonModel(nodes: ApollonNode[], edges: ApollonEdge[]): void {
+  if (nodes.length === 0) return;
+
   const g = new dagre.graphlib.Graph();
-  g.setGraph({ rankdir: 'TB', nodesep: 100, ranksep: 100, edgesep: 50 });
+  g.setGraph({ rankdir: 'TB', nodesep: 140, ranksep: 140, edgesep: 70 });
   g.setDefaultEdgeLabel(() => ({}));
 
   nodes.forEach(node => {
-    // Apollon maneja tamaños fijos iniciales (medidos o asginados)
-    const w = node.width || 200;
-    const h = node.height || 100;
-    g.setNode(node.id, { width: w, height: h });
+    const classData = (node.data || {}) as { attributes?: unknown[]; methods?: unknown[] };
+    const attrCount = Array.isArray(classData.attributes) ? classData.attributes.length : 0;
+    const methodCount = Array.isArray(classData.methods) ? classData.methods.length : 0;
+    const computedHeight = Math.max(node.height || 100, 100 + (attrCount + methodCount) * 28);
+    const computedWidth = Math.max(node.width || 220, 220);
+
+    node.width = computedWidth;
+    node.height = computedHeight;
+    g.setNode(node.id, { width: computedWidth, height: computedHeight });
   });
 
+  const nodeIds = new Set(nodes.map(n => n.id));
   edges.forEach(edge => {
-    g.setEdge(edge.source, edge.target);
+    const src = edge.source;
+    const tgt = edge.target;
+    if (src && tgt && nodeIds.has(src) && nodeIds.has(tgt)) {
+      g.setEdge(src, tgt);
+    }
   });
 
   dagre.layout(g);
 
+  let minLeft = Infinity;
+  let minTop = Infinity;
+
   nodes.forEach(node => {
     const dagreNode = g.node(node.id);
     if (dagreNode) {
-      // dagreNode.x/y es el centro, ajustar a top-left
+      const left = dagreNode.x - (node.width || 220) / 2;
+      const top = dagreNode.y - (node.height || 100) / 2;
+      if (left < minLeft) minLeft = left;
+      if (top < minTop) minTop = top;
+    }
+  });
+
+  const offsetX = minLeft < 60 ? 60 - minLeft : 0;
+  const offsetY = minTop < 60 ? 60 - minTop : 0;
+
+  nodes.forEach(node => {
+    const dagreNode = g.node(node.id);
+    if (dagreNode) {
       node.position = {
-        x: Math.round(dagreNode.x - (node.width || 200) / 2),
-        y: Math.round(dagreNode.y - (node.height || 100) / 2),
+        x: Math.round(dagreNode.x - (node.width || 220) / 2 + offsetX),
+        y: Math.round(dagreNode.y - (node.height || 100) / 2 + offsetY),
       };
     }
   });
@@ -220,10 +247,13 @@ export function canonicalToApollon(canonical: CanonicalModel): ApollonModel {
       aType = 'ClassBidirectional';
     }
 
+    const srcId = rel.source_id || (rel as any).source;
+    const tgtId = rel.target_id || (rel as any).target;
+
     edges.push({
       id: rel.id,
-      source: rel.source_id,
-      target: rel.target_id,
+      source: srcId,
+      target: tgtId,
       type: aType as DiagramEdgeType,
       sourceHandle: '',
       targetHandle: '',
@@ -254,12 +284,14 @@ export function canonicalToApollon(canonical: CanonicalModel): ApollonModel {
  * Aplica un CanonicalModel a una instancia existente de ApollonEditor.
  * Conserva el estado visual local (coordenadas x/y, ancho/alto) de los elementos
  * que ya existen en el editor, evitando que reboten a posiciones por defecto.
+ * Si forceLayout es true, recalcula completamente la distribución limpia con Dagre.
  */
 export function applyCanonicalModelToApollon(
   editor: NativeApollonEditor,
   canonical: CanonicalModel,
   diagramType: 'class' | 'component',
-  visualState?: Record<string, { x: number; y: number }>
+  visualState?: Record<string, { x: number; y: number }>,
+  forceLayout: boolean = false
 ): void {
   const currentApollon = editor.model;
   
@@ -268,14 +300,18 @@ export function applyCanonicalModelToApollon(
     ? canonicalComponentToApollon(canonical)
     : canonicalToApollon(canonical);
 
-  // 2. Crear un mapa de nodos existentes en el editor actual
+  // 2. Crear un mapa de nodos existentes en el editor actual (solo si no forzamos layout)
   const existingNodesMap = new Map<string, ApollonNode>();
-  currentApollon.nodes.forEach(node => {
-    existingNodesMap.set(node.id, node);
-  });
+  if (!forceLayout) {
+    currentApollon.nodes.forEach(node => {
+      existingNodesMap.set(node.id, node);
+    });
+  }
 
   // 3. Fusionar: conservar estado visual y de UI de nodos existentes, u override remoto
   const mergedNodes = baseApollon.nodes.map(newNode => {
+    if (forceLayout) return newNode;
+
     const existingNode = existingNodesMap.get(newNode.id);
     const remotePos = visualState?.[newNode.id];
 
@@ -308,9 +344,9 @@ export function applyCanonicalModelToApollon(
     nodes: mergedNodes,
   };
 
-  // 5. Aplicar layout automático solo si el diagrama no tiene nodos previos ni posiciones guardadas
-  const hasCustomPositions = visualState && Object.keys(visualState).length > 0;
-  if (existingNodesMap.size === 0 && !hasCustomPositions) {
+  // 5. Aplicar layout automático si se fuerza layout, o si el diagrama no tiene nodos previos ni posiciones guardadas
+  const hasCustomPositions = !forceLayout && visualState && Object.keys(visualState).length > 0;
+  if (forceLayout || (existingNodesMap.size === 0 && !hasCustomPositions)) {
     autoLayoutApollonModel(finalApollon.nodes, finalApollon.edges);
   }
 

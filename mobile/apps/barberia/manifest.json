@@ -2,7 +2,7 @@
   "project": "barberia",
   "display_name": "Barberia",
   "version": "1.0.0",
-  "domain": "barberia",
+  "domain": "E_COMMERCE",
   "schema_version": "1.0",
   "generator_version": "0.8.0",
   "backend": {

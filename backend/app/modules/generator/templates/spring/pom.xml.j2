@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>{{ package_name }}</groupId>
-    <artifactId>{{ app_name }}</artifactId>
+    <artifactId>{{ app_name.lower().replace(' ', '-').replace('_', '-') }}</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>{{ app_name }}</name>
     <description>Generated project for {{ app_name }}</description>

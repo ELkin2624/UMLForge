@@ -1,0 +1,707 @@
+{
+  "schema_version": "1.0",
+  "project_name": "uml_model",
+  "domain": "E_COMMERCE",
+  "tools": [
+    {
+      "name": "list_clientes",
+      "description": "Obtiene la lista de Clientes registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/clientes",
+      "required_permission": "READ_CLIENTE",
+      "http": {
+        "method": "GET",
+        "path": "/api/clientes"
+      },
+      "permissions": {
+        "required": "READ_CLIENTE"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Filtrar por nombre"
+          },
+          "email": {
+            "type": "string",
+            "description": "Filtrar por email"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_cliente_by_id",
+      "description": "Obtiene los detalles de un/a Cliente por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/clientes/{id}",
+      "required_permission": "READ_CLIENTE",
+      "http": {
+        "method": "GET",
+        "path": "/api/clientes/{id}"
+      },
+      "permissions": {
+        "required": "READ_CLIENTE"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de Cliente"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_cliente",
+      "description": "Crea un/a nuevo/a Cliente en el sistema.",
+      "method": "POST",
+      "path": "/api/clientes",
+      "required_permission": "CREATE_CLIENTE",
+      "http": {
+        "method": "POST",
+        "path": "/api/clientes"
+      },
+      "permissions": {
+        "required": "CREATE_CLIENTE"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "email": {
+            "type": "string",
+            "description": "Valor para email"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_cliente",
+      "description": "Actualiza los datos de un/a Cliente existente.",
+      "method": "PUT",
+      "path": "/api/clientes/{id}",
+      "required_permission": "UPDATE_CLIENTE",
+      "http": {
+        "method": "PUT",
+        "path": "/api/clientes/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_CLIENTE"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "email": {
+            "type": "string",
+            "description": "Valor para email"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Cliente a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_cliente",
+      "description": "Elimina un/a Cliente por su ID.",
+      "method": "DELETE",
+      "path": "/api/clientes/{id}",
+      "required_permission": "DELETE_CLIENTE",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/clientes/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_CLIENTE"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Cliente a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_productos",
+      "description": "Obtiene la lista de Productos registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/productos",
+      "required_permission": "READ_PRODUCTO",
+      "http": {
+        "method": "GET",
+        "path": "/api/productos"
+      },
+      "permissions": {
+        "required": "READ_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Filtrar por nombre"
+          },
+          "precio": {
+            "type": "integer",
+            "description": "Filtrar por precio"
+          },
+          "stock": {
+            "type": "integer",
+            "description": "Filtrar por stock"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_producto_by_id",
+      "description": "Obtiene los detalles de un/a Producto por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/productos/{id}",
+      "required_permission": "READ_PRODUCTO",
+      "http": {
+        "method": "GET",
+        "path": "/api/productos/{id}"
+      },
+      "permissions": {
+        "required": "READ_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de Producto"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_producto",
+      "description": "Crea un/a nuevo/a Producto en el sistema.",
+      "method": "POST",
+      "path": "/api/productos",
+      "required_permission": "CREATE_PRODUCTO",
+      "http": {
+        "method": "POST",
+        "path": "/api/productos"
+      },
+      "permissions": {
+        "required": "CREATE_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "precio": {
+            "type": "integer",
+            "description": "Valor para precio"
+          },
+          "stock": {
+            "type": "integer",
+            "description": "Valor para stock"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_producto",
+      "description": "Actualiza los datos de un/a Producto existente.",
+      "method": "PUT",
+      "path": "/api/productos/{id}",
+      "required_permission": "UPDATE_PRODUCTO",
+      "http": {
+        "method": "PUT",
+        "path": "/api/productos/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "precio": {
+            "type": "integer",
+            "description": "Valor para precio"
+          },
+          "stock": {
+            "type": "integer",
+            "description": "Valor para stock"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Producto a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_producto",
+      "description": "Elimina un/a Producto por su ID.",
+      "method": "DELETE",
+      "path": "/api/productos/{id}",
+      "required_permission": "DELETE_PRODUCTO",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/productos/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Producto a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_ventas",
+      "description": "Obtiene la lista de ventas registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/ventas",
+      "required_permission": "READ_VENTA",
+      "http": {
+        "method": "GET",
+        "path": "/api/ventas"
+      },
+      "permissions": {
+        "required": "READ_VENTA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "fecha": {
+            "type": "string",
+            "description": "Filtrar por fecha"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_venta_by_id",
+      "description": "Obtiene los detalles de un/a venta por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/ventas/{id}",
+      "required_permission": "READ_VENTA",
+      "http": {
+        "method": "GET",
+        "path": "/api/ventas/{id}"
+      },
+      "permissions": {
+        "required": "READ_VENTA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de venta"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_venta",
+      "description": "Crea un/a nuevo/a venta en el sistema.",
+      "method": "POST",
+      "path": "/api/ventas",
+      "required_permission": "CREATE_VENTA",
+      "http": {
+        "method": "POST",
+        "path": "/api/ventas"
+      },
+      "permissions": {
+        "required": "CREATE_VENTA"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "description": "Valor para fecha"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_venta",
+      "description": "Actualiza los datos de un/a venta existente.",
+      "method": "PUT",
+      "path": "/api/ventas/{id}",
+      "required_permission": "UPDATE_VENTA",
+      "http": {
+        "method": "PUT",
+        "path": "/api/ventas/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_VENTA"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "description": "Valor para fecha"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la venta a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_venta",
+      "description": "Elimina un/a venta por su ID.",
+      "method": "DELETE",
+      "path": "/api/ventas/{id}",
+      "required_permission": "DELETE_VENTA",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/ventas/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_VENTA"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la venta a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_ventaproductos",
+      "description": "Obtiene la lista de ventaProductos registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/venta_productos",
+      "required_permission": "READ_VENTAPRODUCTO",
+      "http": {
+        "method": "GET",
+        "path": "/api/venta_productos"
+      },
+      "permissions": {
+        "required": "READ_VENTAPRODUCTO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "ventaId": {
+            "type": "string",
+            "description": "Filtrar por ventaId"
+          },
+          "productoId": {
+            "type": "string",
+            "description": "Filtrar por productoId"
+          },
+          "cantidad": {
+            "type": "integer",
+            "description": "Filtrar por cantidad"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_ventaproducto_by_id",
+      "description": "Obtiene los detalles de un/a ventaProducto por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/venta_productos/{id}",
+      "required_permission": "READ_VENTAPRODUCTO",
+      "http": {
+        "method": "GET",
+        "path": "/api/venta_productos/{id}"
+      },
+      "permissions": {
+        "required": "READ_VENTAPRODUCTO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador de ventaProducto"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_ventaproducto",
+      "description": "Crea un/a nuevo/a ventaProducto en el sistema.",
+      "method": "POST",
+      "path": "/api/venta_productos",
+      "required_permission": "CREATE_VENTAPRODUCTO",
+      "http": {
+        "method": "POST",
+        "path": "/api/venta_productos"
+      },
+      "permissions": {
+        "required": "CREATE_VENTAPRODUCTO"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ventaId": {
+            "type": "string",
+            "description": "Valor para ventaId"
+          },
+          "productoId": {
+            "type": "string",
+            "description": "Valor para productoId"
+          },
+          "cantidad": {
+            "type": "integer",
+            "description": "Valor para cantidad"
+          },
+          "precioUnit": {
+            "type": "integer",
+            "description": "Valor para precioUnit"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_ventaproducto",
+      "description": "Actualiza los datos de un/a ventaProducto existente.",
+      "method": "PUT",
+      "path": "/api/venta_productos/{id}",
+      "required_permission": "UPDATE_VENTAPRODUCTO",
+      "http": {
+        "method": "PUT",
+        "path": "/api/venta_productos/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_VENTAPRODUCTO"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "ventaId": {
+            "type": "string",
+            "description": "Valor para ventaId"
+          },
+          "productoId": {
+            "type": "string",
+            "description": "Valor para productoId"
+          },
+          "cantidad": {
+            "type": "integer",
+            "description": "Valor para cantidad"
+          },
+          "precioUnit": {
+            "type": "integer",
+            "description": "Valor para precioUnit"
+          },
+          "id": {
+            "type": "string",
+            "description": "ID del/la ventaProducto a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_ventaproducto",
+      "description": "Elimina un/a ventaProducto por su ID.",
+      "method": "DELETE",
+      "path": "/api/venta_productos/{id}",
+      "required_permission": "DELETE_VENTAPRODUCTO",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/venta_productos/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_VENTAPRODUCTO"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del/la ventaProducto a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    }
+  ]
+}

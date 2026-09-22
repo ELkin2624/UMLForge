@@ -72,42 +72,62 @@ export function parseIntentStructured(text: string, initialContext?: string): Pa
   for (const clause of clauses) {
     // ── 1. Creación de Clase ────────────────────────────────────────────────
     // Ej: "crea una clase llamada Cliente con nombre string y edad entero"
+    // Ej: "crea una tabla con el nombre 'Rol' con atributos..."
     // Ej: "crea la entidad Pedido"
     // Ej: "crea la clase de Teoria con atributos..." (con prep. "de")
     // Ej: "crea la clase Pedido que tenga id entero"
+    const STOP_WORDS = new Set([
+      'con', 'de', 'del', 'la', 'el', 'las', 'los', 'un', 'una', 'para',
+      'tabla', 'tablas', 'clase', 'clases', 'entidad', 'entidades', 'que', 'en', 'nombre'
+    ]);
+
     const createClassMatch = clause.match(
-      /(?:crea|gener)\s+(?:(?:una|la|el|las|los)\s+)?(?:clases?|entidades?|tablas?)\s+(?:de\s+|para\s+|del\s+|llamad[oa]s?\s+|con\s+(?:el\s+)?nombre\s+)?([\wáéíóúüñÁÉÍÓÚÜÑ]+)(?:\s+(?:que\s+)?(?:con\s+)?(?:tenga[ns]?\s+)?(.*))?/i
+      /(?:crea|gener)\s+(?:(?:una|la|el|las|los)\s+)?(?:clases?|entidades?|tablas?)\s+(?:de\s+|para\s+|del\s+|llamad[oa]s?\s+(?:de\s+)?|con\s+(?:el\s+)?nombre\s+(?:de\s+)?|titulad[oa]\s+)?([\wáéíóúüñÁÉÍÓÚÜÑ]+)(?:\s+(?:que\s+)?(?:con\s+)?(?:tenga[ns]?\s+)?(.*))?/i
     ) || clause.match(
       /^crea\s+([\wáéíóúüñÁÉÍÓÚÜÑ]+)(?:\s+(.*))?$/i
     );
 
     if (createClassMatch) {
-      console.log('[IntentParser] Matched CREATE_CLASS:', createClassMatch[1], 'Rest:', createClassMatch[2]);
-      const className = capitalizeClassName(createClassMatch[1]);
-      commands.push({ type: 'CREATE_CLASS', className });
-      
-      currentContextClass = className;
-      if (!classesMentioned.includes(className)) {
-        classesMentioned.push(className);
-      }
+      let rawClassName = createClassMatch[1];
+      let rest = createClassMatch[2] || '';
 
-      const rest = createClassMatch[2];
-      if (rest) {
-        // Ignorar si el "rest" empieza con palabras de enlace sin atributos
-        const cleanRest = rest.replace(/^(?:que\s+)?(?:tenga[ns]?\s+)?(?:con\s+)?(?:(?:los|el|un)\s+)?(?:atributos?|campos?|propiedades?)\s+/i, '').trim();
-        if (cleanRest) {
-          const attrs = parseAttributeList(cleanRest);
-          for (const attr of attrs) {
-            commands.push({
-              type: 'ADD_ATTRIBUTE',
-              className,
-              attributeName: attr.name,
-              attributeType: attr.type
-            });
-          }
+      // Si por backtracking se capturó una stop word como "con" o "de", buscar el nombre real en el resto
+      if (STOP_WORDS.has(rawClassName.toLowerCase())) {
+        const words = rest.trim().split(/\s+/);
+        const validIdx = words.findIndex(w => !STOP_WORDS.has(w.toLowerCase().replace(/[^a-zA-Z0-9_áéíóúüñÁÉÍÓÚÜÑ]/g, '')));
+        if (validIdx !== -1) {
+          rawClassName = words[validIdx];
+          rest = words.slice(validIdx + 1).join(' ');
         }
       }
-      continue;
+
+      if (!STOP_WORDS.has(rawClassName.toLowerCase())) {
+        console.log('[IntentParser] Matched CREATE_CLASS:', rawClassName, 'Rest:', rest);
+        const className = capitalizeClassName(rawClassName);
+        commands.push({ type: 'CREATE_CLASS', className });
+        
+        currentContextClass = className;
+        if (!classesMentioned.includes(className)) {
+          classesMentioned.push(className);
+        }
+
+        if (rest) {
+          // Ignorar si el "rest" empieza con palabras de enlace sin atributos
+          const cleanRest = rest.replace(/^(?:que\s+)?(?:tenga[ns]?\s+)?(?:con\s+)?(?:(?:los|el|un)\s+)?(?:atributos?|campos?|propiedades?)\s+/i, '').trim();
+          if (cleanRest) {
+            const attrs = parseAttributeList(cleanRest);
+            for (const attr of attrs) {
+              commands.push({
+                type: 'ADD_ATTRIBUTE',
+                className,
+                attributeName: attr.name,
+                attributeType: attr.type
+              });
+            }
+          }
+        }
+        continue;
+      }
     }
 
     // ── 2. Eliminación de Clase ─────────────────────────────────────────────
@@ -246,22 +266,19 @@ export function parseIntentStructured(text: string, initialContext?: string): Pa
     }
 
     // 4.7 Asociación Explícita con 2 clases (ej: "relaciona Cliente con Pedido", "Cliente pertenece a Pedido")
-    // Note: Removed terminal anchors ($) to allow trailing context words like "donde un producto pertenece a una categoría"
     const rel2Match = clause.match(
-      /^(?:relaciona|conecta|asocia|vincula)\s+(?:(?:la|una)\s+clase\s+)?([a-zA-Z0-9_áéíóú]+)\s+(?:con|y)\s+(?:(?:la|una)\s+clase\s+)?([a-zA-Z0-9_áéíóú]+)/i
+      /^(?:relaciona|conecta|asocia|vincula)\s+(?:(?:\* a \*|1 a \*|\* a 1|1 a 1|0\.\.1|1\.\.\*|0\.\.\*)\s+)?(?:(?:la|una|el)\s+)?(?:clase|tabla|entidad\s+)?([a-zA-Z0-9_áéíóú]+)\s+(?:con|y|a)\s+(?:(?:la|una|el)\s+)?(?:clase|tabla|entidad\s+)?([a-zA-Z0-9_áéíóú]+)/i
     ) || clause.match(
       /(?:es\s+relacionada\s+con\s+|relacionada\s+con\s+)([a-zA-Z0-9_áéíóú]+)\s+donde\s+(?:un|una)?\s+([a-zA-Z0-9_áéíóú]+)\s+(?:pertenece\s+a)/i
     ) || clause.match(
       /^([a-zA-Z0-9_áéíóú]+)\s+(?:pertenece\s+a|est[aá]\s+asociad[oa]\s+con|est[aá]\s+vinculad[oa]\s+a|es\s+relacionada\s+con)\s+([a-zA-Z0-9_áéíóú]+)/i
     );
     if (rel2Match) {
-      // In case 2 (relacionada con X donde Y pertenece a X), the groups are swapped
       let source = rel2Match[1];
       let target = rel2Match[2];
       if (clause.includes("donde")) {
-        // "relacionada con categoría donde producto pertenece a..."
-        source = rel2Match[2]; // producto
-        target = rel2Match[1]; // categoria
+        source = rel2Match[2];
+        target = rel2Match[1];
       }
       commands.push({
         type: 'CREATE_RELATIONSHIP',
@@ -274,9 +291,11 @@ export function parseIntentStructured(text: string, initialContext?: string): Pa
       continue;
     }
 
-    // 4.8 Relación Contextual con 1 clase (ej: "relaciona con Pedido" o "conecta con Factura")
+    // 4.8 Relación Contextual con 1 clase (ej: "relaciona con Pedido", "relaciona * a * a la tabla Usuario")
     const relContextMatch = clause.match(
-      /^(?:relaciona|conecta|asocia|vincula)\s+(?:con\s+)?(?:(?:la|una)\s+clase\s+)?([a-zA-Z0-9_áéíóú]+)$/i
+      /^(?:relaciona|conecta|asocia|vincula)\s+(?:(?:\* a \*|1 a \*|\* a 1|1 a 1|0\.\.1|1\.\.\*|0\.\.\*)\s+)?(?:con|a)\s+(?:(?:la|una|el)\s+)?(?:clase|tabla|entidad)?\s*([a-zA-Z0-9_áéíóú]+)/i
+    ) || clause.match(
+      /^(?:relaciona|conecta|asocia|vincula)\s+(?:con\s+|a\s+)?(?:(?:la|una|el)\s+)?(?:clase|tabla|entidad)?\s*([a-zA-Z0-9_áéíóú]+)$/i
     );
     if (relContextMatch) {
       const targetClass = capitalizeClassName(relContextMatch[1]);

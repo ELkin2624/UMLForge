@@ -1,0 +1,67 @@
+{
+  "success": false,
+  "project_name": "uml_model",
+  "total_duration_ms": 18310,
+  "stages": [
+    {
+      "name": "validation",
+      "status": "success",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "generation",
+      "status": "success",
+      "duration_ms": 1138,
+      "error": null,
+      "logs": "Generados 45 archivos."
+    },
+    {
+      "name": "extraction",
+      "status": "success",
+      "duration_ms": 110,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "postgres",
+      "status": "success",
+      "duration_ms": 8116,
+      "error": null,
+      "logs": ""
+    },
+    {
+      "name": "maven",
+      "status": "failure",
+      "duration_ms": 7757,
+      "error": "Fallo en maven verify",
+      "logs": "[INFO] Scanning for projects...\n[INFO] \n[INFO] ------------------< com.example.uml_model:uml-model >-------------------\n[INFO] Building uml_model 0.0.1-SNAPSHOT\n[INFO]   from pom.xml\n[INFO] --------------------------------[ jar ]---------------------------------\n[INFO] \n[INFO] --- clean:3.3.2:clean (default-clean) @ uml-model ---\n[INFO] \n[INFO] --- resources:3.3.1:resources (default-resources) @ uml-model ---\n[INFO] Copying 1 resource from src\\main\\resources to target\\classes\n[INFO] Copying 2 resources from src\\main\\resources to target\\classes\n[INFO] \n[INFO] --- compiler:3.11.0:compile (default-compile) @ uml-model ---\n[INFO] Changes detected - recompiling the module! :source\n[INFO] Compiling 27 source files with javac [debug release 21] to target\\classes\n[INFO] Some messages have been simplified; recompile with -Xdiags:verbose to get full output\n[INFO] -------------------------------------------------------------\n[ERROR] COMPILATION ERROR : \n[INFO] -------------------------------------------------------------\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[18,21] variable ventaId is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[19,21] variable productoId is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[51,20] method getVentaId() is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[58,20] method getProductoId() is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[19,21] variable ventaId is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[20,21] variable productoId is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[60,20] method getVentaId() is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[67,20] method getProductoId() is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/service/ventaProductoService.java:[93,60] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/service/ventaProductoService.java:[101,66] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[32,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[36,24] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[39,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[43,27] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[23,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[27,24] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[30,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[34,27] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[INFO] 18 errors \n[INFO] -------------------------------------------------------------\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD FAILURE\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  5.815 s\n[INFO] Finished at: 2026-09-22T18:29:06-03:00\n[INFO] ------------------------------------------------------------------------\n[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project uml-model: Compilation failure: Compilation failure: \n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[18,21] variable ventaId is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[19,21] variable productoId is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[51,20] method getVentaId() is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[58,20] method getProductoId() is already defined in class com.example.uml_model.dto.request.ventaProductoRequest\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[19,21] variable ventaId is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[20,21] variable productoId is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[60,20] method getVentaId() is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[67,20] method getProductoId() is already defined in class com.example.uml_model.dto.response.ventaProductoResponse\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/service/ventaProductoService.java:[93,60] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/service/ventaProductoService.java:[101,66] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[32,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[36,24] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[39,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/response/ventaProductoResponse.java:[43,27] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[23,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[27,24] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[30,16] incompatible types: java.lang.Integer cannot be converted to java.lang.String\n[ERROR] /C:/Users/apaza/AppData/Local/Temp/e2e_uml_model_ybt1z9l2/uml_model/src/main/java/com/example/uml_model/dto/request/ventaProductoRequest.java:[34,27] incompatible types: java.lang.String cannot be converted to java.lang.Integer\n[ERROR] -> [Help 1]\n[ERROR] \n[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.\n[ERROR] Re-run Maven using the -X switch to enable full debug logging.\n[ERROR] \n[ERROR] For more information about the errors and possible solutions, please read the following articles:\n[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+    },
+    {
+      "name": "spring",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "health",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "newman",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    }
+  ],
+  "test_summary": null,
+  "zip_path": null,
+  "report_path": "e2e_report_uml_model_20260922_212907.json",
+  "error": "Fallo durante la compilación/verificación de Maven."
+}

@@ -1,0 +1,260 @@
+{
+  "schema_version": "1.0",
+  "project_name": "FacturacionProject",
+  "domain": "E_COMMERCE",
+  "entities": [
+    {
+      "name": "Factura",
+      "plural_name": "Facturas",
+      "table_name": "facturas",
+      "resource_path": "/facturas",
+      "icon": "dollar-sign",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "fecha",
+          "label": "Fecha",
+          "ui_type": "date",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "detalleFacturas",
+          "target_entity": "DetalleFactura",
+          "relation_kind": "ONE_TO_MANY",
+          "join_column": null,
+          "is_collection": true
+        },
+        {
+          "name": "usuario",
+          "target_entity": "Usuario",
+          "relation_kind": "ONE_TO_ONE",
+          "join_column": null,
+          "is_collection": false
+        }
+      ]
+    },
+    {
+      "name": "Categoria",
+      "plural_name": "Categorias",
+      "table_name": "categorias",
+      "resource_path": "/categorias",
+      "icon": "folder",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "nombre",
+          "label": "Nombre",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "categoria",
+          "target_entity": "Categoria",
+          "relation_kind": "ONE_TO_ONE",
+          "join_column": "categoria_id",
+          "is_collection": false
+        },
+        {
+          "name": "producto",
+          "target_entity": "Producto",
+          "relation_kind": "ONE_TO_ONE",
+          "join_column": null,
+          "is_collection": false
+        }
+      ]
+    },
+    {
+      "name": "Usuario",
+      "plural_name": "Usuarios",
+      "table_name": "usuarios",
+      "resource_path": "/usuarios",
+      "icon": "user",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "CI",
+          "label": "C I",
+          "ui_type": "number",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "nombre",
+          "label": "Nombre",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "factura",
+          "target_entity": "Factura",
+          "relation_kind": "ONE_TO_ONE",
+          "join_column": "factura_id",
+          "is_collection": false
+        }
+      ]
+    },
+    {
+      "name": "Producto",
+      "plural_name": "Productos",
+      "table_name": "productos",
+      "resource_path": "/productos",
+      "icon": "tag",
+      "id_field_name": "Id",
+      "fields": [
+        {
+          "name": "Id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "nombre",
+          "label": "Nombre",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "categoria",
+          "target_entity": "Categoria",
+          "relation_kind": "ONE_TO_ONE",
+          "join_column": "categoria_id",
+          "is_collection": false
+        },
+        {
+          "name": "detalleFacturas",
+          "target_entity": "DetalleFactura",
+          "relation_kind": "ONE_TO_MANY",
+          "join_column": null,
+          "is_collection": true
+        }
+      ]
+    },
+    {
+      "name": "DetalleFactura",
+      "plural_name": "DetalleFacturas",
+      "table_name": "detalle_facturas",
+      "resource_path": "/detalle_facturas",
+      "icon": "dollar-sign",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "producto",
+          "target_entity": "Producto",
+          "relation_kind": "MANY_TO_ONE",
+          "join_column": "producto_id",
+          "is_collection": false
+        },
+        {
+          "name": "factura",
+          "target_entity": "Factura",
+          "relation_kind": "MANY_TO_ONE",
+          "join_column": "factura_id",
+          "is_collection": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1124 @@
+{
+  "schema_version": "1.0",
+  "project_name": "Imported Model",
+  "domain": "E_COMMERCE",
+  "tools": [
+    {
+      "name": "list_categorias",
+      "description": "Obtiene la lista de Categorias registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/categorias",
+      "required_permission": "READ_CATEGORIA",
+      "http": {
+        "method": "GET",
+        "path": "/api/categorias"
+      },
+      "permissions": {
+        "required": "READ_CATEGORIA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Filtrar por nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_categoria_by_id",
+      "description": "Obtiene los detalles de un/a Categoria por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/categorias/{id}",
+      "required_permission": "READ_CATEGORIA",
+      "http": {
+        "method": "GET",
+        "path": "/api/categorias/{id}"
+      },
+      "permissions": {
+        "required": "READ_CATEGORIA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de Categoria"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_categoria",
+      "description": "Crea un/a nuevo/a Categoria en el sistema.",
+      "method": "POST",
+      "path": "/api/categorias",
+      "required_permission": "CREATE_CATEGORIA",
+      "http": {
+        "method": "POST",
+        "path": "/api/categorias"
+      },
+      "permissions": {
+        "required": "CREATE_CATEGORIA"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_categoria",
+      "description": "Actualiza los datos de un/a Categoria existente.",
+      "method": "PUT",
+      "path": "/api/categorias/{id}",
+      "required_permission": "UPDATE_CATEGORIA",
+      "http": {
+        "method": "PUT",
+        "path": "/api/categorias/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_CATEGORIA"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Categoria a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_categoria",
+      "description": "Elimina un/a Categoria por su ID.",
+      "method": "DELETE",
+      "path": "/api/categorias/{id}",
+      "required_permission": "DELETE_CATEGORIA",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/categorias/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_CATEGORIA"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Categoria a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_rols",
+      "description": "Obtiene la lista de Rols registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/rols",
+      "required_permission": "READ_ROL",
+      "http": {
+        "method": "GET",
+        "path": "/api/rols"
+      },
+      "permissions": {
+        "required": "READ_ROL"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Filtrar por nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_rol_by_id",
+      "description": "Obtiene los detalles de un/a Rol por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/rols/{id}",
+      "required_permission": "READ_ROL",
+      "http": {
+        "method": "GET",
+        "path": "/api/rols/{id}"
+      },
+      "permissions": {
+        "required": "READ_ROL"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador de Rol"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_rol",
+      "description": "Crea un/a nuevo/a Rol en el sistema.",
+      "method": "POST",
+      "path": "/api/rols",
+      "required_permission": "CREATE_ROL",
+      "http": {
+        "method": "POST",
+        "path": "/api/rols"
+      },
+      "permissions": {
+        "required": "CREATE_ROL"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_rol",
+      "description": "Actualiza los datos de un/a Rol existente.",
+      "method": "PUT",
+      "path": "/api/rols/{id}",
+      "required_permission": "UPDATE_ROL",
+      "http": {
+        "method": "PUT",
+        "path": "/api/rols/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_ROL"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "id": {
+            "type": "string",
+            "description": "ID del/la Rol a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_rol",
+      "description": "Elimina un/a Rol por su ID.",
+      "method": "DELETE",
+      "path": "/api/rols/{id}",
+      "required_permission": "DELETE_ROL",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/rols/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_ROL"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del/la Rol a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_facturas",
+      "description": "Obtiene la lista de Facturas registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/facturas",
+      "required_permission": "READ_FACTURA",
+      "http": {
+        "method": "GET",
+        "path": "/api/facturas"
+      },
+      "permissions": {
+        "required": "READ_FACTURA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "fecha": {
+            "type": "string",
+            "description": "Filtrar por fecha"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_factura_by_id",
+      "description": "Obtiene los detalles de un/a Factura por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/facturas/{id}",
+      "required_permission": "READ_FACTURA",
+      "http": {
+        "method": "GET",
+        "path": "/api/facturas/{id}"
+      },
+      "permissions": {
+        "required": "READ_FACTURA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de Factura"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_factura",
+      "description": "Crea un/a nuevo/a Factura en el sistema.",
+      "method": "POST",
+      "path": "/api/facturas",
+      "required_permission": "CREATE_FACTURA",
+      "http": {
+        "method": "POST",
+        "path": "/api/facturas"
+      },
+      "permissions": {
+        "required": "CREATE_FACTURA"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "description": "Valor para fecha"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_factura",
+      "description": "Actualiza los datos de un/a Factura existente.",
+      "method": "PUT",
+      "path": "/api/facturas/{id}",
+      "required_permission": "UPDATE_FACTURA",
+      "http": {
+        "method": "PUT",
+        "path": "/api/facturas/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_FACTURA"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "description": "Valor para fecha"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Factura a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_factura",
+      "description": "Elimina un/a Factura por su ID.",
+      "method": "DELETE",
+      "path": "/api/facturas/{id}",
+      "required_permission": "DELETE_FACTURA",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/facturas/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_FACTURA"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Factura a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_productos",
+      "description": "Obtiene la lista de Productos registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/productos",
+      "required_permission": "READ_PRODUCTO",
+      "http": {
+        "method": "GET",
+        "path": "/api/productos"
+      },
+      "permissions": {
+        "required": "READ_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Filtrar por nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_producto_by_id",
+      "description": "Obtiene los detalles de un/a Producto por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/productos/{id}",
+      "required_permission": "READ_PRODUCTO",
+      "http": {
+        "method": "GET",
+        "path": "/api/productos/{id}"
+      },
+      "permissions": {
+        "required": "READ_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de Producto"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_producto",
+      "description": "Crea un/a nuevo/a Producto en el sistema.",
+      "method": "POST",
+      "path": "/api/productos",
+      "required_permission": "CREATE_PRODUCTO",
+      "http": {
+        "method": "POST",
+        "path": "/api/productos"
+      },
+      "permissions": {
+        "required": "CREATE_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_producto",
+      "description": "Actualiza los datos de un/a Producto existente.",
+      "method": "PUT",
+      "path": "/api/productos/{id}",
+      "required_permission": "UPDATE_PRODUCTO",
+      "http": {
+        "method": "PUT",
+        "path": "/api/productos/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Producto a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_producto",
+      "description": "Elimina un/a Producto por su ID.",
+      "method": "DELETE",
+      "path": "/api/productos/{id}",
+      "required_permission": "DELETE_PRODUCTO",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/productos/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_PRODUCTO"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Producto a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_usuarios",
+      "description": "Obtiene la lista de Usuarios registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/usuarios",
+      "required_permission": "READ_USUARIO",
+      "http": {
+        "method": "GET",
+        "path": "/api/usuarios"
+      },
+      "permissions": {
+        "required": "READ_USUARIO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "CI": {
+            "type": "integer",
+            "description": "Filtrar por CI"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Filtrar por nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_usuario_by_id",
+      "description": "Obtiene los detalles de un/a Usuario por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/usuarios/{id}",
+      "required_permission": "READ_USUARIO",
+      "http": {
+        "method": "GET",
+        "path": "/api/usuarios/{id}"
+      },
+      "permissions": {
+        "required": "READ_USUARIO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de Usuario"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_usuario",
+      "description": "Crea un/a nuevo/a Usuario en el sistema.",
+      "method": "POST",
+      "path": "/api/usuarios",
+      "required_permission": "CREATE_USUARIO",
+      "http": {
+        "method": "POST",
+        "path": "/api/usuarios"
+      },
+      "permissions": {
+        "required": "CREATE_USUARIO"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "CI": {
+            "type": "integer",
+            "description": "Valor para CI"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_usuario",
+      "description": "Actualiza los datos de un/a Usuario existente.",
+      "method": "PUT",
+      "path": "/api/usuarios/{id}",
+      "required_permission": "UPDATE_USUARIO",
+      "http": {
+        "method": "PUT",
+        "path": "/api/usuarios/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_USUARIO"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "CI": {
+            "type": "integer",
+            "description": "Valor para CI"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Usuario a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_usuario",
+      "description": "Elimina un/a Usuario por su ID.",
+      "method": "DELETE",
+      "path": "/api/usuarios/{id}",
+      "required_permission": "DELETE_USUARIO",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/usuarios/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_USUARIO"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la Usuario a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_detallefacturas",
+      "description": "Obtiene la lista de DetalleFacturas registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/detalle_facturas",
+      "required_permission": "READ_DETALLEFACTURA",
+      "http": {
+        "method": "GET",
+        "path": "/api/detalle_facturas"
+      },
+      "permissions": {
+        "required": "READ_DETALLEFACTURA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_detallefactura_by_id",
+      "description": "Obtiene los detalles de un/a DetalleFactura por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/detalle_facturas/{id}",
+      "required_permission": "READ_DETALLEFACTURA",
+      "http": {
+        "method": "GET",
+        "path": "/api/detalle_facturas/{id}"
+      },
+      "permissions": {
+        "required": "READ_DETALLEFACTURA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de DetalleFactura"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_detallefactura",
+      "description": "Crea un/a nuevo/a DetalleFactura en el sistema.",
+      "method": "POST",
+      "path": "/api/detalle_facturas",
+      "required_permission": "CREATE_DETALLEFACTURA",
+      "http": {
+        "method": "POST",
+        "path": "/api/detalle_facturas"
+      },
+      "permissions": {
+        "required": "CREATE_DETALLEFACTURA"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "update_detallefactura",
+      "description": "Actualiza los datos de un/a DetalleFactura existente.",
+      "method": "PUT",
+      "path": "/api/detalle_facturas/{id}",
+      "required_permission": "UPDATE_DETALLEFACTURA",
+      "http": {
+        "method": "PUT",
+        "path": "/api/detalle_facturas/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_DETALLEFACTURA"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la DetalleFactura a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_detallefactura",
+      "description": "Elimina un/a DetalleFactura por su ID.",
+      "method": "DELETE",
+      "path": "/api/detalle_facturas/{id}",
+      "required_permission": "DELETE_DETALLEFACTURA",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/detalle_facturas/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_DETALLEFACTURA"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la DetalleFactura a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_roleusuarios",
+      "description": "Obtiene la lista de RoleUsuarios registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/role_usuarios",
+      "required_permission": "READ_ROLEUSUARIO",
+      "http": {
+        "method": "GET",
+        "path": "/api/role_usuarios"
+      },
+      "permissions": {
+        "required": "READ_ROLEUSUARIO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "roleId": {
+            "type": "string",
+            "description": "Filtrar por roleId"
+          },
+          "usuarioId": {
+            "type": "string",
+            "description": "Filtrar por usuarioId"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_roleusuario_by_id",
+      "description": "Obtiene los detalles de un/a RoleUsuario por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/role_usuarios/{id}",
+      "required_permission": "READ_ROLEUSUARIO",
+      "http": {
+        "method": "GET",
+        "path": "/api/role_usuarios/{id}"
+      },
+      "permissions": {
+        "required": "READ_ROLEUSUARIO"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador de RoleUsuario"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_roleusuario",
+      "description": "Crea un/a nuevo/a RoleUsuario en el sistema.",
+      "method": "POST",
+      "path": "/api/role_usuarios",
+      "required_permission": "CREATE_ROLEUSUARIO",
+      "http": {
+        "method": "POST",
+        "path": "/api/role_usuarios"
+      },
+      "permissions": {
+        "required": "CREATE_ROLEUSUARIO"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "description": "Valor para roleId"
+          },
+          "usuarioId": {
+            "type": "string",
+            "description": "Valor para usuarioId"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_roleusuario",
+      "description": "Actualiza los datos de un/a RoleUsuario existente.",
+      "method": "PUT",
+      "path": "/api/role_usuarios/{id}",
+      "required_permission": "UPDATE_ROLEUSUARIO",
+      "http": {
+        "method": "PUT",
+        "path": "/api/role_usuarios/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_ROLEUSUARIO"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "description": "Valor para roleId"
+          },
+          "usuarioId": {
+            "type": "string",
+            "description": "Valor para usuarioId"
+          },
+          "id": {
+            "type": "integer",
+            "description": "ID del/la RoleUsuario a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_roleusuario",
+      "description": "Elimina un/a RoleUsuario por su ID.",
+      "method": "DELETE",
+      "path": "/api/role_usuarios/{id}",
+      "required_permission": "DELETE_ROLEUSUARIO",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/role_usuarios/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_ROLEUSUARIO"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "ID del/la RoleUsuario a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    }
+  ]
+}

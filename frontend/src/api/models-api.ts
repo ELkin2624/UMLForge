@@ -36,9 +36,20 @@ function mapToBackendDTO(model: UMLModel): any {
     relationships: (model.relationships || []).map(rel => {
       const srcId = rel.source_id || (rel as any).source || '';
       const tgtId = rel.target_id || (rel as any).target || '';
+      const srcClass = (model.classes || []).find(c => c.id === srcId);
+      const tgtClass = (model.classes || []).find(c => c.id === tgtId);
+      const defaultName = (srcClass && tgtClass)
+        ? `${srcClass.name}_${tgtClass.name}`
+        : (srcId ? `rel_${srcId.substring(0, 4)}` : 'rel');
+
+      const explicitName = (rel as any).name;
+      const finalName = explicitName && !explicitName.startsWith('rel_') && explicitName !== 'rel'
+        ? explicitName
+        : defaultName;
+
       return {
         id: rel.id,
-        name: (rel as any).name || `rel_${srcId.substring(0, 4)}`,
+        name: finalName,
         source: srcId,
         target: tgtId,
         type: (rel.type || 'association').toLowerCase(),

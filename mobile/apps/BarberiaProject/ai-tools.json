@@ -1,0 +1,335 @@
+{
+  "schema_version": "1.0",
+  "project_name": "BarberiaProject",
+  "domain": "CLINICAL",
+  "tools": [
+    {
+      "name": "list_clientes",
+      "description": "Obtiene la lista de Clientes registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/clientes",
+      "required_permission": "READ_CLIENTE",
+      "http": {
+        "method": "GET",
+        "path": "/api/clientes"
+      },
+      "permissions": {
+        "required": "READ_CLIENTE"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "nombre": {
+            "type": "string",
+            "description": "Filtrar por nombre"
+          },
+          "telefono": {
+            "type": "string",
+            "description": "Filtrar por telefono"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_cliente_by_id",
+      "description": "Obtiene los detalles de un/a Cliente por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/clientes/{id}",
+      "required_permission": "READ_CLIENTE",
+      "http": {
+        "method": "GET",
+        "path": "/api/clientes/{id}"
+      },
+      "permissions": {
+        "required": "READ_CLIENTE"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador de Cliente"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_cliente",
+      "description": "Crea un/a nuevo/a Cliente en el sistema.",
+      "method": "POST",
+      "path": "/api/clientes",
+      "required_permission": "CREATE_CLIENTE",
+      "http": {
+        "method": "POST",
+        "path": "/api/clientes"
+      },
+      "permissions": {
+        "required": "CREATE_CLIENTE"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "telefono": {
+            "type": "string",
+            "description": "Valor para telefono"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_cliente",
+      "description": "Actualiza los datos de un/a Cliente existente.",
+      "method": "PUT",
+      "path": "/api/clientes/{id}",
+      "required_permission": "UPDATE_CLIENTE",
+      "http": {
+        "method": "PUT",
+        "path": "/api/clientes/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_CLIENTE"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "type": "string",
+            "description": "Valor para nombre"
+          },
+          "telefono": {
+            "type": "string",
+            "description": "Valor para telefono"
+          },
+          "id": {
+            "type": "string",
+            "description": "ID del/la Cliente a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_cliente",
+      "description": "Elimina un/a Cliente por su ID.",
+      "method": "DELETE",
+      "path": "/api/clientes/{id}",
+      "required_permission": "DELETE_CLIENTE",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/clientes/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_CLIENTE"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del/la Cliente a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "list_citas",
+      "description": "Obtiene la lista de Citas registrados con filtros opcionales.",
+      "method": "GET",
+      "path": "/api/citas",
+      "required_permission": "READ_CITA",
+      "http": {
+        "method": "GET",
+        "path": "/api/citas"
+      },
+      "permissions": {
+        "required": "READ_CITA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "description": "Número máximo de registros a retornar"
+          },
+          "search": {
+            "type": "string",
+            "description": "Término de búsqueda textual"
+          },
+          "fecha": {
+            "type": "string",
+            "description": "Filtrar por fecha"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "get_cita_by_id",
+      "description": "Obtiene los detalles de un/a Cita por su identificador único (ID).",
+      "method": "GET",
+      "path": "/api/citas/{id}",
+      "required_permission": "READ_CITA",
+      "http": {
+        "method": "GET",
+        "path": "/api/citas/{id}"
+      },
+      "permissions": {
+        "required": "READ_CITA"
+      },
+      "policy": {
+        "action_type": "READ",
+        "requires_confirmation": false
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador de Cita"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "create_cita",
+      "description": "Crea un/a nuevo/a Cita en el sistema.",
+      "method": "POST",
+      "path": "/api/citas",
+      "required_permission": "CREATE_CITA",
+      "http": {
+        "method": "POST",
+        "path": "/api/citas"
+      },
+      "permissions": {
+        "required": "CREATE_CITA"
+      },
+      "policy": {
+        "action_type": "CREATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "description": "Valor para fecha"
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "update_cita",
+      "description": "Actualiza los datos de un/a Cita existente.",
+      "method": "PUT",
+      "path": "/api/citas/{id}",
+      "required_permission": "UPDATE_CITA",
+      "http": {
+        "method": "PUT",
+        "path": "/api/citas/{id}"
+      },
+      "permissions": {
+        "required": "UPDATE_CITA"
+      },
+      "policy": {
+        "action_type": "UPDATE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "description": "Valor para fecha"
+          },
+          "id": {
+            "type": "string",
+            "description": "ID del/la Cita a actualizar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "delete_cita",
+      "description": "Elimina un/a Cita por su ID.",
+      "method": "DELETE",
+      "path": "/api/citas/{id}",
+      "required_permission": "DELETE_CITA",
+      "http": {
+        "method": "DELETE",
+        "path": "/api/citas/{id}"
+      },
+      "permissions": {
+        "required": "DELETE_CITA"
+      },
+      "policy": {
+        "action_type": "DELETE",
+        "requires_confirmation": true
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del/la Cita a eliminar"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    }
+  ]
+}

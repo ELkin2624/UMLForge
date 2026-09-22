@@ -8,14 +8,14 @@ from .process import run_command
 
 def find_newman_command(custom_path: str | None = None) -> list[str]:
     """Resuelve la invocación de Newman (binario directo o via npx)."""
-    base_cmd: list[str] = []
-
-    if custom_path:
+    if custom_path and Path(custom_path).exists():
         base_cmd = [custom_path]
     elif shutil.which("newman"):
-        base_cmd = ["newman"]
+        base_cmd = [shutil.which("newman") or "newman"]
+    elif shutil.which("newman.cmd"):
+        base_cmd = [shutil.which("newman.cmd") or "newman.cmd"]
     elif shutil.which("npx"):
-        base_cmd = ["npx", "-y", "newman"]
+        base_cmd = [shutil.which("npx") or "npx", "-y", "newman"]
     else:
         base_cmd = ["newman"]
 
@@ -26,12 +26,18 @@ def find_newman_command(custom_path: str | None = None) -> list[str]:
 
 def check_newman_available(custom_path: str | None = None) -> bool:
     """Verifica si Newman está disponible para ejecución."""
+    # Verificación rápida por sistema de archivos / PATH sin esperar arranque de Node
+    if custom_path and Path(custom_path).exists():
+        return True
+    if shutil.which("newman") or shutil.which("newman.cmd") or shutil.which("npx"):
+        return True
     try:
         cmd = find_newman_command(custom_path) + ["--version"]
-        res = run_command(cmd, timeout=10)
+        res = run_command(cmd, timeout=30)
         return res.returncode == 0
     except Exception:
         return False
+
 
 
 def run_newman(

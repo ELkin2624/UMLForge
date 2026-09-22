@@ -74,6 +74,18 @@ class SyntheticDataGenerator:
                 for rel in entity.relations:
                     if rel.persistence_owner and rel.relation_kind in ("MANY_TO_ONE", "ONE_TO_ONE"):
                         join_col = rel.join_column or f"{rel.name}_id"
+                        # Si es auto-referencia (ej. Categoria -> Categoria):
+                        # La primera fila (raíz) no tiene padre (NULL).
+                        # Las filas siguientes tienen como categoría padre a la raíz (target_ids[0]).
+                        if rel.target_entity == c_name:
+                            target_ids = generated_ids.get(c_name, [])
+                            if i == 0 or not target_ids:
+                                row[join_col] = "NULL"
+                            else:
+                                root_id = target_ids[0]
+                                row[join_col] = f"'{root_id}'" if rel.target_id_type == "UUID" else str(root_id)
+                            continue
+
                         target_ids = generated_ids.get(rel.target_entity, [])
                         if target_ids:
                             target_id = target_ids[i % len(target_ids)]
@@ -81,6 +93,7 @@ class SyntheticDataGenerator:
                                 row[join_col] = f"'{target_id}'"
                             else:
                                 row[join_col] = str(target_id)
+
 
                 records.append(row)
 
@@ -98,7 +111,7 @@ class SyntheticDataGenerator:
             # Para tablas con secuencias en PostgreSQL, sincronizar el contador de secuencia
             if id_type in ("Long", "Integer"):
                 dataset.sql_statements.append(
-                    f"SELECT setval(pg_get_serial_sequence('{t_name}', '{entity.id_field.name}'), coalesce(max({entity.id_field.name}), 1)) FROM {t_name};"
+                    f"SELECT setval(pg_get_serial_sequence('{t_name.lower()}', '{entity.id_field.name.lower()}'), coalesce(max({entity.id_field.name}), 1)) FROM {t_name};"
                 )
 
         # 3. Generar inserciones para tablas intermedias MANY_TO_MANY

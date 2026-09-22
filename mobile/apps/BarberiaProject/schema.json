@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "project_name": "BarberiaProject",
+  "domain": "CLINICAL",
+  "entities": [
+    {
+      "name": "Cliente",
+      "plural_name": "Clientes",
+      "table_name": "clientes",
+      "resource_path": "/clientes",
+      "icon": "user",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "text",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "nombre",
+          "label": "Nombre",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "telefono",
+          "label": "Telefono",
+          "ui_type": "phone",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "citas",
+          "target_entity": "Cita",
+          "relation_kind": "ONE_TO_MANY",
+          "join_column": null,
+          "is_collection": true
+        }
+      ]
+    },
+    {
+      "name": "Cita",
+      "plural_name": "Citas",
+      "table_name": "citas",
+      "resource_path": "/citas",
+      "icon": "calendar",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "text",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "fecha",
+          "label": "Fecha",
+          "ui_type": "date",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "cliente",
+          "target_entity": "Cliente",
+          "relation_kind": "MANY_TO_ONE",
+          "join_column": "cliente_id",
+          "is_collection": false
+        }
+      ]
+    }
+  ]
+}

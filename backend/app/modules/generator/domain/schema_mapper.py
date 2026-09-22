@@ -22,6 +22,28 @@ class SchemaInfo(BaseModel):
 
 class SchemaMapper:
     @classmethod
+    def _resolve_fk_sql_type(cls, target_ent: EntityInfo | None, target_id_type: str) -> str:
+        if target_ent:
+            pk_sql = target_ent.id_field.sql_type.upper()
+            if "SERIAL" in pk_sql or pk_sql in ("INT", "INTEGER"):
+                return "INTEGER"
+            elif "BIGSERIAL" in pk_sql or pk_sql == "BIGINT":
+                return "BIGINT"
+            elif "VARCHAR" in pk_sql or "CHAR" in pk_sql:
+                return pk_sql
+            elif "UUID" in pk_sql:
+                return "UUID"
+            return pk_sql
+
+        if target_id_type in ("Integer", "int"):
+            return "INTEGER"
+        elif target_id_type in ("String", "str"):
+            return "VARCHAR(255)"
+        elif target_id_type == "UUID":
+            return "UUID"
+        return "BIGINT"
+
+    @classmethod
     def map_schema(cls, entities: list[EntityInfo]) -> SchemaInfo:
         schema = SchemaInfo()
         entity_by_name = {e.class_name: e for e in entities}
@@ -68,7 +90,7 @@ class SchemaMapper:
                 if rel.persistence_owner and rel.join_column:
                     target_ent = entity_by_name.get(rel.target_entity)
                     target_pk = target_ent.id_field.name if target_ent else "id"
-                    fk_sql_type = "UUID" if rel.target_id_type == "UUID" else "BIGINT"
+                    fk_sql_type = cls._resolve_fk_sql_type(target_ent, rel.target_id_type)
                     target_table = target_ent.table_name if target_ent else cls._get_table_name(rel.target_entity, entities)
 
                     table.columns.append(
@@ -89,11 +111,12 @@ class SchemaMapper:
                     target_table = target_ent.table_name if target_ent else cls._get_table_name(rel.target_entity, entities)
                     join_table = TableInfo(name=f"{entity.table_name}_{target_table}")
 
-                    owner_sql = "UUID" if entity.id_field.java_type == "UUID" else "BIGINT"
-                    target_sql = "UUID" if rel.target_id_type == "UUID" else "BIGINT"
+                    owner_sql = cls._resolve_fk_sql_type(entity, entity.id_field.java_type)
+                    target_sql = cls._resolve_fk_sql_type(target_ent, rel.target_id_type)
 
                     col_owner = f"{entity.class_name.lower()}_id"
                     col_target = f"{rel.target_entity.lower()}_id"
+
 
                     # FK 1 (este lado)
                     join_table.columns.append(

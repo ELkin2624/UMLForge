@@ -21,6 +21,7 @@ class UMLModel(BaseModel):
     """
 
     id: str = Field(..., description="Identificador único del proyecto/modelo")
+    name: str = Field(default="UML Model", description="Nombre del proyecto/modelo")
     uml_version: str = Field(
         default=UML_VERSION, description="Versión de UML utilizada"
     )

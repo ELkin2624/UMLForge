@@ -51,6 +51,7 @@ export default function TabsLayout() {
         name="[entity]"
         options={{
           href: null, // Oculto de la barra inferior, se navega dinámicamente
+          headerShown: false,
         }}
       />
     </Tabs>

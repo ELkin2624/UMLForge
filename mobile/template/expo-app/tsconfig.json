@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "module": "ESNext",
     "moduleResolution": "node",
     "allowJs": true,
@@ -16,12 +20,27 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@umlforge/api-client": ["../../packages/api-client/src/index.ts"],
-      "@umlforge/schema-runtime": ["../../packages/schema-runtime/src/index.ts"],
-      "@umlforge/ai-runtime": ["../../packages/ai-runtime/src/index.ts"],
-      "@umlforge/ui": ["../../packages/ui/src/index.ts"]
+      "@/*": [
+        "./*"
+      ],
+      "@umlforge/api-client": [
+        "../../packages/api-client/src/index.ts"
+      ],
+      "@umlforge/schema-runtime": [
+        "../../packages/schema-runtime/src/index.ts"
+      ],
+      "@umlforge/ai-runtime": [
+        "../../packages/ai-runtime/src/index.ts"
+      ],
+      "@umlforge/ui": [
+        "../../packages/ui/src/index.ts"
+      ]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.d.ts"
+  ],
+  "extends": "expo/tsconfig.base"
 }

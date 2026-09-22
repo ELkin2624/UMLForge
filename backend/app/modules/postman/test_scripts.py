@@ -6,6 +6,8 @@ def generate_create_test_script(entity_var: str) -> list[str]:
         "if (pm.response.code === 201) {",
         "    const json = pm.response.json();",
         f'    pm.collectionVariables.set("{entity_var}Id", json.id);',
+        f'    const resolvedId = (json && (json.id !== undefined ? json.id : json.Id));',
+        f'    if (resolvedId !== undefined) pm.collectionVariables.set("{entity_var}Id", resolvedId);',
         "}",
     ]
 
@@ -28,9 +30,10 @@ def generate_get_by_id_test_script() -> list[str]:
         "});",
         'pm.test("Response has id", function () {',
         "    const json = pm.response.json();",
-        "    pm.expect(json).to.have.property('id');",
+        "    pm.expect(json.id !== undefined || json.Id !== undefined).to.be.true;",
         "});",
     ]
+
 
 
 def generate_update_test_script() -> list[str]:

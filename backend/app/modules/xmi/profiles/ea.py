@@ -4,7 +4,7 @@ Mapea entre el modelo intermedio neutral XMIElement y el CanonicalModel (UMLMode
 """
 
 from typing import Literal, cast
-from uuid import UUID
+from uuid import NAMESPACE_URL, UUID, uuid5
 
 from app.core.canonical_model.class_model import UMLAttribute, UMLClass
 from app.core.canonical_model.component_model import (
@@ -67,6 +67,79 @@ def _compute_multiplicity(lower: str | None, upper: str | None) -> str:
     return f"{low}..{up}"
 
 
+def _parse_multiplicity_bounds(mult: str | None) -> tuple[str, str]:
+    if not mult or str(mult).strip() == "":
+        return "1", "1"
+    m = str(mult).strip()
+    if m == "*":
+        return "0", "*"
+    if ".." in m:
+        parts = m.split("..", 1)
+        low = parts[0].strip()
+        up = parts[1].strip()
+        if low == "*":
+            low = "0"
+        return low, up
+    if m == "0":
+        return "0", "0"
+    return m, m
+
+
+
+EA_PRIMITIVE_TYPE_MAP: dict[str, str] = {
+    "int": "Integer",
+    "integer": "Integer",
+    "smallint": "Integer",
+    "tinyint": "Integer",
+    "long": "Long",
+    "bigint": "Long",
+    "string": "String",
+    "varchar": "String",
+    "char": "String",
+    "text": "String",
+    "nvarchar": "String",
+    "character": "String",
+    "boolean": "Boolean",
+    "bool": "Boolean",
+    "bit": "Boolean",
+    "float": "Double",
+    "double": "Double",
+    "real": "Double",
+    "decimal": "BigDecimal",
+    "numeric": "BigDecimal",
+    "date": "LocalDate",
+    "datetime": "LocalDateTime",
+    "timestamp": "LocalDateTime",
+    "time": "LocalTime",
+    "uuid": "UUID",
+    "byte": "byte",
+    "void": "void",
+}
+
+
+def normalize_ea_type(raw_type: str | None) -> str:
+    """Normaliza un tipo de dato proveniente de Enterprise Architect a un tipo canónico legible."""
+    if not raw_type:
+        return "String"
+
+    cleaned = raw_type.strip()
+    for prefix in ("EAJava_", "EAC_", "EACSharp_", "EAPrimitive_", "EA_"):
+        if cleaned.startswith(prefix):
+            cleaned = cleaned[len(prefix):]
+            break
+
+    lower_key = cleaned.lower()
+    if lower_key in EA_PRIMITIVE_TYPE_MAP:
+        return EA_PRIMITIVE_TYPE_MAP[lower_key]
+
+    # Si es un nombre válido de identificador Java / UML (ej. NombreDeClase)
+    if cleaned.isalnum() or "_" in cleaned:
+        return cleaned
+
+    return "String"
+
+
+
 def map_intermediate_to_canonical(
     doc: XMIModelDocument,
     id_mapper: IDMapper | None = None,
@@ -109,12 +182,26 @@ def map_intermediate_to_canonical(
 
     def resolve_type(type_name: str | None, type_ref: str | None) -> str:
         if type_name:
-            return type_name
+            return normalize_ea_type(type_name)
         if type_ref:
+            # 1. Normalizar directamente si coincide con tipos conocidos o prefijos EA (ej. EAJava_int)
+            clean_type = normalize_ea_type(type_ref)
+            if clean_type != "String" or type_ref.lower().endswith("string"):
+                return clean_type
+
+            # 2. Buscar si es un elemento referenciado por ID en el documento
             ref_elem = find_element_by_id(type_ref)
             if ref_elem and ref_elem.name:
-                return ref_elem.name
-            return str(id_mapper.register(type_ref))
+                return normalize_ea_type(ref_elem.name)
+
+            # 3. Si apunta a una clase o interfaz del modelo
+            if ref_elem and (
+                match_uml_type(ref_elem.xmi_type, "Class")
+                or match_uml_type(ref_elem.xmi_type, "Interface")
+            ):
+                return ref_elem.name or "String"
+
+            return "String"
         return "String"
 
     # Procesar elementos (soportando clases anidadas de forma recursiva)
@@ -128,8 +215,6 @@ def map_intermediate_to_canonical(
             handled = True
             attributes: list[UMLAttribute] = []
             operations: list[UMLOperation] = []
-            attributes: list[UMLAttribute] = []
-            operations: list[UMLOperation] = []
 
             for child in elem.children:
                 child_id = id_mapper.register(child.xmi_id)
@@ -140,6 +225,12 @@ def map_intermediate_to_canonical(
                     match_uml_type(child.xmi_type, "Property")
                     or child.tag_name == "ownedAttribute"
                 ):
+                    # Extremos de asociación en una AssociationClass NO son atributos de la entidad
+                    if child.tag_name == "ownedEnd":
+                        continue
+                    if not child.name and child.type_ref:
+                        continue
+
                     attr_type = resolve_type(child.type_name, child.type_ref)
                     multiplicity = _compute_multiplicity(
                         child.lower_value, child.upper_value
@@ -391,21 +482,53 @@ def map_intermediate_to_canonical(
                 elif end2.aggregation == "shared":
                     rel_type = RelationshipKind.AGGREGATION
 
-                relationships.append(
-                    UMLRelationship(
-                        id=elem_id,
-                        name=elem.name or f"Assoc_{elem.xmi_id}",
-                        type=rel_type,
-                        source=str(src_uuid),
-                        target=str(tgt_uuid),
-                        source_multiplicity=_compute_multiplicity(
-                            end1.lower_value, end1.upper_value
-                        ),
-                        target_multiplicity=_compute_multiplicity(
-                            end2.lower_value, end2.upper_value
-                        ),
+                if match_uml_type(elem.xmi_type, "AssociationClass"):
+                    # Representar AssociationClass conectada a ambas entidades
+                    rel1_id = id_mapper.register(f"{elem.xmi_id}_rel_end1")
+                    rel2_id = id_mapper.register(f"{elem.xmi_id}_rel_end2")
+                    end1_mult = _compute_multiplicity(end1.lower_value, end1.upper_value)
+                    end2_mult = _compute_multiplicity(end2.lower_value, end2.upper_value)
+
+                    # Relación 1: src (ej. Producto) 1 -> * AssociationClass (DetalleFactura)
+                    relationships.append(
+                        UMLRelationship(
+                            id=rel1_id,
+                            name=f"{elem_name}_{getattr(end1, 'name', None) or 'item'}",
+                            type=RelationshipKind.ASSOCIATION,
+                            source=str(src_uuid),
+                            target=str(elem_id),
+                            source_multiplicity="1" if end1_mult == "1" else end1_mult,
+                            target_multiplicity="*" if end1_mult == "1" else end1_mult,
+                        )
                     )
-                )
+                    # Relación 2: tgt (ej. Factura) 1 -> * AssociationClass (DetalleFactura)
+                    relationships.append(
+                        UMLRelationship(
+                            id=rel2_id,
+                            name=f"{elem_name}_{getattr(end2, 'name', None) or 'header'}",
+                            type=RelationshipKind.ASSOCIATION,
+                            source=str(tgt_uuid),
+                            target=str(elem_id),
+                            source_multiplicity="1" if end2_mult == "1" else end2_mult,
+                            target_multiplicity="*" if end2_mult == "1" else end2_mult,
+                        )
+                    )
+                else:
+                    relationships.append(
+                        UMLRelationship(
+                            id=elem_id,
+                            name=elem.name or f"Assoc_{elem.xmi_id}",
+                            type=rel_type,
+                            source=str(src_uuid),
+                            target=str(tgt_uuid),
+                            source_multiplicity=_compute_multiplicity(
+                                end1.lower_value, end1.upper_value
+                            ),
+                            target_multiplicity=_compute_multiplicity(
+                                end2.lower_value, end2.upper_value
+                            ),
+                        )
+                    )
             else:
                 warnings.append(
                     f"Asociación {elem_name} ({elem.xmi_id}) ignorada por no poder resolver 2 extremos."
@@ -482,11 +605,13 @@ def canonical_to_ea_intermediate(
 ) -> XMIModelDocument:
     """
     Transforma un UMLModel canónico a un XMIModelDocument intermedio siguiendo el perfil EA.
+    Garantiza que todos los identificadores xmi:id sigan el estándar EAID_ (<= 41 caracteres)
+    para compatibilidad estricta con Enterprise Architect y motores relacionales DAO / Jet.
     """
     if id_mapper is None:
         id_mapper = IDMapper()
 
-    model_xmi_id = id_mapper.register_canonical(model.id, prefix="EAID_Model_")
+    model_xmi_id = id_mapper.register_canonical(model.id, prefix="EAID_")
     root_elements: list[XMIElement] = []
 
     # 1. Clases
@@ -499,12 +624,13 @@ def canonical_to_ea_intermediate(
         classes_by_owner[owner].append(cls)
 
     def generate_class_element(cls: UMLClass) -> XMIElement:
-        cls_xmi_id = id_mapper.register_canonical(cls.id, prefix="EAID_Class_")
+        cls_xmi_id = id_mapper.register_canonical(cls.id, prefix="EAID_")
         cls_children: list[XMIElement] = []
 
         # Atributos
         for attr in cls.attributes:
-            attr_xmi_id = id_mapper.register_canonical(attr.id, prefix="EAID_Attr_")
+            attr_xmi_id = id_mapper.register_canonical(attr.id, prefix="EAID_")
+            attr_low, attr_up = _parse_multiplicity_bounds(attr.multiplicity)
             cls_children.append(
                 XMIElement(
                     xmi_id=attr_xmi_id,
@@ -514,27 +640,19 @@ def canonical_to_ea_intermediate(
                     visibility=attr.visibility.value,
                     is_static=attr.is_static,
                     type_name=attr.type,
-                    lower_value=(
-                        attr.multiplicity.split("..")[0]
-                        if ".." in attr.multiplicity
-                        else attr.multiplicity
-                    ),
-                    upper_value=(
-                        attr.multiplicity.split("..")[1]
-                        if ".." in attr.multiplicity
-                        else attr.multiplicity
-                    ),
+                    lower_value=attr_low,
+                    upper_value=attr_up,
                     default_value=attr.initial_value,
                 )
             )
 
         # Operaciones
         for op in cls.operations:
-            op_xmi_id = id_mapper.register_canonical(op.id, prefix="EAID_Op_")
+            op_xmi_id = id_mapper.register_canonical(op.id, prefix="EAID_")
             op_children: list[XMIElement] = []
 
             for param in op.parameters:
-                p_xmi_id = id_mapper.register_canonical(param.id, prefix="EAID_Param_")
+                p_xmi_id = id_mapper.register_canonical(param.id, prefix="EAID_")
                 op_children.append(
                     XMIElement(
                         xmi_id=p_xmi_id,
@@ -547,7 +665,9 @@ def canonical_to_ea_intermediate(
                 )
 
             if op.return_type and op.return_type != "void":
-                ret_xmi_id = f"{op_xmi_id}_ret"
+                op_uuid = id_mapper.register(op_xmi_id)
+                ret_uuid = uuid5(op_uuid, "return")
+                ret_xmi_id = id_mapper.register_canonical(ret_uuid, prefix="EAID_")
                 op_children.append(
                     XMIElement(
                         xmi_id=ret_xmi_id,
@@ -571,6 +691,22 @@ def canonical_to_ea_intermediate(
                 )
             )
 
+        # Generalizaciones de esta clase (<generalization general="..."/>)
+        for rel in model.relationships:
+            if rel.type == RelationshipKind.GENERALIZATION and str(rel.source) == str(cls.id):
+                gen_uuid = uuid5(id_mapper.register(cls_xmi_id), f"gen_{rel.target}")
+                gen_xmi_id = id_mapper.register_canonical(gen_uuid, prefix="EAID_")
+                tgt_xmi_id = id_mapper.register_canonical(rel.target, prefix="EAID_")
+                cls_children.append(
+                    XMIElement(
+                        xmi_id=gen_xmi_id,
+                        xmi_type="uml:Generalization",
+                        tag_name="generalization",
+                        name=rel.name,
+                        general_ref=tgt_xmi_id,
+                    )
+                )
+
         # Clases anidadas
         if str(cls.id) in classes_by_owner:
             for nested_cls in classes_by_owner[str(cls.id)]:
@@ -591,15 +727,15 @@ def canonical_to_ea_intermediate(
 
     # 2. Interfaces
     for iface in model.interfaces:
-        if_xmi_id = id_mapper.register_canonical(iface.id, prefix="EAID_If_")
+        if_xmi_id = id_mapper.register_canonical(iface.id, prefix="EAID_")
         if_children: list[XMIElement] = []
 
         for op in iface.operations:
-            op_xmi_id = id_mapper.register_canonical(op.id, prefix="EAID_Op_")
+            op_xmi_id = id_mapper.register_canonical(op.id, prefix="EAID_")
             op_children = []
 
             for param in op.parameters:
-                p_xmi_id = id_mapper.register_canonical(param.id, prefix="EAID_Param_")
+                p_xmi_id = id_mapper.register_canonical(param.id, prefix="EAID_")
                 op_children.append(
                     XMIElement(
                         xmi_id=p_xmi_id,
@@ -612,7 +748,9 @@ def canonical_to_ea_intermediate(
                 )
 
             if op.return_type and op.return_type != "void":
-                ret_xmi_id = f"{op_xmi_id}_ret"
+                op_uuid = id_mapper.register(op_xmi_id)
+                ret_uuid = uuid5(op_uuid, "return")
+                ret_xmi_id = id_mapper.register_canonical(ret_uuid, prefix="EAID_")
                 op_children.append(
                     XMIElement(
                         xmi_id=ret_xmi_id,
@@ -648,16 +786,16 @@ def canonical_to_ea_intermediate(
 
     # 3. Componentes y sus puertos
     for comp in model.components:
-        comp_xmi_id = id_mapper.register_canonical(comp.id, prefix="EAID_Comp_")
+        comp_xmi_id = id_mapper.register_canonical(comp.id, prefix="EAID_")
         comp_children: list[XMIElement] = []
 
         # Buscar puertos pertenecientes a este componente
         comp_uuid = UUID(comp.id) if isinstance(comp.id, str) else comp.id
         for port in model.ports:
             if port.component_id == comp_uuid:
-                port_xmi_id = id_mapper.register_canonical(port.id, prefix="EAID_Port_")
+                port_xmi_id = id_mapper.register_canonical(port.id, prefix="EAID_")
                 if_xmi_id = id_mapper.register_canonical(
-                    port.interface_id, prefix="EAID_If_"
+                    port.interface_id, prefix="EAID_"
                 )
 
                 comp_children.append(
@@ -682,91 +820,86 @@ def canonical_to_ea_intermediate(
             )
         )
 
-    # 4. Relaciones (Asociaciones y Generalizaciones)
+    # 4. Relaciones (Asociaciones)
+    class_names: dict[str, str] = {str(c.id): c.name for c in model.classes}
+
     for rel in model.relationships:
-        rel_xmi_id = id_mapper.register_canonical(rel.id, prefix="EAID_Rel_")
-
         if rel.type == RelationshipKind.GENERALIZATION:
-            # En UML XMI, generalización se puede colocar como packagedElement o dentro de la subclase
-            src_xmi_id = id_mapper.register_canonical(rel.source, prefix="EAID_Class_")
-            tgt_xmi_id = id_mapper.register_canonical(rel.target, prefix="EAID_Class_")
+            # Las generalizaciones se incrustan como <generalization> dentro de la subclase
+            continue
 
-            root_elements.append(
-                XMIElement(
-                    xmi_id=rel_xmi_id,
-                    xmi_type="uml:Generalization",
-                    tag_name="packagedElement",
-                    name=rel.name,
-                    client_ref=src_xmi_id,
-                    general_ref=tgt_xmi_id,
-                )
-            )
+        rel_xmi_id = id_mapper.register_canonical(rel.id, prefix="EAID_")
+        src_xmi_id = id_mapper.register_canonical(rel.source, prefix="EAID_")
+        tgt_xmi_id = id_mapper.register_canonical(rel.target, prefix="EAID_")
+        src_name = class_names.get(str(rel.source), "source")
+        tgt_name = class_names.get(str(rel.target), "target")
+
+        # Nombre legible si viene con fallback 'rel_...' o vacío
+        if not rel.name or rel.name.startswith("rel_") or rel.name == "rel":
+            rel_name = f"{src_name}_{tgt_name}"
         else:
-            src_xmi_id = id_mapper.register_canonical(rel.source, prefix="EAID_Class_")
-            tgt_xmi_id = id_mapper.register_canonical(rel.target, prefix="EAID_Class_")
+            rel_name = rel.name
 
-            agg_val = "none"
-            rel_type_str = str(
-                rel.type.value if hasattr(rel.type, "value") else rel.type
-            ).lower()
-            if "composite" in rel_type_str or "composition" in rel_type_str:
-                agg_val = "composite"
-            elif "shared" in rel_type_str or "aggregation" in rel_type_str:
-                agg_val = "shared"
+        agg_val = "none"
+        rel_type_str = str(
+            rel.type.value if hasattr(rel.type, "value") else rel.type
+        ).lower()
+        if "composite" in rel_type_str or "composition" in rel_type_str:
+            agg_val = "composite"
+        elif "shared" in rel_type_str or "aggregation" in rel_type_str:
+            agg_val = "shared"
 
-            end1 = XMIElement(
-                xmi_id=f"{rel_xmi_id}_end1",
-                xmi_type="uml:Property",
-                tag_name="ownedEnd",
-                type_ref=src_xmi_id,
-                aggregation="none",
-                lower_value=(
-                    rel.source_multiplicity.split("..")[0]
-                    if ".." in rel.source_multiplicity
-                    else rel.source_multiplicity
-                ),
-                upper_value=(
-                    rel.source_multiplicity.split("..")[1]
-                    if ".." in rel.source_multiplicity
-                    else rel.source_multiplicity
-                ),
-            )
-            end2 = XMIElement(
-                xmi_id=f"{rel_xmi_id}_end2",
-                xmi_type="uml:Property",
-                tag_name="ownedEnd",
-                type_ref=tgt_xmi_id,
-                aggregation=agg_val,
-                lower_value=(
-                    rel.target_multiplicity.split("..")[0]
-                    if ".." in rel.target_multiplicity
-                    else rel.target_multiplicity
-                ),
-                upper_value=(
-                    rel.target_multiplicity.split("..")[1]
-                    if ".." in rel.target_multiplicity
-                    else rel.target_multiplicity
-                ),
-            )
+        src_low, src_up = _parse_multiplicity_bounds(rel.source_multiplicity)
+        tgt_low, tgt_up = _parse_multiplicity_bounds(rel.target_multiplicity)
 
-            root_elements.append(
-                XMIElement(
-                    xmi_id=rel_xmi_id,
-                    xmi_type="uml:Association",
-                    tag_name="packagedElement",
-                    name=rel.name,
-                    children=[end1, end2],
-                )
+        rel_uuid = id_mapper.register(rel_xmi_id)
+        end1_uuid = uuid5(rel_uuid, "end1")
+        end2_uuid = uuid5(rel_uuid, "end2")
+        end1_id = id_mapper.register_canonical(end1_uuid, prefix="EAID_")
+        end2_id = id_mapper.register_canonical(end2_uuid, prefix="EAID_")
+
+        end1 = XMIElement(
+            xmi_id=end1_id,
+            xmi_type="uml:Property",
+            tag_name="ownedEnd",
+            name=src_name.lower(),
+            type_ref=src_xmi_id,
+            aggregation="none",
+            lower_value=src_low,
+            upper_value=src_up,
+            raw_attributes={"association": rel_xmi_id},
+        )
+        end2 = XMIElement(
+            xmi_id=end2_id,
+            xmi_type="uml:Property",
+            tag_name="ownedEnd",
+            name=tgt_name.lower(),
+            type_ref=tgt_xmi_id,
+            aggregation=agg_val,
+            lower_value=tgt_low,
+            upper_value=tgt_up,
+            raw_attributes={"association": rel_xmi_id},
+        )
+
+        root_elements.append(
+            XMIElement(
+                xmi_id=rel_xmi_id,
+                xmi_type="uml:Association",
+                tag_name="packagedElement",
+                name=rel_name,
+                member_end_refs=[end1_id, end2_id],
+                children=[end1, end2],
             )
+        )
 
     # 5. Conectores
     for conn in model.connectors:
-        conn_xmi_id = id_mapper.register_canonical(conn.id, prefix="EAID_Conn_")
+        conn_xmi_id = id_mapper.register_canonical(conn.id, prefix="EAID_")
         src_p_xmi_id = id_mapper.register_canonical(
-            conn.source_port_id, prefix="EAID_Port_"
+            conn.source_port_id, prefix="EAID_"
         )
         tgt_p_xmi_id = id_mapper.register_canonical(
-            conn.target_port_id, prefix="EAID_Port_"
+            conn.target_port_id, prefix="EAID_"
         )
 
         root_elements.append(
@@ -782,12 +915,12 @@ def canonical_to_ea_intermediate(
 
     # 6. Dependencias
     for dep in model.dependencies:
-        dep_xmi_id = id_mapper.register_canonical(dep.id, prefix="EAID_Dep_")
+        dep_xmi_id = id_mapper.register_canonical(dep.id, prefix="EAID_")
         src_elem_xmi_id = id_mapper.register_canonical(
-            dep.source_id, prefix="EAID_Elem_"
+            dep.source_id, prefix="EAID_"
         )
         tgt_elem_xmi_id = id_mapper.register_canonical(
-            dep.target_id, prefix="EAID_Elem_"
+            dep.target_id, prefix="EAID_"
         )
 
         root_elements.append(
@@ -800,9 +933,16 @@ def canonical_to_ea_intermediate(
             )
         )
 
+    raw_name = getattr(model, "name", None)
+    clean_model_name = (
+        raw_name.strip()
+        if raw_name and raw_name.strip() and not raw_name.startswith("Model_")
+        else "UMLForge_Model"
+    )
+
     return XMIModelDocument(
         doc_fingerprint="exported",
         model_id=model_xmi_id,
-        model_name=getattr(model, "name", None) or f"Model_{model.id}",
+        model_name=clean_model_name,
         root_elements=root_elements,
     )

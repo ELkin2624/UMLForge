@@ -105,8 +105,9 @@ def rotate_refresh_token(db: Session, old_token: str, user_id: int) -> tuple[str
     db_token.revoked_at = datetime.datetime.utcnow()
     
     # Creamos nuevos
-    user = db.query(User).get(user_id)
+    user = db.get(User, user_id)
     access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
+
     new_refresh_token = create_refresh_token(data={"sub": str(user.id), "username": user.username})
     
     new_db_refresh = RefreshToken(

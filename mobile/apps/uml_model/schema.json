@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0",
+  "project_name": "uml_model",
+  "domain": "E_COMMERCE",
+  "entities": [
+    {
+      "name": "Cliente",
+      "plural_name": "Clientes",
+      "table_name": "clientes",
+      "resource_path": "/clientes",
+      "icon": "user",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "nombre",
+          "label": "Nombre",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "email",
+          "label": "Email",
+          "ui_type": "email",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "ventas",
+          "target_entity": "venta",
+          "relation_kind": "ONE_TO_MANY",
+          "join_column": null,
+          "is_collection": true
+        }
+      ]
+    },
+    {
+      "name": "Producto",
+      "plural_name": "Productos",
+      "table_name": "productos",
+      "resource_path": "/productos",
+      "icon": "tag",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "nombre",
+          "label": "Nombre",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "precio",
+          "label": "Precio",
+          "ui_type": "currency",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "stock",
+          "label": "Stock",
+          "ui_type": "number",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "ventaProductos",
+          "target_entity": "ventaProducto",
+          "relation_kind": "ONE_TO_MANY",
+          "join_column": null,
+          "is_collection": true
+        }
+      ]
+    },
+    {
+      "name": "venta",
+      "plural_name": "ventas",
+      "table_name": "ventas",
+      "resource_path": "/ventas",
+      "icon": "dollar-sign",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "number",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "fecha",
+          "label": "Fecha",
+          "ui_type": "date",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "cliente",
+          "target_entity": "Cliente",
+          "relation_kind": "MANY_TO_ONE",
+          "join_column": "cliente_id",
+          "is_collection": false
+        },
+        {
+          "name": "ventaProductos",
+          "target_entity": "ventaProducto",
+          "relation_kind": "ONE_TO_MANY",
+          "join_column": null,
+          "is_collection": true
+        }
+      ]
+    },
+    {
+      "name": "ventaProducto",
+      "plural_name": "ventaProductos",
+      "table_name": "venta_productos",
+      "resource_path": "/venta_productos",
+      "icon": "tag",
+      "id_field_name": "id",
+      "fields": [
+        {
+          "name": "id",
+          "label": "ID",
+          "ui_type": "text",
+          "required": true,
+          "is_primary_key": true,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "ventaId",
+          "label": "Venta Id",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "productoId",
+          "label": "Producto Id",
+          "ui_type": "text",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": true,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "cantidad",
+          "label": "Cantidad",
+          "ui_type": "number",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": true,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        },
+        {
+          "name": "precioUnit",
+          "label": "Precio Unit",
+          "ui_type": "currency",
+          "required": false,
+          "is_primary_key": false,
+          "is_list_visible": false,
+          "is_searchable": false,
+          "min_length": null,
+          "max_length": null,
+          "min_value": null,
+          "max_value": null
+        }
+      ],
+      "relations": [
+        {
+          "name": "venta",
+          "target_entity": "venta",
+          "relation_kind": "MANY_TO_ONE",
+          "join_column": "venta_id",
+          "is_collection": false
+        },
+        {
+          "name": "producto",
+          "target_entity": "Producto",
+          "relation_kind": "MANY_TO_ONE",
+          "join_column": "producto_id",
+          "is_collection": false
+        }
+      ]
+    }
+  ]
+}

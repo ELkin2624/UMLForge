@@ -22,7 +22,7 @@ import {
   CheckSquare,
   Cloud,
 } from 'lucide-react';
-import { useAuthStore } from '../../../features/auth/store';
+import { useAuthStore, getUserFallbackFromToken } from '../../../features/auth/store';
 import { useShareStore } from '../../../features/sharing/model/share-store';
 import { request } from '../../../api/client';
 
@@ -75,6 +75,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabCategory>('all');
   const user = useAuthStore(s => s.user);
+  const token = useAuthStore(s => s.token);
   const clearAuth = useAuthStore(s => s.clearAuth);
   const { localRole, collaborators, roomId, openShareDialog } = useShareStore();
 
@@ -101,7 +102,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
     openShareDialog();
   };
 
-  const displayName = user?.display_name || user?.username || 'Usuario';
+  const fallbackUser = token ? getUserFallbackFromToken(token) : null;
+  const effectiveUser = user || fallbackUser;
+
+  const displayName = effectiveUser?.display_name || effectiveUser?.username || 'Usuario';
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
@@ -136,7 +140,8 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
         </div>
 
         {/* Tarjeta de Perfil de Usuario */}
-        {user && (
+        {effectiveUser && (
+
           <div className="mobile-user-card">
             <div className="mobile-user-avatar">
               <span>{initial}</span>

@@ -54,6 +54,11 @@ def generate_create_body(
         # 1. Campo de relación foránea
         if field.get("is_relation"):
             target_entity = field.get("target_entity", "")
+            # Si es auto-referencia (ej. Categoria -> Categoria),
+            # NO enviar el campo en la creación inicial de la entidad raíz
+            if target_entity == resource.entity_name:
+                continue
+
             var_name = target_entity[0].lower() + target_entity[1:] + "Id"
             target_id_type = field.get("target_id_type", "Long")
 
