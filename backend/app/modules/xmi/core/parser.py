@@ -144,7 +144,8 @@ def _extract_multiplicity_and_defaults(
         if child_local == "lowerValue":
             lower = child.attrib.get("value", "0")
         elif child_local == "upperValue":
-            upper = child.attrib.get("value", "1")
+            upper_raw = child.attrib.get("value", "1")
+            upper = "*" if str(upper_raw) == "-1" else upper_raw
         elif child_local == "defaultValue":
             default_val = child.attrib.get("value")
 
@@ -163,6 +164,10 @@ def _parse_element_recursive(elem: Any, parent_id: str | None = None) -> XMIElem
     visibility = elem.attrib.get("visibility")
     is_abstract = elem.attrib.get("isAbstract", "false").lower() in ("true", "1")
     is_static = elem.attrib.get("isStatic", "false").lower() in ("true", "1")
+    is_ordered_raw = elem.attrib.get("isOrdered")
+    is_ordered = is_ordered_raw.lower() in ("true", "1") if is_ordered_raw is not None else None
+    is_unique_raw = elem.attrib.get("isUnique")
+    is_unique = is_unique_raw.lower() in ("true", "1") if is_unique_raw is not None else None
     direction = elem.attrib.get("direction")
     aggregation = elem.attrib.get("aggregation")
 
@@ -223,6 +228,8 @@ def _parse_element_recursive(elem: Any, parent_id: str | None = None) -> XMIElem
         visibility=visibility,
         is_abstract=is_abstract,
         is_static=is_static,
+        is_ordered=is_ordered,
+        is_unique=is_unique,
         direction=direction,
         type_ref=type_ref,
         type_name=type_name,

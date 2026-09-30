@@ -1,0 +1,21 @@
+-- Seed data for UML Model
+INSERT INTO vendedors (id, nombre, comision) VALUES (1, 'Carlos', 1) ON CONFLICT (id) DO NOTHING;
+INSERT INTO vendedors (id, nombre, comision) VALUES (2, 'María', 2) ON CONFLICT (id) DO NOTHING;
+INSERT INTO vendedors (id, nombre, comision) VALUES (3, 'Ana', 3) ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('vendedors', 'id'), coalesce(max(id), 1)) FROM vendedors;
+INSERT INTO productos (id, nombre, precio, stock) VALUES (1, 'Laptop Lenovo ThinkPad 14', 1, 10) ON CONFLICT (id) DO NOTHING;
+INSERT INTO productos (id, nombre, precio, stock) VALUES (2, 'Monitor LG UltraGear 27', 2, 25) ON CONFLICT (id) DO NOTHING;
+INSERT INTO productos (id, nombre, precio, stock) VALUES (3, 'Teclado Mecánico RGB', 3, 40) ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('productos', 'id'), coalesce(max(id), 1)) FROM productos;
+INSERT INTO clientes (id, nombre, gmail) VALUES (1, 'Carlos', 'Cliente gmail 1') ON CONFLICT (id) DO NOTHING;
+INSERT INTO clientes (id, nombre, gmail) VALUES (2, 'María', 'Cliente gmail 2') ON CONFLICT (id) DO NOTHING;
+INSERT INTO clientes (id, nombre, gmail) VALUES (3, 'Ana', 'Cliente gmail 3') ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('clientes', 'id'), coalesce(max(id), 1)) FROM clientes;
+INSERT INTO ventas (id, fecha, cliente_id, vendedor_id) VALUES (1, '2025-01-01', 1, 1) ON CONFLICT (id) DO NOTHING;
+INSERT INTO ventas (id, fecha, cliente_id, vendedor_id) VALUES (2, '2025-01-02', 2, 2) ON CONFLICT (id) DO NOTHING;
+INSERT INTO ventas (id, fecha, cliente_id, vendedor_id) VALUES (3, '2025-01-03', 3, 3) ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('ventas', 'id'), coalesce(max(id), 1)) FROM ventas;
+INSERT INTO venta_productos (id, cantidad, preunit, venta_id, producto_id) VALUES (1, 10, 1, 1, 1) ON CONFLICT (id) DO NOTHING;
+INSERT INTO venta_productos (id, cantidad, preunit, venta_id, producto_id) VALUES (2, 25, 2, 2, 2) ON CONFLICT (id) DO NOTHING;
+INSERT INTO venta_productos (id, cantidad, preunit, venta_id, producto_id) VALUES (3, 40, 3, 3, 3) ON CONFLICT (id) DO NOTHING;
+SELECT setval(pg_get_serial_sequence('venta_productos', 'id'), coalesce(max(id), 1)) FROM venta_productos;

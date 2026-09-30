@@ -1,5 +1,5 @@
 """
-Perfil de adaptación XMI 2.5.1 específico para Sparx Systems Enterprise Architect (EA).
+Perfil de adaptación XMI 2.1 específico para Sparx Systems Enterprise Architect (EA).
 Mapea entre el modelo intermedio neutral XMIElement y el CanonicalModel (UMLModel).
 """
 
@@ -62,8 +62,14 @@ def _compute_multiplicity(lower: str | None, upper: str | None) -> str:
         return "1"
     low = "0" if lower is None else str(lower)
     up = "1" if upper is None else str(upper)
+    if up in ("-1", "*"):
+        up = "*"
+    if low in ("-1", "*"):
+        low = "0"
     if low == up:
         return low
+    if low == "0" and up == "*":
+        return "*"
     return f"{low}..{up}"
 
 
@@ -71,54 +77,28 @@ def _parse_multiplicity_bounds(mult: str | None) -> tuple[str, str]:
     if not mult or str(mult).strip() == "":
         return "1", "1"
     m = str(mult).strip()
-    if m == "*":
+    if m in ("*", "-1", "0..-1", "0..*"):
         return "0", "*"
     if ".." in m:
         parts = m.split("..", 1)
         low = parts[0].strip()
         up = parts[1].strip()
-        if low == "*":
+        if low in ("*", "-1"):
             low = "0"
+        if up in ("-1", "*"):
+            up = "*"
         return low, up
     if m == "0":
         return "0", "0"
     return m, m
 
 
-
-EA_PRIMITIVE_TYPE_MAP: dict[str, str] = {
-    "int": "Integer",
-    "integer": "Integer",
-    "smallint": "Integer",
-    "tinyint": "Integer",
-    "long": "Long",
-    "bigint": "Long",
-    "string": "String",
-    "varchar": "String",
-    "char": "String",
-    "text": "String",
-    "nvarchar": "String",
-    "character": "String",
-    "boolean": "Boolean",
-    "bool": "Boolean",
-    "bit": "Boolean",
-    "float": "Double",
-    "double": "Double",
-    "real": "Double",
-    "decimal": "BigDecimal",
-    "numeric": "BigDecimal",
-    "date": "LocalDate",
-    "datetime": "LocalDateTime",
-    "timestamp": "LocalDateTime",
-    "time": "LocalTime",
-    "uuid": "UUID",
-    "byte": "byte",
-    "void": "void",
-}
-
-
 def normalize_ea_type(raw_type: str | None) -> str:
-    """Normaliza un tipo de dato proveniente de Enterprise Architect a un tipo canónico legible."""
+    """
+    Normaliza un tipo de dato proveniente de Enterprise Architect respetando el nombre
+    original del tipo asignado por el usuario (ej. int, char, varchar, number, etc.)
+    tras remover los prefijos específicos de dialecto EA (EAJava_, EAC_, etc.).
+    """
     if not raw_type:
         return "String"
 
@@ -128,15 +108,7 @@ def normalize_ea_type(raw_type: str | None) -> str:
             cleaned = cleaned[len(prefix):]
             break
 
-    lower_key = cleaned.lower()
-    if lower_key in EA_PRIMITIVE_TYPE_MAP:
-        return EA_PRIMITIVE_TYPE_MAP[lower_key]
-
-    # Si es un nombre válido de identificador Java / UML (ej. NombreDeClase)
-    if cleaned.isalnum() or "_" in cleaned:
-        return cleaned
-
-    return "String"
+    return cleaned if cleaned else "String"
 
 
 
@@ -324,6 +296,7 @@ def map_intermediate_to_canonical(
                 elif match_uml_type(child.xmi_type, "Association") or match_uml_type(child.xmi_type, "Generalization"):
                     process_element(child)
 
+            is_assoc_cls = match_uml_type(elem.xmi_type, "AssociationClass")
             classes.append(
                 UMLClass(
                     id=elem_id,
@@ -332,6 +305,7 @@ def map_intermediate_to_canonical(
                     attributes=attributes,
                     operations=operations,
                     owner_id=current_owner_id,
+                    is_association_class=is_assoc_cls,
                 )
             )
 
@@ -513,6 +487,12 @@ def map_intermediate_to_canonical(
                             target_multiplicity="*" if end2_mult == "1" else end2_mult,
                         )
                     )
+
+                    for c in classes:
+                        if c.id == elem_id:
+                            c.association_source_id = str(src_uuid)
+                            c.association_target_id = str(tgt_uuid)
+                            break
                 else:
                     relationships.append(
                         UMLRelationship(
@@ -712,9 +692,47 @@ def canonical_to_ea_intermediate(
             for nested_cls in classes_by_owner[str(cls.id)]:
                 cls_children.append(generate_class_element(nested_cls))
 
+        is_assoc = getattr(cls, "is_association_class", False)
+        xmi_type_val = "uml:AssociationClass" if is_assoc else "uml:Class"
+
+        if is_assoc and cls.association_source_id and cls.association_target_id:
+            src_xmi = id_mapper.register_canonical(cls.association_source_id, prefix="EAID_")
+            tgt_xmi = id_mapper.register_canonical(cls.association_target_id, prefix="EAID_")
+            cls_uuid = UUID(str(cls.id)) if isinstance(cls.id, str) else cls.id
+            end1_id = id_mapper.register_canonical(uuid5(cls_uuid, "end1"), prefix="EAID_")
+            end2_id = id_mapper.register_canonical(uuid5(cls_uuid, "end2"), prefix="EAID_")
+            cls_children.append(
+                XMIElement(
+                    xmi_id=end1_id,
+                    xmi_type="uml:Property",
+                    tag_name="ownedEnd",
+                    name="source",
+                    type_ref=src_xmi,
+                    aggregation="none",
+                    is_ordered=False,
+                    is_unique=True,
+                    lower_value="0",
+                    upper_value="*",
+                )
+            )
+            cls_children.append(
+                XMIElement(
+                    xmi_id=end2_id,
+                    xmi_type="uml:Property",
+                    tag_name="ownedEnd",
+                    name="target",
+                    type_ref=tgt_xmi,
+                    aggregation="none",
+                    is_ordered=False,
+                    is_unique=True,
+                    lower_value="0",
+                    upper_value="*",
+                )
+            )
+
         return XMIElement(
             xmi_id=cls_xmi_id,
-            xmi_type="uml:Class",
+            xmi_type=xmi_type_val,
             tag_name="packagedElement",
             name=cls.name,
             visibility="public",

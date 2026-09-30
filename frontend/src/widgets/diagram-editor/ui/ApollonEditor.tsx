@@ -4,10 +4,8 @@ import { CursorOverlay } from '../../../components/presence/CursorOverlay';
 import { SelectionOverlay } from '../../../components/presence/SelectionOverlay';
 import { useApollonEditor } from '../model/use-apollon-editor';
 
-/**
- * Componente visual del editor de diagramas UML (Apollon) estructurado según FSD.
- * Responsabilidad exclusiva: Renderizar el canvas, overlays de presencia y vincular eventos.
- */
+/** Componente visual del editor de diagramas UML (Apollon) estructurado según FSD.
+ * Responsabilidad exclusiva: Renderizar el canvas, overlays de presencia y vincular eventos. */
 export const ApollonEditor: React.FC = () => {
   const {
     editorRef,

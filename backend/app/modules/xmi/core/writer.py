@@ -1,7 +1,6 @@
 """
 Serializador genérico de modelo intermedio XMI a documento XML conforme a OMG XMI 2.1 / Enterprise Architect.
 """
-
 from typing import Any
 
 from lxml import etree
@@ -50,6 +49,17 @@ def _serialize_element_recursive(parent_xml: Any, elem: XMIElement) -> None:
 
     if elem.is_static:
         xml_elem.set("isStatic", "true")
+
+    # isOrdered e isUnique para Property (evita que Enterprise Architect interprete como {bag})
+    if elem.is_ordered is not None:
+        xml_elem.set("isOrdered", "true" if elem.is_ordered else "false")
+    elif elem.xmi_type == "uml:Property" or tag_name in ("ownedAttribute", "ownedEnd"):
+        xml_elem.set("isOrdered", "false")
+
+    if elem.is_unique is not None:
+        xml_elem.set("isUnique", "true" if elem.is_unique else "false")
+    elif elem.xmi_type == "uml:Property" or tag_name in ("ownedAttribute", "ownedEnd"):
+        xml_elem.set("isUnique", "true")
 
     if elem.direction:
         xml_elem.set("direction", elem.direction)

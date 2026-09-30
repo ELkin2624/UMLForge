@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xmi:XMI xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmi:version="2.1">
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+  <uml:Model xmi:type="uml:Model" xmi:id="EAID_88297286_F7CA_51DE_9CBD_66E336724029" name="UML Model">
+    <packagedElement xmi:id="EAID_98CE5726_E456_4C14_B421_9D73FD0B5214" xmi:type="uml:Class" name="Usuario" visibility="public">
+      <ownedAttribute xmi:id="EAID_4981E278_79BD_40EA_B8E8_55F1F967EB9F" xmi:type="uml:Property" name="id" visibility="private" isOrdered="false" isUnique="true">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#int"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="EAID_262E625A_DBAD_42A5_B322_8EE6431C95B3" xmi:type="uml:Property" name="nombre" visibility="private" isOrdered="false" isUnique="true">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#char"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:id="EAID_30F1EBA6_B4A7_4114_8FED_260A340C9739" xmi:type="uml:Class" name="Rol" visibility="public">
+      <ownedAttribute xmi:id="EAID_EECB8BE0_8EB4_42B5_BF34_D687638E2425" xmi:type="uml:Property" name="id" visibility="private" isOrdered="false" isUnique="true">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#int"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="EAID_07E0EA32_7E54_4E4D_93B4_272D9B4EBD78" xmi:type="uml:Property" name="nombre" visibility="private" isOrdered="false" isUnique="true">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#varchar"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:id="EAID_AC6AF7FD_7EE9_4D22_9FCE_BBF50295CA2B" xmi:type="uml:Class" name="UsuarioRol" visibility="public">
+      <ownedAttribute xmi:id="EAID_C6D6564E_363A_4EE2_8E17_5D8425A8FB34" xmi:type="uml:Property" name="id" visibility="private" isOrdered="false" isUnique="true">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#number"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="EAID_96DA30D1_C351_4173_AA96_C11F47E99E4B" xmi:type="uml:Property" name="usuarioId" visibility="private" isOrdered="false" isUnique="true">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#number"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:id="EAID_C32ACBA8_C035_43FA_91AB_AE38C9DD733E" xmi:type="uml:Property" name="rolId" visibility="private" isOrdered="false" isUnique="true">
+        <type xmi:type="uml:PrimitiveType" href="http://www.omg.org/spec/UML/20131001/PrimitiveTypes.xmi#number"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedAttribute>
+    </packagedElement>
+    <packagedElement xmi:id="EAID_6F2781AE_E47A_47D6_BBB5_CD6C4EBB1C5D" xmi:type="uml:Association" name="Usuario_UsuarioRol">
+      <memberEnd xmi:idref="EAID_49DFA720_C19B_543F_9BCF_0C846ECDDEF2"/>
+      <memberEnd xmi:idref="EAID_6523CAA0_DEAC_59B1_9C86_FA9C2D963B75"/>
+      <ownedEnd xmi:id="EAID_49DFA720_C19B_543F_9BCF_0C846ECDDEF2" xmi:type="uml:Property" name="usuario" isOrdered="false" isUnique="true" association="EAID_6F2781AE_E47A_47D6_BBB5_CD6C4EBB1C5D" type="EAID_98CE5726_E456_4C14_B421_9D73FD0B5214">
+        <type xmi:idref="EAID_98CE5726_E456_4C14_B421_9D73FD0B5214"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="EAID_6523CAA0_DEAC_59B1_9C86_FA9C2D963B75" xmi:type="uml:Property" name="usuariorol" isOrdered="false" isUnique="true" association="EAID_6F2781AE_E47A_47D6_BBB5_CD6C4EBB1C5D" type="EAID_AC6AF7FD_7EE9_4D22_9FCE_BBF50295CA2B">
+        <type xmi:idref="EAID_AC6AF7FD_7EE9_4D22_9FCE_BBF50295CA2B"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="0"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" value="*"/>
+      </ownedEnd>
+    </packagedElement>
+    <packagedElement xmi:id="EAID_5E995E40_BD30_4989_971C_46E754A93D0C" xmi:type="uml:Association" name="Rol_UsuarioRol">
+      <memberEnd xmi:idref="EAID_EBD39383_5B66_5993_8C7B_76DA0EFD8FCC"/>
+      <memberEnd xmi:idref="EAID_7EE0C882_81DB_5F5A_967D_3E4005D7401B"/>
+      <ownedEnd xmi:id="EAID_EBD39383_5B66_5993_8C7B_76DA0EFD8FCC" xmi:type="uml:Property" name="rol" isOrdered="false" isUnique="true" association="EAID_5E995E40_BD30_4989_971C_46E754A93D0C" type="EAID_30F1EBA6_B4A7_4114_8FED_260A340C9739">
+        <type xmi:idref="EAID_30F1EBA6_B4A7_4114_8FED_260A340C9739"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="1"/>
+        <upperValue xmi:type="uml:LiteralInteger" value="1"/>
+      </ownedEnd>
+      <ownedEnd xmi:id="EAID_7EE0C882_81DB_5F5A_967D_3E4005D7401B" xmi:type="uml:Property" name="usuariorol" isOrdered="false" isUnique="true" association="EAID_5E995E40_BD30_4989_971C_46E754A93D0C" type="EAID_AC6AF7FD_7EE9_4D22_9FCE_BBF50295CA2B">
+        <type xmi:idref="EAID_AC6AF7FD_7EE9_4D22_9FCE_BBF50295CA2B"/>
+        <lowerValue xmi:type="uml:LiteralInteger" value="0"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" value="*"/>
+      </ownedEnd>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

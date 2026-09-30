@@ -1,0 +1,72 @@
+{
+  "success": false,
+  "project_name": "uml_model",
+  "total_duration_ms": 127683,
+  "stages": [
+    {
+      "name": "validation",
+      "status": "success",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "generation",
+      "status": "success",
+      "duration_ms": 1718,
+      "error": null,
+      "logs": "Generados 45 archivos."
+    },
+    {
+      "name": "extraction",
+      "status": "success",
+      "duration_ms": 259,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "postgres",
+      "status": "success",
+      "duration_ms": 7954,
+      "error": null,
+      "logs": ""
+    },
+    {
+      "name": "maven",
+      "status": "success",
+      "duration_ms": 18331,
+      "error": null,
+      "logs": "[INFO] Scanning for projects...\n[INFO] \n[INFO] ------------------< com.example.uml_model:uml-model >-------------------\n[INFO] Building uml_model 0.0.1-SNAPSHOT\n[INFO]   from pom.xml\n[INFO] --------------------------------[ jar ]---------------------------------\n[INFO] \n[INFO] --- clean:3.3.2:clean (default-clean) @ uml-model ---\n[INFO] \n[INFO] --- resources:3.3.1:resources (default-resources) @ uml-model ---\n[INFO] Copying 1 resource from src\\main\\resources to target\\classes\n[INFO] Copying 2 resources from src\\main\\resources to target\\classes\n[INFO] \n[INFO] --- compiler:3.11.0:compile (default-compile) @ uml-model ---\n[INFO] Changes detected - recompiling the module! :source\n[INFO] Compiling 27 source files with javac [debug release 21] to target\\classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ uml-model ---\n[INFO] skip non existing resourceDirectory C:\\Users\\apaza\\AppData\\Local\\Temp\\e2e_uml_model_xz4r80l8\\uml_model\\src\\test\\resources\n[INFO] \n[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ uml-model ---\n[INFO] Changes detected - recompiling the module! :dependency\n[INFO] Compiling 4 source files with javac [debug release 21] to target\\test-classes\n[INFO] \n[INFO] --- surefire:3.1.2:test (default-test) @ uml-model ---\n[INFO] Tests are skipped.\n[INFO] \n[INFO] --- jar:3.3.0:jar (default-jar) @ uml-model ---\n[INFO] Building jar: C:\\Users\\apaza\\AppData\\Local\\Temp\\e2e_uml_model_xz4r80l8\\uml_model\\target\\uml-model-0.0.1-SNAPSHOT.jar\n[INFO] \n[INFO] --- spring-boot:3.2.3:repackage (repackage) @ uml-model ---\n[INFO] Replacing main artifact C:\\Users\\apaza\\AppData\\Local\\Temp\\e2e_uml_model_xz4r80l8\\uml_model\\target\\uml-model-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.\n[INFO] The original artifact has been renamed to C:\\Users\\apaza\\AppData\\Local\\Temp\\e2e_uml_model_xz4r80l8\\uml_model\\target\\uml-model-0.0.1-SNAPSHOT.jar.original\n[INFO] ------------------------------------------------------------------------\n[INFO] BUILD SUCCESS\n[INFO] ------------------------------------------------------------------------\n[INFO] Total time:  13.848 s\n[INFO] Finished at: 2026-09-29T00:01:22-03:00\n[INFO] ------------------------------------------------------------------------"
+    },
+    {
+      "name": "spring",
+      "status": "success",
+      "duration_ms": 14,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "health",
+      "status": "success",
+      "duration_ms": 38112,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "newman",
+      "status": "failure",
+      "duration_ms": 58901,
+      "error": "Newman reportó 3 fallos en aserciones.",
+      "logs": "newman\n\nusslhhcarrg API\n\n□ Rol\n└ Create Rol\n  POST http://localhost:8080/api/rols [201 Created, 196B, 337ms]\n  √  Status code is 201\n\n└ List Rols\n  GET http://localhost:8080/api/rols [200 OK, 271B, 279ms]\n  √  Status code is 200\n  √  Response is array\n\n└ Get Rol\n  GET http://localhost:8080/api/rols/1 [200 OK, 190B, 65ms]\n  √  Status code is 200\n  √  Response has id\n\n└ Update Rol\n  PUT http://localhost:8080/api/rols/1 [200 OK, 190B, 70ms]\n  √  Status code is 200\n\n└ Delete Rol\n  DELETE http://localhost:8080/api/rols/1 [500 Internal Server Error, 265B, 131ms]\n  1. Status code is 204\n\n□ Producto\n└ Create Producto\n  POST http://localhost:8080/api/productos [201 Created, 212B, 65ms]\n  √  Status code is 201\n\n└ List Productos\n  GET http://localhost:8080/api/productos [200 OK, 335B, 73ms]\n  √  Status code is 200\n  √  Response is array\n\n└ Get Producto\n  GET http://localhost:8080/api/productos/1 [200 OK, 208B, 19ms]\n  √  Status code is 200\n  √  Response has id\n\n└ Update Producto\n  PUT http://localhost:8080/api/productos/1 [200 OK, 208B, 51ms]\n  √  Status code is 200\n\n└ Delete Producto\n  DELETE http://localhost:8080/api/productos/1 [500 Internal Server Error, 270B, 40ms]\n  2. Status code is 204\n\n□ Usuario\n└ Create Usuario\n  POST http://localhost:8080/api/usuarios [201 Created, 210B, 54ms]\n  √  Status code is 201\n\n└ List Usuarios\n  GET http://localhost:8080/api/usuarios [200 OK, 330B, 40ms]\n  √  Status code is 200\n  √  Response is array\n\n└ Get Usuario\n  GET http://localhost:8080/api/usuarios/1 [200 OK, 205B, 20ms]\n  √  Status code is 200\n  √  Response has id\n\n└ Update Usuario\n  PUT http://localhost:8080/api/usuarios/1 [200 OK, 205B, 55ms]\n  √  Status code is 200\n\n└ Delete Usuario\n  DELETE http://localhost:8080/api/usuarios/1 [500 Internal Server Error, 269B, 34ms]\n  3. Status code is 204\n\n□ UsuarioRol\n└ Create UsuarioRol\n  POST http://localhost:8080/api/usuario_rols [201 Created, 201B, 70ms]\n  √  Status code is 201\n\n└ List UsuarioRols\n  GET http://localhost:8080/api/usuario_rols [200 OK, 297B, 27ms]\n  √  Status code is 200\n  √  Response is array\n\n└ Get UsuarioRol\n  GET http://localhost:8080/api/usuario_rols/1 [200 OK, 196B, 24ms]\n  √  Status code is 200\n  √  Response has id\n\n└ Update UsuarioRol\n  PUT http://localhost:8080/api/usuario_rols/1 [200 OK, 196B, 32ms]\n  √  Status code is 200\n\n└ Delete UsuarioRol\n  DELETE http://localhost:8080/api/usuario_rols/1 [204 No Content, 112B, 53ms]\n  √  Status code is 204\n\n┌─────────────────────────┬───────────────────┬───────────────────┐\n│                         │          executed │            failed │\n├─────────────────────────┼───────────────────┼───────────────────┤\n│              iterations │                 1 │                 0 │\n├─────────────────────────┼───────────────────┼───────────────────┤\n│                requests │                20 │                 0 │\n├─────────────────────────┼───────────────────┼───────────────────┤\n│            test-scripts │                20 │                 0 │\n├─────────────────────────┼───────────────────┼───────────────────┤\n│      prerequest-scripts │                 0 │                 0 │\n├─────────────────────────┼───────────────────┼───────────────────┤\n│              assertions │                28 │                 3 │\n├─────────────────────────┴───────────────────┴───────────────────┤\n│ total run duration: 3.2s                                        │\n├─────────────────────────────────────────────────────────────────┤\n│ total data received: 1.35kB (approx)                            │\n├─────────────────────────────────────────────────────────────────┤\n│ average response time: 76ms [min: 19ms, max: 337ms, s.d.: 81ms] │\n└─────────────────────────────────────────────────────────────────┘\n\n\u001b[31m  # \u001b[39m\u001b[31m failure        \u001b[39m\u001b[31m detail                                                \u001b[39m\n\u001b[90m    \u001b[39m\u001b[90m                \u001b[39m\u001b[90m                                                       \u001b[39m\n 1.  AssertionError  Status code is 204                                    \n                     expected response to have status code 204 but got 500 \n                     at assertion:0 in test-script                         \n                     inside \"Rol / Delete Rol\"                             \n\u001b[90m    \u001b[39m\u001b[90m                \u001b[39m\u001b[90m                                                       \u001b[39m\n 2.  AssertionError  Status code is 204                                    \n                     expected response to have status code 204 but got 500 \n                     at assertion:0 in test-script                         \n                     inside \"Producto / Delete Producto\"                   \n\u001b[90m    \u001b[39m\u001b[90m                \u001b[39m\u001b[90m                                                       \u001b[39m\n 3.  AssertionError  Status code is 204                                    \n                     expected response to have status code 204 but got 500 \n                     at assertion:0 in test-script                         \n                     inside \"Usuario / Delete Usuario\"                     \n(node:13268) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead\n(Use `node --trace-deprecation ...` to show where the warning was created)"
+    }
+  ],
+  "test_summary": {
+    "total": 28,
+    "passed": 25,
+    "failed": 3,
+    "skipped": 0
+  },
+  "zip_path": null,
+  "report_path": "e2e_report_uml_model_20260929_030301.json",
+  "error": "Fallaron las pruebas de integración Postman con Newman."
+}

@@ -35,9 +35,14 @@ def test_intermediate_to_xmi_xml_serialization() -> None:
     assert 'name="TestModel"' in xml_str
     assert 'name="Persona"' in xml_str
     assert 'name="nombre"' in xml_str
+    assert 'isOrdered="false"' in xml_str
+    assert 'isUnique="true"' in xml_str
 
     # Validar que el XML resultante es parseable de vuelta
     reparsed_doc = parse_xmi_to_intermediate(xml_str.encode("utf-8"))
     assert reparsed_doc.model_name == "TestModel"
     assert len(reparsed_doc.root_elements) == 1
     assert reparsed_doc.root_elements[0].name == "Persona"
+    attr_elem = reparsed_doc.root_elements[0].children[0]
+    assert attr_elem.is_ordered is False
+    assert attr_elem.is_unique is True

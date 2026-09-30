@@ -59,3 +59,15 @@ class UMLClass(UMLElement):
     owner_id: str | None = Field(
         default=None, description="ID de la clase dueña si esta clase está anidada"
     )
+    is_association_class: bool = Field(
+        default=False,
+        description="Indica si esta clase actúa como una Clase de Asociación (AssociationClass)",
+    )
+    association_source_id: str | None = Field(
+        default=None,
+        description="ID de la clase origen en la asociación vinculada a esta AssociationClass",
+    )
+    association_target_id: str | None = Field(
+        default=None,
+        description="ID de la clase destino en la asociación vinculada a esta AssociationClass",
+    )

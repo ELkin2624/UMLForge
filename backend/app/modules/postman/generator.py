@@ -74,6 +74,7 @@ def generate_postman_collection(
 
     for res in resources:
         entity_var = to_camel_case(res.entity_name)
+        created_var = f"created{res.entity_name[0].upper() + res.entity_name[1:]}"
 
         items = []
 
@@ -106,7 +107,7 @@ def generate_postman_collection(
             PostmanItem(
                 name=f"Get {res.entity_name}",
                 event=[_create_postman_event("test", generate_get_by_id_test_script())],
-                request=_build_request("GET", _build_url(res.route, entity_var)),
+                request=_build_request("GET", _build_url(res.route, created_var)),
             )
         )
 
@@ -116,7 +117,7 @@ def generate_postman_collection(
                 name=f"Update {res.entity_name}",
                 event=[_create_postman_event("test", generate_update_test_script())],
                 request=_build_request(
-                    "PUT", _build_url(res.route, entity_var), generate_update_body(res, domain)
+                    "PUT", _build_url(res.route, created_var), generate_update_body(res, domain)
                 ),
             )
         )
@@ -126,7 +127,7 @@ def generate_postman_collection(
             PostmanItem(
                 name=f"Delete {res.entity_name}",
                 event=[_create_postman_event("test", generate_delete_test_script())],
-                request=_build_request("DELETE", _build_url(res.route, entity_var)),
+                request=_build_request("DELETE", _build_url(res.route, created_var)),
             )
         )
 

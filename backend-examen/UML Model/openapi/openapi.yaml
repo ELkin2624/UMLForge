@@ -1,0 +1,205 @@
+openapi: 3.0.1
+info:
+  title: UML Model API
+  version: 1.0.0
+paths:
+  "/api/vendedors":
+    get:
+      summary: Get all Vendedors
+      tags:
+        - Vendedor
+      responses:
+        "200":
+          description: OK
+  "/api/vendedors/{id}":
+    get:
+      summary: Get Vendedor by ID
+      tags:
+        - Vendedor
+      responses:
+        "200":
+          description: OK
+  "/api/vendedors":
+    post:
+      summary: Create Vendedor
+      tags:
+        - Vendedor
+      responses:
+        "200":
+          description: OK
+  "/api/vendedors/{id}":
+    put:
+      summary: Update Vendedor
+      tags:
+        - Vendedor
+      responses:
+        "200":
+          description: OK
+  "/api/vendedors/{id}":
+    delete:
+      summary: Delete Vendedor
+      tags:
+        - Vendedor
+      responses:
+        "200":
+          description: OK
+  "/api/productos":
+    get:
+      summary: Get all Productos
+      tags:
+        - Producto
+      responses:
+        "200":
+          description: OK
+  "/api/productos/{id}":
+    get:
+      summary: Get Producto by ID
+      tags:
+        - Producto
+      responses:
+        "200":
+          description: OK
+  "/api/productos":
+    post:
+      summary: Create Producto
+      tags:
+        - Producto
+      responses:
+        "200":
+          description: OK
+  "/api/productos/{id}":
+    put:
+      summary: Update Producto
+      tags:
+        - Producto
+      responses:
+        "200":
+          description: OK
+  "/api/productos/{id}":
+    delete:
+      summary: Delete Producto
+      tags:
+        - Producto
+      responses:
+        "200":
+          description: OK
+  "/api/clientes":
+    get:
+      summary: Get all Clientes
+      tags:
+        - Cliente
+      responses:
+        "200":
+          description: OK
+  "/api/clientes/{id}":
+    get:
+      summary: Get Cliente by ID
+      tags:
+        - Cliente
+      responses:
+        "200":
+          description: OK
+  "/api/clientes":
+    post:
+      summary: Create Cliente
+      tags:
+        - Cliente
+      responses:
+        "200":
+          description: OK
+  "/api/clientes/{id}":
+    put:
+      summary: Update Cliente
+      tags:
+        - Cliente
+      responses:
+        "200":
+          description: OK
+  "/api/clientes/{id}":
+    delete:
+      summary: Delete Cliente
+      tags:
+        - Cliente
+      responses:
+        "200":
+          description: OK
+  "/api/ventas":
+    get:
+      summary: Get all Ventas
+      tags:
+        - Venta
+      responses:
+        "200":
+          description: OK
+  "/api/ventas/{id}":
+    get:
+      summary: Get Venta by ID
+      tags:
+        - Venta
+      responses:
+        "200":
+          description: OK
+  "/api/ventas":
+    post:
+      summary: Create Venta
+      tags:
+        - Venta
+      responses:
+        "200":
+          description: OK
+  "/api/ventas/{id}":
+    put:
+      summary: Update Venta
+      tags:
+        - Venta
+      responses:
+        "200":
+          description: OK
+  "/api/ventas/{id}":
+    delete:
+      summary: Delete Venta
+      tags:
+        - Venta
+      responses:
+        "200":
+          description: OK
+  "/api/venta_productos":
+    get:
+      summary: Get all VentaProductos
+      tags:
+        - VentaProducto
+      responses:
+        "200":
+          description: OK
+  "/api/venta_productos/{id}":
+    get:
+      summary: Get VentaProducto by ID
+      tags:
+        - VentaProducto
+      responses:
+        "200":
+          description: OK
+  "/api/venta_productos":
+    post:
+      summary: Create VentaProducto
+      tags:
+        - VentaProducto
+      responses:
+        "200":
+          description: OK
+  "/api/venta_productos/{id}":
+    put:
+      summary: Update VentaProducto
+      tags:
+        - VentaProducto
+      responses:
+        "200":
+          description: OK
+  "/api/venta_productos/{id}":
+    delete:
+      summary: Delete VentaProducto
+      tags:
+        - VentaProducto
+      responses:
+        "200":
+          description: OK

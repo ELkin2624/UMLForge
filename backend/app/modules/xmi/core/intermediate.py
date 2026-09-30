@@ -1,15 +1,13 @@
 """
 Modelos neutrales intermedios para representación de elementos XMI desacoplados de XML y CanonicalModel.
 """
-
 from pydantic import BaseModel, ConfigDict, Field
 
 
 class XMIElement(BaseModel):
     """
-    Representación neutral de un nodo o elemento XMI 2.5.1.
+    Representación neutral de un nodo o elemento XMI 2.1.
     """
-
     xmi_id: str = Field(..., description="Identificador XMI del elemento")
     xmi_type: str = Field(..., description="Tipo UML/XMI del elemento (ej. uml:Class)")
     tag_name: str = Field(..., description="Nombre local de la etiqueta XML original")
@@ -17,6 +15,12 @@ class XMIElement(BaseModel):
     visibility: str | None = Field(default=None, description="Visibilidad declarada")
     is_abstract: bool = Field(default=False, description="Indica si es abstracto")
     is_static: bool = Field(default=False, description="Indica si es estático")
+    is_ordered: bool | None = Field(
+        default=None, description="Indica si la propiedad es ordenada (isOrdered)"
+    )
+    is_unique: bool | None = Field(
+        default=None, description="Indica si los elementos son únicos (isUnique)"
+    )
     direction: str | None = Field(
         default=None, description="Dirección del parámetro (in, out, return, etc.)"
     )

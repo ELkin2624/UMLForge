@@ -9,6 +9,8 @@ def generate_collection_variables(
     if postman_defaults:
         for key, val in postman_defaults.items():
             vars_list.append(PostmanVariable(key=key, value=str(val), type="string"))
+            cap_key = "created" + key[0].upper() + key[1:]
+            vars_list.append(PostmanVariable(key=cap_key, value=str(val), type="string"))
 
     return vars_list
 
@@ -21,5 +23,7 @@ def generate_environment_values(
     if postman_defaults:
         for key, val in postman_defaults.items():
             vars_list.append(PostmanVariable(key=key, value=str(val), type="string"))
+            cap_key = "created" + key[0].upper() + key[1:]
+            vars_list.append(PostmanVariable(key=cap_key, value=str(val), type="string"))
 
     return vars_list

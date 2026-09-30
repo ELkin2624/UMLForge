@@ -224,3 +224,98 @@ def test_self_referencing_category_generation_e2e():
     postman_coll = file_map["postman/store.postman_collection.json"]
     assert '"categoriaId":' not in postman_coll
 
+
+def test_junction_entity_with_explicit_fk_attributes_e2e():
+    """
+    Verifica que cuando una entidad intermedia (como UsuarioRol) tiene atributos explicitos
+    como 'rolId' o 'usuarioId' además de relaciones ManyToOne con Rol y Usuario,
+    el generador no duplica los campos ni los getters/setters en DTOs, entidades ni servicios.
+    """
+    u_id = _uid()
+    r_id = _uid()
+    ur_id = _uid()
+
+    usuario = UMLClass(
+        id=u_id,
+        name="Usuario",
+        attributes=[
+            UMLAttribute(id=_uid(), name="id", type="int", is_primary_key=True),
+            UMLAttribute(id=_uid(), name="nombre", type="varchar", is_nullable=False),
+        ],
+    )
+
+    rol = UMLClass(
+        id=r_id,
+        name="Rol",
+        attributes=[
+            UMLAttribute(id=_uid(), name="id", type="int", is_primary_key=True),
+            UMLAttribute(id=_uid(), name="nombre", type="varchar", is_nullable=False),
+        ],
+    )
+
+    usuario_rol = UMLClass(
+        id=ur_id,
+        name="UsuarioRol",
+        attributes=[
+            UMLAttribute(id=_uid(), name="id", type="number", is_primary_key=True),
+            UMLAttribute(id=_uid(), name="rolId", type="number"),
+            UMLAttribute(id=_uid(), name="usuarioId", type="number"),
+        ],
+    )
+
+    rel_rol = UMLRelationship(
+        id=_uid(),
+        name="rol",
+        source=ur_id,
+        target=r_id,
+        source_multiplicity="*",
+        target_multiplicity="1",
+        type=RelationshipKind.ASSOCIATION,
+    )
+
+    rel_usr = UMLRelationship(
+        id=_uid(),
+        name="usuario",
+        source=ur_id,
+        target=u_id,
+        source_multiplicity="*",
+        target_multiplicity="1",
+        type=RelationshipKind.ASSOCIATION,
+    )
+
+    model = UMLModel(
+        id="UMLModelTest",
+        name="uml_model",
+        classes=[usuario, rol, usuario_rol],
+        relationships=[rel_rol, rel_usr],
+    )
+
+    from pathlib import Path
+    templates_dir = Path(__file__).parents[2] / "app" / "modules" / "generator" / "templates"
+    generator = ProjectGenerator(templates_dir=templates_dir)
+    generated = generator.generate(model, "uml_model", "com.example.uml_model")
+
+    file_map = {f.path: f.content for f in generated.files}
+
+    # 1. UsuarioRolRequest.java: debe tener exactamente UNA declaración de rolId y usuarioId
+    req_java = file_map["src/main/java/com/example/uml_model/dto/request/UsuarioRolRequest.java"]
+    assert req_java.count("private Integer rolId;") == 1
+    assert req_java.count("private Integer usuarioId;") == 1
+    assert req_java.count("public Integer getRolId()") == 1
+    assert req_java.count("public Integer getUsuarioId()") == 1
+
+    # 2. UsuarioRolResponse.java: debe tener exactamente UNA declaración de rolId y usuarioId
+    res_java = file_map["src/main/java/com/example/uml_model/dto/response/UsuarioRolResponse.java"]
+    assert res_java.count("private Integer rolId;") == 1
+    assert res_java.count("private Integer usuarioId;") == 1
+    assert res_java.count("public Integer getRolId()") == 1
+    assert res_java.count("public Integer getUsuarioId()") == 1
+
+    # 3. UsuarioRol.java (Entity): debe tener relaciones @ManyToOne y no campos @Column rolId duplicados
+    ent_java = file_map["src/main/java/com/example/uml_model/entity/UsuarioRol.java"]
+    assert "@Column(name = \"rolId\"" not in ent_java
+    assert "@Column(name = \"usuarioId\"" not in ent_java
+    assert "@JoinColumn(name = \"rol_id\")" in ent_java
+    assert "@JoinColumn(name = \"usuario_id\")" in ent_java
+
+

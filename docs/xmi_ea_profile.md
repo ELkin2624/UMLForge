@@ -79,7 +79,9 @@ Cualquier otro elemento (ej. `uml:Activity`, `uml:UseCase`, `uml:State`, `uml:No
   - `<generalization>` → Herencia.
 
 ### 4.2 Atributos / Propiedades (`uml:Property`)
-- **Etiqueta:** `<ownedAttribute xmi:type="uml:Property" xmi:id="..." name="..." visibility="..." isStatic="...">`
+- **Etiqueta:** `<ownedAttribute xmi:type="uml:Property" xmi:id="..." name="..." visibility="..." isStatic="..." isOrdered="false" isUnique="true">`
+- **Modificadores de Colección:**
+  - `isOrdered="false"` y `isUnique="true"` para evitar que Enterprise Architect asuma por defecto que permite duplicados y renderice `{bag}`.
 - **Tipo de dato (`type`):**
   - Si es primitivo: `<type xmi:type="uml:PrimitiveType" href=".../PrimitiveTypes.xmi#String"/>` o atributo `type="String"`.
   - Si es referencia a clase: `type="EAID_TargetClassId"` o `<type xmi:idref="..."/>`.

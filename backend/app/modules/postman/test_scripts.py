@@ -1,4 +1,5 @@
 def generate_create_test_script(entity_var: str) -> list[str]:
+    cap_entity = entity_var[0].upper() + entity_var[1:]
     return [
         'pm.test("Status code is 201", function () {',
         "    pm.response.to.have.status(201);",
@@ -7,7 +8,10 @@ def generate_create_test_script(entity_var: str) -> list[str]:
         "    const json = pm.response.json();",
         f'    pm.collectionVariables.set("{entity_var}Id", json.id);',
         f'    const resolvedId = (json && (json.id !== undefined ? json.id : json.Id));',
-        f'    if (resolvedId !== undefined) pm.collectionVariables.set("{entity_var}Id", resolvedId);',
+        f'    if (resolvedId !== undefined) {{',
+        f'        pm.collectionVariables.set("created{cap_entity}Id", resolvedId);',
+        f'        try {{ pm.environment.set("created{cap_entity}Id", resolvedId); }} catch (e) {{}}',
+        f'    }}',
         "}",
     ]
 

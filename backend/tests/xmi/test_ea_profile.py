@@ -236,14 +236,14 @@ def test_association_class_and_ea_types() -> None:
     # Must NOT contain ownedEnd as fake attributes
     assert len(detalle.attributes) == 1
     assert detalle.attributes[0].name == "cantidad"
-    assert detalle.attributes[0].type == "Integer"
+    assert detalle.attributes[0].type == "int"
 
     prod = next(c for c in model.classes if c.name == "Producto")
-    assert prod.attributes[0].type == "Integer"
-    assert prod.attributes[1].type == "String"
+    assert prod.attributes[0].type == "int"
+    assert prod.attributes[1].type == "varchar"
 
     fact = next(c for c in model.classes if c.name == "Factura")
-    assert fact.attributes[0].type == "LocalDate"
+    assert fact.attributes[0].type == "date"
 
     # Must have 2 relationships connecting DetalleFactura to Factura and Producto
     assert len(model.relationships) == 2

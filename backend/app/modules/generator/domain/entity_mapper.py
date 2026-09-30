@@ -21,47 +21,10 @@ class EntityMapper:
         for uml_class in model.classes:
             table_name = cls._to_snake_case(uml_class.name) + "s"
 
-            # Buscar el campo ID (suponemos que hay uno llamado 'id', o lo generamos)
-            id_field = None
-            fields = []
-
-            for attr in uml_class.attributes:
-                field_info = FieldInfo(
-                    name=attr.name,
-                    java_type=TypeMapper.get_java_type(attr.type),
-                    sql_type=TypeMapper.get_sql_type(attr.type),
-                    is_primary_key=attr.is_primary_key,
-                    is_nullable=attr.is_nullable,
-                    min_length=attr.min_length,
-                    max_length=attr.max_length,
-                    min_value=attr.min_value,
-                    max_value=attr.max_value,
-                )
-
-                if attr.is_primary_key or attr.name.lower() == "id":
-                    if not id_field:
-                        field_info.is_primary_key = True
-                        if attr.name.lower() == "id":
-                            field_info.name = "id"
-                        id_field = field_info
-                    else:
-                        fields.append(field_info)
-                else:
-                    fields.append(field_info)
-
-            if not id_field:
-                id_field = FieldInfo(
-                    name="id",
-                    java_type="Long",
-                    sql_type="BIGINT",
-                    is_primary_key=True,
-                    is_nullable=False,
-                )
-
-            # Mapear relaciones y herencia
+            # 1. Mapear relaciones y herencia primero
             relations = []
             parent_class = None
-            
+
             for rel in model.relationships:
                 if rel.type == "generalization":
                     if str(rel.source) == str(uml_class.id):
@@ -92,6 +55,52 @@ class EntityMapper:
                     if r.relation_kind == "MANY_TO_MANY":
                         r.mapped_by += "s"
 
+            # 2. Buscar el campo ID y mapear atributos ordinarios (excluyendo FKs de relaciones y duplicados)
+            id_field = None
+            fields = []
+            seen_field_names = set()
+
+            for attr in uml_class.attributes:
+                field_info = FieldInfo(
+                    name=attr.name,
+                    java_type=TypeMapper.get_java_type(attr.type),
+                    sql_type=TypeMapper.get_sql_type(attr.type),
+                    is_primary_key=attr.is_primary_key,
+                    is_nullable=attr.is_nullable,
+                    min_length=attr.min_length,
+                    max_length=attr.max_length,
+                    min_value=attr.min_value,
+                    max_value=attr.max_value,
+                )
+
+                if attr.is_primary_key or attr.name.lower() == "id":
+                    if not id_field:
+                        field_info.is_primary_key = True
+                        if attr.name.lower() == "id":
+                            field_info.name = "id"
+                        id_field = field_info
+                    continue
+
+                # Si el atributo es una FK redundante de una relación @ManyToOne/@OneToOne propietaria, omitir
+                if cls._is_fk_attribute(attr.name, relations):
+                    continue
+
+                norm_name = attr.name.lower().replace("_", "")
+                if norm_name in seen_field_names:
+                    continue
+                seen_field_names.add(norm_name)
+
+                fields.append(field_info)
+
+            if not id_field:
+                id_field = FieldInfo(
+                    name="id",
+                    java_type="Long",
+                    sql_type="BIGINT",
+                    is_primary_key=True,
+                    is_nullable=False,
+                )
+
             resource_path = table_name
 
             entity_info = EntityInfo(
@@ -118,6 +127,44 @@ class EntityMapper:
                     rel.target_table = target_ent.table_name
 
         return entities
+
+    @classmethod
+    def _is_fk_attribute(cls, attr_name: str, relations: list) -> bool:
+        if attr_name.lower() == "id":
+            return False
+
+        def normalize(val: str) -> str:
+            return val.lower().replace("_", "").replace("-", "").strip()
+
+        norm_attr = normalize(attr_name)
+
+        for rel in relations:
+            if not rel.persistence_owner:
+                continue
+            if rel.relation_kind not in ("MANY_TO_ONE", "ONE_TO_ONE"):
+                continue
+
+            target_name = normalize(rel.target_entity)
+            rel_name = normalize(rel.name)
+            join_col = normalize(rel.join_column) if rel.join_column else ""
+
+            candidates = {
+                f"{target_name}id",
+                f"id{target_name}",
+                f"{rel_name}id",
+                f"id{rel_name}",
+                target_name,
+                rel_name,
+            }
+            if join_col:
+                candidates.add(join_col)
+                if not join_col.endswith("id"):
+                    candidates.add(f"{join_col}id")
+
+            if norm_attr in candidates:
+                return True
+
+        return False
 
     @staticmethod
     def _to_snake_case(name: str) -> str:

@@ -21,6 +21,9 @@ export interface UMLClass {
   attributes: UMLAttribute[];
   operations: UMLOperation[];
   owner_id?: string; // Para soportar nesting de clases
+  is_association_class?: boolean;
+  association_source_id?: string;
+  association_target_id?: string;
 }
 
 export interface UMLRelationship {
