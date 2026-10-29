@@ -9,38 +9,61 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  ScrollView,
 } from 'react-native';
-import { HolstTheme } from '@umlforge/ui';
 import { useApp } from '../../src/AppContext';
 
 interface ChatMessage {
   id: string;
-  sender: 'user' | 'assistant';
+  sender: 'user' | 'assistant' | 'system';
   text: string;
+  timestamp?: string;
 }
 
 export default function ChatScreen() {
-  const { orchestrator, manifest, activeDriverName } = useApp();
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      sender: 'assistant',
-      text: `¡Hola! Soy el asistente inteligente de ${manifest.display_name}. Puedes preguntarme sobre los servicios, catálogo de cortes, citas o personal registrado.`,
-    },
-  ]);
+  const { manifest } = useApp();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [currentStep, setCurrentStep] = useState<string | null>(null);
   const flatListRef = useRef<any>(null);
 
-  const [pendingConfirmation, setPendingConfirmation] = useState<any | null>(null);
+  const API_URL = 'http://10.0.2.2:8000/api/v1'; // 10.0.2.2 para Android emulator
+  const diagramId = manifest.id || '1';
+  const userId = 'mobile_user';
+  const userName = 'Desarrollador Móvil';
 
-  const quickPrompts = [
-    '¿Qué cortes de pelo tienen disponibles?',
-    '¿Cuáles son los barberos del local?',
-    '¿Qué citas están agendadas?',
-  ];
+  // Cargar historial privado del usuario
+  async function loadHistory() {
+    try {
+      const res = await fetch(`${API_URL}/ai/history/${diagramId}?user_id=${userId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          const mapped: ChatMessage[] = data.map((m: any, idx: number) => ({
+            id: String(idx),
+            sender: m.role === 'user' ? 'user' : 'assistant',
+            text: m.content,
+            timestamp: m.timestamp,
+          }));
+          setMessages(mapped);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Error loading private history:', err);
+    }
+
+    setMessages([
+      {
+        id: 'welcome',
+        sender: 'assistant',
+        text: `¡Hola! Soy tu Arquitecto IA Omnisciente en ${manifest.display_name}. Tu chat es privado, pero conozco las decisiones de arquitectura de todo el equipo en el lienzo.`,
+      },
+    ]);
+  }
+
+  useEffect(() => {
+    loadHistory();
+  }, []);
 
   async function handleSend(textToSend?: string) {
     const text = (textToSend || inputText).trim();
@@ -50,93 +73,45 @@ export default function ChatScreen() {
       id: String(Date.now()),
       sender: 'user',
       text,
+      timestamp: new Date().toISOString(),
     };
 
-    setMessages((prev: ChatMessage[]) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInputText('');
     setIsProcessing(true);
-    setCurrentStep('Iniciando inferencia...');
 
     try {
-      const result = await orchestrator.processUserMessage(text, (step: string) => {
-        setCurrentStep(step);
+      const res = await fetch(`${API_URL}/ai/collaborate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          diagram_id: String(diagramId),
+          user_id: userId,
+          user_name: userName,
+          prompt: text,
+          current_canvas_snapshot: {},
+        }),
       });
 
-      const assistantMsg: ChatMessage = {
-        id: String(Date.now() + 1),
-        sender: 'assistant',
-        text: result.content,
-      };
-
-      setMessages((prev: ChatMessage[]) => [...prev, assistantMsg]);
-
-      if (result.pendingConfirmation) {
-        setPendingConfirmation(result.pendingConfirmation);
+      if (res.ok) {
+        const data = await res.json();
+        const aiMsg: ChatMessage = {
+          id: String(Date.now() + 1),
+          sender: 'assistant',
+          text: data.reply,
+          timestamp: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, aiMsg]);
       } else {
-        setPendingConfirmation(null);
+        throw new Error('Respuesta no satisfactoria del servidor');
       }
     } catch (err: any) {
-      setMessages((prev: ChatMessage[]) => [
+      setMessages((prev) => [
         ...prev,
         {
           id: String(Date.now() + 1),
-          sender: 'assistant',
-          text: `Hubo un inconveniente al procesar tu solicitud: ${err.message}`,
-        },
-      ]);
-    } finally {
-      setIsProcessing(false);
-      setCurrentStep(null);
-    }
-  }
-
-  async function handleConfirmAction() {
-    if (!pendingConfirmation || isProcessing) return;
-    setIsProcessing(true);
-    setCurrentStep('Ejecutando operación autorizada...');
-
-    try {
-      const result = await orchestrator.confirmPendingToolCall((step: string) => {
-        setCurrentStep(step);
-      });
-
-      setPendingConfirmation(null);
-      setMessages((prev: ChatMessage[]) => [
-        ...prev,
-        {
-          id: String(Date.now()),
-          sender: 'assistant',
-          text: result.content,
-        },
-      ]);
-    } catch (err: any) {
-      setMessages((prev: ChatMessage[]) => [
-        ...prev,
-        {
-          id: String(Date.now()),
-          sender: 'assistant',
-          text: `Error al ejecutar operación: ${err.message}`,
-        },
-      ]);
-    } finally {
-      setIsProcessing(false);
-      setCurrentStep(null);
-    }
-  }
-
-  async function handleCancelAction() {
-    if (!pendingConfirmation || isProcessing) return;
-    setIsProcessing(true);
-
-    try {
-      const result = await orchestrator.cancelPendingToolCall('El usuario rechazó la confirmación en pantalla');
-      setPendingConfirmation(null);
-      setMessages((prev: ChatMessage[]) => [
-        ...prev,
-        {
-          id: String(Date.now()),
-          sender: 'assistant',
-          text: result.content,
+          sender: 'system',
+          text: `⚠️ Error al conectar con el Arquitecto IA: ${err.message || 'Servidor no disponible'}`,
         },
       ]);
     } finally {
@@ -150,110 +125,58 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
-      {/* Driver Indicator Banner */}
-      <View style={styles.topBanner}>
-        <Text style={styles.topBannerText}>
-          ⚡ Motor On-Device: <Text style={styles.bold}>{activeDriverName}</Text>
-        </Text>
+      <View style={styles.privacyBanner}>
+        <Text style={styles.privacyText}>🔒 Chat Privado • Conectado a Memoria Cognitiva Compartida</Text>
       </View>
 
-      {/* Mensajes */}
       <FlatList
         ref={flatListRef}
         data={messages}
-        keyExtractor={(item: ChatMessage) => item.id}
-        contentContainerStyle={styles.messagesList}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.messageList}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-        renderItem={({ item }: { item: ChatMessage }) => {
+        renderItem={({ item }) => {
           const isUser = item.sender === 'user';
+          const isSystem = item.sender === 'system';
+
+          if (isSystem) {
+            return (
+              <View style={styles.systemBubble}>
+                <Text style={styles.systemText}>{item.text}</Text>
+              </View>
+            );
+          }
+
           return (
-            <View
-              style={[
-                styles.messageBubble,
-                isUser ? styles.userBubble : styles.assistantBubble,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.messageText,
-                  isUser ? styles.userText : styles.assistantText,
-                ]}
-              >
-                {item.text}
-              </Text>
+            <View style={[styles.bubbleWrapper, isUser ? styles.bubbleRight : styles.bubbleLeft]}>
+              <View style={[styles.bubble, isUser ? styles.userBubble : styles.aiBubble]}>
+                <Text style={[styles.messageText, isUser ? styles.userText : styles.aiText]}>
+                  {item.text}
+                </Text>
+              </View>
             </View>
           );
         }}
       />
 
-      {/* Banner de Estado de Tool Calling */}
-      {isProcessing && currentStep && (
-        <View style={styles.stepBanner}>
-          <ActivityIndicator size="small" color={HolstTheme.colors.primary700} />
-          <Text style={styles.stepText}>{currentStep}</Text>
+      {isProcessing && (
+        <View style={styles.typingIndicator}>
+          <ActivityIndicator size="small" color="#8B5CF6" />
+          <Text style={styles.typingText}>Arquitecto IA consultando memoria compartida...</Text>
         </View>
       )}
 
-      {/* Sugerencias Rápidas */}
-      <View style={styles.quickPromptsContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {quickPrompts.map((prompt, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.promptChip}
-              onPress={() => handleSend(prompt)}
-              disabled={isProcessing}
-            >
-              <Text style={styles.promptText}>{prompt}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Tarjeta de Confirmación Humana Requerida (Human-In-The-Loop) */}
-      {pendingConfirmation && (
-        <View style={styles.confirmBox}>
-          <Text style={styles.confirmTitle}>
-            ⚠️ Confirmación Requerida ({pendingConfirmation.actionType})
-          </Text>
-          <Text style={styles.confirmDesc}>
-            {pendingConfirmation.description}
-          </Text>
-          <Text style={styles.confirmParams}>
-            Parámetros: {JSON.stringify(pendingConfirmation.arguments)}
-          </Text>
-          <View style={styles.confirmActions}>
-            <TouchableOpacity
-              style={[styles.confirmBtn, styles.cancelBtn]}
-              onPress={handleCancelAction}
-              disabled={isProcessing}
-            >
-              <Text style={styles.cancelBtnText}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.confirmBtn, styles.actionBtn]}
-              onPress={handleConfirmAction}
-              disabled={isProcessing}
-            >
-              <Text style={styles.actionBtnText}>Confirmar y Ejecutar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-
-      {/* Input de Mensaje */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Escribe una pregunta sobre el negocio..."
-          placeholderTextColor={HolstTheme.colors.textMuted}
+          placeholder="Escribe tu consulta arquitectónica..."
+          placeholderTextColor="#64748b"
           value={inputText}
           onChangeText={setInputText}
-          onSubmitEditing={() => handleSend()}
           editable={!isProcessing}
         />
         <TouchableOpacity
-          style={[styles.sendButton, !inputText.trim() || isProcessing ? styles.sendButtonDisabled : null]}
+          style={[styles.sendButton, (!inputText.trim() || isProcessing) && styles.sendButtonDisabled]}
           onPress={() => handleSend()}
           disabled={!inputText.trim() || isProcessing}
         >
@@ -267,169 +190,115 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: HolstTheme.colors.background,
+    backgroundColor: '#0f131c',
   },
-  topBanner: {
-    backgroundColor: HolstTheme.colors.surfaceSubtle,
-    paddingVertical: 6,
-    paddingHorizontal: HolstTheme.spacing.md,
+  privacyBanner: {
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
     borderBottomWidth: 1,
-    borderBottomColor: HolstTheme.colors.border,
+    borderBottomColor: 'rgba(139, 92, 246, 0.25)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
     alignItems: 'center',
   },
-  topBannerText: {
+  privacyText: {
     fontSize: 11,
-    color: HolstTheme.colors.primary900,
+    color: '#c4b5fd',
+    fontWeight: '500',
   },
-  bold: {
-    fontWeight: 'bold',
+  messageList: {
+    padding: 14,
+    gap: 10,
   },
-  messagesList: {
-    padding: HolstTheme.spacing.md,
-    gap: HolstTheme.spacing.sm,
+  bubbleWrapper: {
+    marginBottom: 6,
+    flexDirection: 'row',
   },
-  messageBubble: {
+  bubbleRight: {
+    justifyContent: 'flex-end',
+  },
+  bubbleLeft: {
+    justifyContent: 'flex-start',
+  },
+  bubble: {
     maxWidth: '82%',
     padding: 12,
-    borderRadius: HolstTheme.borderRadius.md,
-    marginBottom: 4,
+    borderRadius: 14,
   },
   userBubble: {
-    alignSelf: 'flex-end',
-    backgroundColor: HolstTheme.colors.primary700,
+    backgroundColor: '#3b82f6',
     borderBottomRightRadius: 2,
   },
-  assistantBubble: {
-    alignSelf: 'flex-start',
-    backgroundColor: HolstTheme.colors.surface,
+  aiBubble: {
+    backgroundColor: '#1a1f2e',
+    borderColor: 'rgba(139, 92, 246, 0.3)',
     borderWidth: 1,
-    borderColor: HolstTheme.colors.border,
     borderBottomLeftRadius: 2,
   },
+  systemBubble: {
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  systemText: {
+    fontSize: 11,
+    color: '#94a3b8',
+  },
   messageText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 18,
   },
   userText: {
-    color: '#FFF',
+    color: '#ffffff',
   },
-  assistantText: {
-    color: HolstTheme.colors.textMain,
+  aiText: {
+    color: '#f1f5f9',
   },
-  stepBanner: {
+  typingIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: HolstTheme.colors.primary100,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderTopWidth: 1,
-    borderTopColor: HolstTheme.colors.primary300,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
-  stepText: {
-    fontSize: 12,
-    color: HolstTheme.colors.primary900,
-    fontWeight: '500',
-  },
-  quickPromptsContainer: {
-    paddingHorizontal: HolstTheme.spacing.md,
-    paddingVertical: 6,
-    backgroundColor: HolstTheme.colors.background,
-  },
-  promptChip: {
-    backgroundColor: HolstTheme.colors.surface,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: HolstTheme.borderRadius.full,
-    borderWidth: 1,
-    borderColor: HolstTheme.colors.border,
-    marginRight: 8,
-  },
-  promptText: {
-    fontSize: 12,
-    color: HolstTheme.colors.primary800,
+  typingText: {
+    fontSize: 11,
+    color: '#c4b5fd',
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    padding: HolstTheme.spacing.sm,
-    backgroundColor: HolstTheme.colors.surface,
+    padding: 10,
+    backgroundColor: '#141824',
     borderTopWidth: 1,
-    borderTopColor: HolstTheme.colors.border,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    alignItems: 'center',
+    gap: 8,
   },
   input: {
     flex: 1,
-    height: 42,
-    backgroundColor: HolstTheme.colors.surfaceSubtle,
-    borderRadius: HolstTheme.borderRadius.full,
-    paddingHorizontal: 16,
-    fontSize: 14,
-    color: HolstTheme.colors.textMain,
+    backgroundColor: '#0b0e14',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 8,
+    color: '#ffffff',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 13,
   },
   sendButton: {
-    marginLeft: 8,
-    backgroundColor: HolstTheme.colors.primary700,
-    paddingHorizontal: 16,
+    backgroundColor: '#8B5CF6',
+    paddingHorizontal: 14,
     paddingVertical: 10,
-    borderRadius: HolstTheme.borderRadius.full,
+    borderRadius: 8,
   },
   sendButtonDisabled: {
     opacity: 0.5,
   },
   sendButtonText: {
-    color: '#FFF',
-    fontWeight: 'bold',
-    fontSize: 13,
-  },
-  confirmBox: {
-    backgroundColor: '#FEF3C7',
-    borderWidth: 1,
-    borderColor: '#F59E0B',
-    borderRadius: HolstTheme.borderRadius.md,
-    margin: HolstTheme.spacing.sm,
-    padding: HolstTheme.spacing.md,
-  },
-  confirmTitle: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#92400E',
-    marginBottom: 4,
-  },
-  confirmDesc: {
-    fontSize: 12,
-    color: '#78350F',
-    marginBottom: 4,
-  },
-  confirmParams: {
-    fontSize: 11,
-    fontFamily: 'monospace',
-    color: '#B45309',
-    marginBottom: 10,
-  },
-  confirmActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 8,
-  },
-  confirmBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  cancelBtn: {
-    backgroundColor: '#E5E7EB',
-  },
-  cancelBtnText: {
-    fontSize: 12,
-    color: '#374151',
+    color: '#ffffff',
     fontWeight: '600',
-  },
-  actionBtn: {
-    backgroundColor: HolstTheme.colors.primary700,
-  },
-  actionBtnText: {
     fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
   },
 });

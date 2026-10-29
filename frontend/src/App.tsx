@@ -6,7 +6,7 @@ import { DeploymentResultPanel } from './features/project-deployment';
 import { Notification } from './shared/ui';
 import { CollaborationPanel } from './components/CollaborationPanel';
 import { PresenceToasts } from './components/presence/PresenceToasts';
-import { VoiceAssistantChat } from './components/VoiceAssistantChat';
+import { AIAssistantSidebar, AISuggestionsOverlay } from './features/ai-assistant';
 import { ShareDialog } from './features/sharing/ui/ShareDialog';
 import { ValidationResult, DeploymentResult } from './types/api-responses';
 import { useModelStore } from './store/model-store';
@@ -289,8 +289,11 @@ function App() {
       {/* No modifica el layout del lienzo. No provoca resize/reflow del editor. */}
       <CollaborationPanel />
 
-      {/* ── Asistente de Voz / Chat Sidebar ── */}
-      <VoiceAssistantChat />
+      {/* ── Modo Sugerencias IA (Google Docs style) ── */}
+      <AISuggestionsOverlay />
+
+      {/* ── Arquitecto IA Omnisciente (Chat Privado + Muro de Auditoría + Sugerencias) ── */}
+      <AIAssistantSidebar />
 
       {/* ── Diálogo de Compartir (Google Docs style) — portal modal ── */}
       <ShareDialog />

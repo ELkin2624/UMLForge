@@ -10,19 +10,19 @@ export interface NotificationProps {
 export const Notification: React.FC<NotificationProps> = ({ type, message, onClose }) => {
   const variantStyles = {
     success: {
-      container: 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100',
-      icon: <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />,
-      closeBtn: 'text-emerald-600 hover:text-emerald-800 dark:hover:text-emerald-200 hover:bg-emerald-100 dark:hover:bg-emerald-900/50',
+      bg: '#dcfce7',
+      text: '#166534',
+      icon: <CheckCircle2 size={18} style={{ color: '#166534', flexShrink: 0 }} />,
     },
     error: {
-      container: 'bg-red-50 dark:bg-red-950/80 border-red-300 dark:border-red-800 text-red-900 dark:text-red-100',
-      icon: <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />,
-      closeBtn: 'text-red-600 hover:text-red-800 dark:hover:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/50',
+      bg: '#fee2e2',
+      text: '#991b1b',
+      icon: <AlertCircle size={18} style={{ color: '#dc2626', flexShrink: 0 }} />,
     },
     info: {
-      container: 'bg-amber-50 dark:bg-amber-950/80 border-amber-300 dark:border-amber-800 text-holst-900 dark:text-holst-100',
-      icon: <Info className="w-5 h-5 text-holst-600 dark:text-holst-400 flex-shrink-0" />,
-      closeBtn: 'text-holst-600 hover:text-holst-800 dark:hover:text-holst-200 hover:bg-amber-100 dark:hover:bg-amber-900/50',
+      bg: '#fef08a',
+      text: '#1a1a1a',
+      icon: <Info size={18} style={{ color: '#1a1a1a', flexShrink: 0 }} />,
     },
   };
 
@@ -31,20 +31,46 @@ export const Notification: React.FC<NotificationProps> = ({ type, message, onClo
   return (
     <div
       role="alert"
-      className={`flex items-center justify-between p-3.5 rounded-lg border shadow-md transition-all text-sm font-sans ${current.container}`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '10px 14px',
+        borderRadius: '12px',
+        backgroundColor: current.bg,
+        border: '2px solid #1a1a1a',
+        boxShadow: '3px 3px 0 #1a1a1a',
+        color: current.text,
+        fontSize: '13px',
+        fontWeight: 700,
+        fontFamily: "var(--sans, 'Inter', system-ui, sans-serif)",
+        transition: 'all 0.2s ease',
+      }}
     >
-      <div className="flex items-center gap-2.5 mr-2">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginRight: '8px' }}>
         {current.icon}
-        <span className="font-medium leading-tight">{message}</span>
+        <span style={{ lineHeight: 1.3 }}>{message}</span>
       </div>
       {onClose && (
         <button
           type="button"
           onClick={onClose}
           aria-label="Cerrar notificación"
-          className={`p-1 rounded-md transition-colors flex-shrink-0 ${current.closeBtn}`}
+          style={{
+            background: '#ffffff',
+            border: '1.5px solid #1a1a1a',
+            borderRadius: '6px',
+            boxShadow: '1px 1px 0 #1a1a1a',
+            padding: '2px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#1a1a1a',
+            flexShrink: 0,
+          }}
         >
-          <X className="w-4 h-4" />
+          <X size={13} />
         </button>
       )}
     </div>

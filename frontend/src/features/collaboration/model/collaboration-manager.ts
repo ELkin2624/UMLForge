@@ -330,4 +330,7 @@ export class CollaborationManager {
       this._visualSubscribers.delete(callback);
     };
   }
+  getDoc(): Y.Doc | null {
+    return this._doc;
+  }
 }

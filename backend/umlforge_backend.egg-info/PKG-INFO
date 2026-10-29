@@ -4,7 +4,7 @@ Version: 0.1.0
 Summary: Herramienta CASE Colaborativa - Backend
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown
-Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pydantic[email]>=2.0.0
 Requires-Dist: jinja2>=3.1.0
 Requires-Dist: fastapi>=0.110.0
 Requires-Dist: uvicorn[standard]>=0.27.0
@@ -14,8 +14,11 @@ Requires-Dist: lxml>=5.0.0
 Requires-Dist: sqlalchemy>=2.0.0
 Requires-Dist: alembic>=1.13.0
 Requires-Dist: psycopg2-binary>=2.9.9
-Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: bcrypt>=4.0.0
 Requires-Dist: pyjwt>=2.8.0
+Requires-Dist: faster-whisper>=1.0.0
+Requires-Dist: google-generativeai>=0.4.0
+Requires-Dist: cohere>=7.0.0
 Provides-Extra: dev
 Requires-Dist: pytest; extra == "dev"
 Requires-Dist: ruff; extra == "dev"

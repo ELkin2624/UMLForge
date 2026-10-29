@@ -16,64 +16,143 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({ result, onClos
     <div
       role="region"
       aria-label="Panel de resultados de validación"
-      className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden transition-all text-sm font-sans"
+      style={{
+        backgroundColor: '#ffffff',
+        border: '2px solid #1a1a1a',
+        borderRadius: '14px',
+        boxShadow: '4px 4px 0 #1a1a1a',
+        overflow: 'hidden',
+        fontFamily: "var(--sans, 'Inter', system-ui, sans-serif)",
+        transition: 'all 0.2s ease',
+      }}
     >
-      {/* Header */}
-      <div className={`flex items-center justify-between px-4 py-3 border-b ${
-        is_valid
-          ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40 text-emerald-800 dark:text-emerald-300'
-          : 'bg-amber-50/80 dark:bg-amber-950/30 border-amber-200/60 dark:border-amber-900/40 text-holst-900 dark:text-holst-300'
-      }`}>
-        <div className="flex items-center gap-2">
+      {/* Header en estilo Bauhaus */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '10px 14px',
+          backgroundColor: is_valid ? '#86efac' : '#fee2e2',
+          borderBottom: '2px solid #1a1a1a',
+          color: '#1a1a1a',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {is_valid ? (
-            <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <ShieldCheck size={20} style={{ color: '#166534' }} />
           ) : (
-            <ShieldAlert className="w-5 h-5 text-red-500 dark:text-red-400" />
+            <ShieldAlert size={20} style={{ color: '#dc2626' }} />
           )}
-          <h3 className="font-semibold text-sm m-0">
+          <h3 style={{ margin: 0, fontSize: '13.5px', fontWeight: 800, color: '#1a1a1a' }}>
             {is_valid ? 'Validación Exitosa' : 'Errores de Validación'}
           </h3>
         </div>
         <button
           onClick={onClose}
           aria-label="Cerrar panel de validación"
-          className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          style={{
+            background: '#ffffff',
+            border: '1.5px solid #1a1a1a',
+            borderRadius: '6px',
+            boxShadow: '1.5px 1.5px 0 #1a1a1a',
+            padding: '3px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#1a1a1a',
+            transition: 'all 0.15s ease',
+          }}
         >
-          <X className="w-4 h-4" />
+          <X size={14} />
         </button>
       </div>
 
       {/* Body */}
-      <div className="p-4 space-y-3">
+      <div style={{ padding: '14px', backgroundColor: '#fafaf9', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {is_valid ? (
-          <div className="flex items-center gap-2.5 text-emerald-700 dark:text-emerald-400 bg-emerald-50/60 dark:bg-emerald-900/20 p-3 rounded-lg border border-emerald-100 dark:border-emerald-900/30">
-            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-            <p className="m-0 font-medium">El modelo UML es consistente y válido.</p>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '10px 12px',
+              borderRadius: '10px',
+              border: '2px solid #1a1a1a',
+              backgroundColor: '#dcfce7',
+              boxShadow: '2px 2px 0 #1a1a1a',
+              color: '#166534',
+              fontSize: '12.5px',
+              fontWeight: 700,
+            }}
+          >
+            <CheckCircle2 size={18} style={{ flexShrink: 0 }} />
+            <p style={{ margin: 0 }}>El modelo UML es consistente y válido.</p>
           </div>
         ) : (
-          <div className="space-y-2.5">
-            <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-xs font-semibold uppercase tracking-wider">
-              <AlertCircle className="w-4 h-4" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '11px',
+                fontWeight: 800,
+                color: '#dc2626',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+              }}
+            >
+              <AlertCircle size={15} />
               <span>Se encontraron {errors.length} problemas:</span>
             </div>
 
-            <ul className="space-y-2 m-0 p-0 list-none max-h-60 overflow-y-auto pr-1">
+            <ul
+              style={{
+                margin: 0,
+                padding: 0,
+                listStyle: 'none',
+                maxHeight: '220px',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
               {errors.map((err, i) => (
                 <li
                   key={i}
-                  className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700/60 text-xs leading-relaxed"
+                  style={{
+                    backgroundColor: '#ffffff',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #1a1a1a',
+                    boxShadow: '2px 2px 0 #1a1a1a',
+                    fontSize: '12px',
+                  }}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-semibold text-holst-900 dark:text-holst-300 bg-holst-100 dark:bg-holst-900/40 px-2 py-0.5 rounded text-[11px]">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span
+                      style={{
+                        fontWeight: 800,
+                        backgroundColor: '#fef08a',
+                        border: '1px solid #1a1a1a',
+                        padding: '1px 6px',
+                        borderRadius: '5px',
+                        fontSize: '10.5px',
+                        color: '#1a1a1a',
+                      }}
+                    >
                       {err.field}
                     </span>
                     {err.model_element_id && (
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                      <span style={{ fontSize: '10px', color: '#64748b', fontFamily: 'monospace' }}>
                         ID: {err.model_element_id}
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-700 dark:text-slate-300 m-0 font-medium">
+                  <p style={{ margin: 0, color: '#334155', fontWeight: 600, lineHeight: 1.4 }}>
                     {err.message}
                   </p>
                 </li>

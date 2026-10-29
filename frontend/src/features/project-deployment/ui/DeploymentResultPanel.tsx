@@ -16,83 +16,131 @@ export const DeploymentResultPanel: React.FC<DeploymentResultPanelProps> = ({ re
     <div
       role="region"
       aria-label="Panel de resultados de despliegue"
-      className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden transition-all text-sm font-sans"
+      style={{
+        backgroundColor: '#ffffff',
+        border: '2px solid #1a1a1a',
+        borderRadius: '14px',
+        boxShadow: '4px 4px 0 #1a1a1a',
+        overflow: 'hidden',
+        fontFamily: "var(--sans, 'Inter', system-ui, sans-serif)",
+        transition: 'all 0.2s ease',
+      }}
     >
       {/* Header */}
-      <div className={`flex items-center justify-between px-4 py-3 border-b ${
-        success
-          ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/40 text-emerald-900 dark:text-emerald-100'
-          : 'bg-red-50 dark:bg-red-950/30 border-red-100 dark:border-red-900/40 text-red-900 dark:text-red-100'
-      }`}>
-        <div className="flex items-center gap-2">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '10px 14px',
+          backgroundColor: success ? '#86efac' : '#fee2e2',
+          borderBottom: '2px solid #1a1a1a',
+          color: '#1a1a1a',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {success ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <CheckCircle2 size={20} style={{ color: '#166534' }} />
           ) : (
-            <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+            <XCircle size={20} style={{ color: '#dc2626' }} />
           )}
-          <h3 className="font-semibold text-sm m-0">
+          <h3 style={{ margin: 0, fontSize: '13.5px', fontWeight: 800, color: '#1a1a1a' }}>
             {success ? 'Despliegue Exitoso' : 'Fallo en Despliegue'}
           </h3>
         </div>
         <button
           onClick={onClose}
           aria-label="Cerrar panel de despliegue"
-          className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          style={{
+            background: '#ffffff',
+            border: '1.5px solid #1a1a1a',
+            borderRadius: '6px',
+            boxShadow: '1.5px 1.5px 0 #1a1a1a',
+            padding: '3px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#1a1a1a',
+          }}
         >
-          <X className="w-4 h-4" />
+          <X size={14} />
         </button>
       </div>
 
       {/* Body */}
-      <div className="p-4 space-y-3.5">
-        {/* Metric & Error */}
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-          <span>Estado general: <strong className={success ? 'text-emerald-600' : 'text-red-600'}>{success ? 'Éxito' : 'Falló'}</strong></span>
-          <div className="flex items-center gap-1 font-mono text-[11px]">
-            <Clock className="w-3.5 h-3.5" />
+      <div style={{ padding: '14px', backgroundColor: '#fafaf9', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
+          <span style={{ fontWeight: 700, color: '#1a1a1a' }}>
+            Estado: <strong style={{ color: success ? '#166534' : '#dc2626' }}>{success ? 'Completado' : 'Falló'}</strong>
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, color: '#64748b' }}>
+            <Clock size={13} />
             <span>{duration_ms} ms</span>
           </div>
         </div>
 
         {error && (
-          <div className="flex items-start gap-2 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 p-2.5 rounded-lg border border-red-200 dark:border-red-900/30">
-            <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-            <span className="font-medium">{error}</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px',
+              padding: '8px 10px',
+              borderRadius: '8px',
+              border: '1.5px solid #1a1a1a',
+              backgroundColor: '#fee2e2',
+              color: '#991b1b',
+              fontSize: '12px',
+              fontWeight: 600,
+            }}
+          >
+            <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <span>{error}</span>
           </div>
         )}
 
         {/* Services Status */}
-        <div>
-          <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-            <Server className="w-3.5 h-3.5" />
-            <span>Servicios</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 800, color: '#1a1a1a', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Server size={13} /> Servicios
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-medium">
-                <Database className="w-3.5 h-3.5 text-holst-700 dark:text-holst-300" />
-                <span>PostgreSQL</span>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div style={{ padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #1a1a1a', backgroundColor: '#ffffff', boxShadow: '2px 2px 0 #1a1a1a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 700 }}>
+                <Database size={13} /> PostgreSQL
               </div>
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                postgres_status?.status === 'up'
-                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
-                  : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
-              }`}>
+              <span
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  padding: '1px 6px',
+                  borderRadius: '5px',
+                  border: '1px solid #1a1a1a',
+                  backgroundColor: postgres_status?.status === 'up' ? '#86efac' : '#fee2e2',
+                  color: postgres_status?.status === 'up' ? '#166534' : '#991b1b',
+                }}
+              >
                 {postgres_status?.status === 'up' ? 'UP' : 'DOWN'}
               </span>
             </div>
 
-            <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-medium">
-                <Flame className="w-3.5 h-3.5 text-orange-500" />
-                <span>Spring Boot</span>
+            <div style={{ padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #1a1a1a', backgroundColor: '#ffffff', boxShadow: '2px 2px 0 #1a1a1a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 700 }}>
+                <Flame size={13} style={{ color: '#ea580c' }} /> Spring Boot
               </div>
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                spring_boot_status?.status === 'up'
-                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
-                  : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
-              }`}>
+              <span
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  padding: '1px 6px',
+                  borderRadius: '5px',
+                  border: '1px solid #1a1a1a',
+                  backgroundColor: spring_boot_status?.status === 'up' ? '#86efac' : '#fee2e2',
+                  color: spring_boot_status?.status === 'up' ? '#166534' : '#991b1b',
+                }}
+              >
                 {spring_boot_status?.status === 'up' ? 'UP' : 'DOWN'}
               </span>
             </div>
@@ -101,26 +149,26 @@ export const DeploymentResultPanel: React.FC<DeploymentResultPanelProps> = ({ re
 
         {/* Newman Tests */}
         {test_summary && (
-          <div>
-            <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#1a1a1a', textTransform: 'uppercase' }}>
               Pruebas Newman
             </div>
-            <div className="grid grid-cols-4 gap-1.5 text-center text-xs">
-              <div className="p-1.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                <div className="text-[10px] text-slate-400 font-semibold">Total</div>
-                <div className="font-bold text-slate-700 dark:text-slate-200 font-mono">{test_summary.total}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', textAlign: 'center' }}>
+              <div style={{ padding: '6px', borderRadius: '6px', border: '1px solid #1a1a1a', backgroundColor: '#ffffff' }}>
+                <div style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 700 }}>Total</div>
+                <div style={{ fontSize: '12px', fontWeight: 800 }}>{test_summary.total}</div>
               </div>
-              <div className="p-1.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/30">
-                <div className="text-[10px] text-emerald-600 font-semibold">OK</div>
-                <div className="font-bold text-emerald-600 font-mono">{test_summary.passed}</div>
+              <div style={{ padding: '6px', borderRadius: '6px', border: '1px solid #1a1a1a', backgroundColor: '#dcfce7' }}>
+                <div style={{ fontSize: '9.5px', color: '#166534', fontWeight: 700 }}>OK</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#166534' }}>{test_summary.passed}</div>
               </div>
-              <div className="p-1.5 rounded bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/30">
-                <div className="text-[10px] text-red-600 font-semibold">Fail</div>
-                <div className="font-bold text-red-600 font-mono">{test_summary.failed}</div>
+              <div style={{ padding: '6px', borderRadius: '6px', border: '1px solid #1a1a1a', backgroundColor: '#fee2e2' }}>
+                <div style={{ fontSize: '9.5px', color: '#991b1b', fontWeight: 700 }}>Fail</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#991b1b' }}>{test_summary.failed}</div>
               </div>
-              <div className="p-1.5 rounded bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/30">
-                <div className="text-[10px] text-amber-600 font-semibold">Skip</div>
-                <div className="font-bold text-amber-600 font-mono">{test_summary.skipped}</div>
+              <div style={{ padding: '6px', borderRadius: '6px', border: '1px solid #1a1a1a', backgroundColor: '#fef08a' }}>
+                <div style={{ fontSize: '9.5px', color: '#1a1a1a', fontWeight: 700 }}>Skip</div>
+                <div style={{ fontSize: '12px', fontWeight: 800, color: '#1a1a1a' }}>{test_summary.skipped}</div>
               </div>
             </div>
           </div>

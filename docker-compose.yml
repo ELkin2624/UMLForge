@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: umlforge_postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-umlforge}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-umlforge_password}
@@ -16,5 +17,17 @@ services:
       timeout: 5s
       retries: 5
 
+  mongodb:
+    image: mongo:7
+    container_name: umlforge_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: umlforge_ai
+    volumes:
+      - mongo_data:/data/db
+
 volumes:
   postgres_data:
+  mongo_data:

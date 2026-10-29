@@ -6,7 +6,7 @@ import { useAuthStore } from '../../auth/store';
 
 let sharedCollaborationManager: CollaborationManager | null = null;
 
-function getSharedCollaborationManager(): CollaborationManager {
+export function getSharedCollaborationManager(): CollaborationManager {
   if (!sharedCollaborationManager) {
     sharedCollaborationManager = new CollaborationManager();
   }

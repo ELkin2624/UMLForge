@@ -6,7 +6,7 @@ export { PresenceToasts } from './ui/PresenceToasts';
 export { StatusIcon } from './ui/StatusIcon';
 
 // Hooks
-export { useCollaboration } from './model/use-collaboration';
+export { useCollaboration, getSharedCollaborationManager } from './model/use-collaboration';
 export { usePresence } from './model/use-presence';
 
 // Model & Managers

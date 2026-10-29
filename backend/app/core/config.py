@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Raíz del repositorio (fuera de backend/)
 REPO_ROOT = Path(__file__).resolve().parents[3]
+BACKEND_DIR = Path(__file__).resolve().parents[2]
 # Proyectos Spring Boot generados → backend-springboot/ (en la raíz del monorepo)
 DEFAULT_OUTPUT_DIR = str(REPO_ROOT / "backend-springboot")
 
@@ -12,8 +13,12 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE: int = 10 * 1024 * 1024  # 10 MB
     CORS_ORIGINS: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"]
     
-    # Database
+    # Database (PostgreSQL)
     DATABASE_URL: str
+    
+    # Database (MongoDB NoSQL)
+    MONGO_URI: str = "mongodb://localhost:27017"
+    MONGO_DB_NAME: str = "umlforge_ai"
     
     # Auth
     JWT_SECRET: str
@@ -30,7 +35,7 @@ class Settings(BaseSettings):
     COHERE_API_KEY: str = ""
 
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=(str(BACKEND_DIR / ".env"), ".env"), env_file_encoding="utf-8", extra="ignore"
     )
 
 

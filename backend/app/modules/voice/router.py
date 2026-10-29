@@ -29,40 +29,46 @@ if settings.GEMINI_API_KEY:
     genai.configure(api_key=settings.GEMINI_API_KEY, transport="rest")
 
 # Inicialización diferida / global del modelo de transcripción
-# Usamos "base" (o "small") y compute_type="int8" para que consuma menos de 200MB de RAM en backend.
+# Usamos "tiny" con int8 y 4 hilos de CPU para transcripción casi instantánea (< 0.5s)
 whisper_model = None
 
 def get_whisper_model():
     global whisper_model
     if whisper_model is None:
-        logger.info("Inicializando modelo Whisper local (base, int8)...")
-        whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
+        logger.info("Inicializando modelo Whisper local ultra-rápido (tiny, int8, 4 threads)...")
+        whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8", cpu_threads=4)
     return whisper_model
 
 @router.post("/transcribe", response_model=TranscribeResponse)
 async def transcribe_audio(audio: UploadFile = File(...)):
-    """Transcribe un archivo de audio (.webm/.wav) a texto usando faster-whisper local."""
+    """Transcribe un archivo de audio (.webm/.wav) a texto usando faster-whisper local (tiny)."""
+    temp_path = None
     try:
+        content = await audio.read()
+        if not content or len(content) < 50:
+            return TranscribeResponse(text="")
+
         model = get_whisper_model()
         
-        # Guardar en archivo temporal (faster-whisper prefiere leer de archivo)
+        # Guardar en archivo temporal
         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as temp_audio:
-            content = await audio.read()
             temp_audio.write(content)
             temp_path = temp_audio.name
             
-        # Transcribir
-        segments, info = model.transcribe(temp_path, beam_size=5, language="es")
-        
+        # Transcribir con beam_size=1 y filtro VAD para respuesta instantánea
+        segments, info = model.transcribe(temp_path, beam_size=1, language="es", vad_filter=True)
         text = " ".join([segment.text for segment in segments]).strip()
-        
-        # Limpiar temporal
-        os.remove(temp_path)
         
         return TranscribeResponse(text=text)
     except Exception as e:
-        logger.error(f"Error transcribing audio: {e}")
-        raise HTTPException(status_code=500, detail="Error al transcribir el audio")
+        logger.error(f"Error transcribiendo audio con Whisper: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error al transcribir el audio: {str(e)}")
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
 
 
 SYSTEM_PROMPT = """

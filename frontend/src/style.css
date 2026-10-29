@@ -151,13 +151,15 @@ body,
   }
 }
 
-/* ── Notificaciones flotantes ────────────────────────── */
+/* ── Notificaciones flotantes (Centradas arriba, sin obstruir IA ni lienzo) ── */
 .case-notifications {
   position: fixed;
-  top: calc(var(--toolbar-height) + 8px);
-  right: 16px;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 2000;
-  max-width: 400px;
+  width: 440px;
+  max-width: calc(100vw - 32px);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -170,34 +172,32 @@ body,
 
 @media (max-width: 768px) {
   .case-notifications {
-    left: 10px;
-    right: 10px;
-    max-width: calc(100vw - 20px);
-    top: calc(var(--toolbar-height) + 4px);
+    top: 66px;
+    width: calc(100vw - 24px);
   }
 }
 
-/* ── Paneles de validación / deploy (flotantes derecha) ── */
+/* ── Paneles de validación / deploy (Centrados arriba para no estorbar el Chatbot/IA) ── */
 .case-side-panels {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 380px;
-  z-index: 500;
-  max-height: calc(100% - 20px);
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 440px;
+  max-width: calc(100vw - 32px);
+  z-index: 1050;
+  max-height: calc(100vh - 100px);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {
   .case-side-panels {
-    left: 10px;
-    right: 10px;
-    width: auto;
-    max-width: calc(100vw - 20px);
-    max-height: 75vh;
+    top: 66px;
+    width: calc(100vw - 24px);
   }
 }
 
@@ -514,7 +514,7 @@ body,
 .presence-toasts {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  left: 80px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -526,27 +526,28 @@ body,
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: #ffffff;
+  border: 2px solid var(--ink-black, #1a1a1a);
   padding: 8px 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  box-shadow: 3px 3px 0 var(--ink-black, #1a1a1a);
   animation: toast-slide-up 0.3s ease-out;
   pointer-events: auto;
 }
 
 .presence-toast__dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
+  border: 1.5px solid var(--ink-black, #1a1a1a);
   flex-shrink: 0;
 }
 
 .presence-toast__message {
-  color: #e2e8f0;
+  color: var(--ink-black, #1a1a1a);
   font-size: 12px;
-  font-family: var(--sans);
-  font-weight: 500;
+  font-family: var(--sans, 'Inter', system-ui, sans-serif);
+  font-weight: 700;
 }
 
 @keyframes toast-slide-up {

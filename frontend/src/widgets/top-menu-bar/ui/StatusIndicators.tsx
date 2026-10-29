@@ -3,6 +3,7 @@ import { Loader2, Check, Eye, AlertCircle } from 'lucide-react';
 import { ShareButton } from '../../../features/sharing/ui/ShareButton';
 import { UserMenu } from '../../../features/auth/ui/UserMenu';
 import { NotificationsMenu } from '../../../features/auth/ui/NotificationsMenu';
+import { AIPresenceIndicator } from '../../../features/ai-assistant';
 import { GenState } from '../model/types';
 
 interface StatusIndicatorsProps {
@@ -55,10 +56,12 @@ export const StatusIndicators: React.FC<StatusIndicatorsProps> = ({
         </div>
       )}
 
+      {/* Indicador de Presencia de IA Omnisciente (Yjs) */}
+      <AIPresenceIndicator />
+
       <ShareButton disabled={isBusy && localRole !== 'READER'} />
       <NotificationsMenu />
       <UserMenu />
     </div>
   );
 };
-

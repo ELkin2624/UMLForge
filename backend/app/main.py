@@ -20,6 +20,7 @@ from app.modules.sharing.router import router as sharing_router
 from app.modules.sharing.invitations_router import router as invitations_router
 from app.modules.notifications.router import router as notifications_router
 from app.modules.voice.router import router as voice_router
+from app.modules.ai_agent.router import router as ai_agent_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -60,6 +61,7 @@ app.include_router(deployment_router)
 app.include_router(e2e_router)
 app.include_router(xmi_router)
 app.include_router(voice_router)
+app.include_router(ai_agent_router)
 
 
 # Exception Handlers

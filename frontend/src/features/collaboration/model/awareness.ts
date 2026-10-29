@@ -96,7 +96,7 @@ export function setupAwareness(
  */
 function buildPeerList(awareness: Awareness): PeerInfo[] {
   const peers: PeerInfo[] = [];
-  awareness.getStates().forEach((state, clientId) => {
+  awareness.getStates().forEach((state: any, clientId: number) => {
     const user = state?.user as { name?: string; color?: string } | undefined;
     const cursor = state?.cursor as { x: number; y: number } | undefined;
     const selectedNode = state?.selectedNode as string | undefined;
