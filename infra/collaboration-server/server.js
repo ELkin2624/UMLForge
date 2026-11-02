@@ -1,4 +1,7 @@
 const http = require('http');
+
+// URL del backend FastAPI contra el que se validan token y permisos.
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 const WebSocket = require('ws');
 const yUtils = require('y-websocket/bin/utils');
 
@@ -32,22 +35,34 @@ wss.on('connection', async (conn, req) => {
 
     // Validar token y permisos contra FastAPI
     let authorized = false;
+    let rejectReason = 'sin detalle';
+    // 4001: token inválido/vencido (el cliente puede refrescar y reintentar).
+    // 4003: sin permiso sobre el diagrama (definitivo).
+    let rejectCode = 4003;
     if (/^\d+$/.test(docName)) {
-      const res = await fetch(`http://localhost:8000/api/v1/diagrams/${docName}`, {
+      const res = await fetch(`${BACKEND_URL}/api/v1/diagrams/${docName}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       authorized = res.ok;
+      if (!authorized) {
+        rejectReason = `diagrama ${docName}: FastAPI respondió ${res.status}`;
+        if (res.status === 401) rejectCode = 4001;
+      }
     } else {
-      const res = await fetch(`http://localhost:8000/api/v1/auth/me`, {
+      const res = await fetch(`${BACKEND_URL}/api/v1/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       authorized = res.ok;
+      if (!authorized) {
+        rejectReason = `/auth/me: FastAPI respondió ${res.status}`;
+        if (res.status === 401) rejectCode = 4001;
+      }
     }
 
     if (!authorized) {
-      console.log(`Connection rejected for ${docName}: Forbidden or Invalid Token`);
+      console.log(`Connection rejected for ${docName}: Forbidden or Invalid Token (${rejectReason})`);
       conn.off('message', messageBuffer);
-      conn.close(4003, 'Forbidden');
+      conn.close(rejectCode, rejectCode === 4001 ? 'Unauthorized' : 'Forbidden');
       return;
     }
 

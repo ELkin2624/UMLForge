@@ -3,6 +3,8 @@ import {
   Menu,
   X,
   Save,
+  History,
+  Database,
   FileUp,
   FileDown,
   Download,
@@ -50,6 +52,8 @@ interface MobileDrawerProps {
   isBusy: boolean;
   hasModel: boolean;
   onSave: () => void;
+  onHistory: () => void;
+  onDataDesign: () => void;
   onImportXMI: () => void;
   onExportXMI: () => void;
   onGenerate: (isLocal: boolean) => void;
@@ -66,6 +70,8 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   isBusy,
   hasModel,
   onSave,
+  onHistory,
+  onDataDesign,
   onImportXMI,
   onExportXMI,
   onGenerate,
@@ -258,6 +264,31 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                     <span className="drawer-btn-label">Guardar Modelo</span>
                   </div>
                   <span className="drawer-btn-chip">Ctrl+S</span>
+                </button>
+
+                <button
+                  onClick={() => handleAction(onHistory)}
+                  className="mobile-drawer-btn"
+                >
+                  <div className="drawer-btn-icon badge-lilac">
+                    <History size={16} color="#1a1a1a" />
+                  </div>
+                  <div className="drawer-btn-content">
+                    <span className="drawer-btn-label">Historial de versiones</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleAction(onDataDesign)}
+                  disabled={!hasModel}
+                  className="mobile-drawer-btn"
+                >
+                  <div className="drawer-btn-icon badge-peach">
+                    <Database size={16} color="#1a1a1a" />
+                  </div>
+                  <div className="drawer-btn-content">
+                    <span className="drawer-btn-label">Diseño de datos</span>
+                  </div>
                 </button>
 
                 <button

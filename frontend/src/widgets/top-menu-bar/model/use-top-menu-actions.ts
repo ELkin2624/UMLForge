@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useVersioningStore } from '../../../features/versioning';
 import { useModelStore } from '../../../store/model-store';
 import { useE2EValidation } from '../../../hooks/use-e2e-validation';
 import { useShareStore } from '../../../features/sharing/model/share-store';
@@ -50,7 +51,8 @@ export function useTopMenuActions({
     setLoading(true);
     onError(null);
     try {
-      await saveDiagram(roomId, model);
+      const res = await saveDiagram(roomId, model);
+      useVersioningStore.getState().markSaved(Boolean(res.version_created));
     } catch (e: any) {
       onError(e.message);
     } finally {

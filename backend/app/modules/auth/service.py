@@ -7,36 +7,38 @@ from app.core.database.models import User, Diagram, DiagramPermission, RefreshTo
 from app.core.security import get_password_hash, get_token_hash, verify_token_hash, create_access_token, create_refresh_token, verify_password
 from app.modules.auth.schemas import UserCreate, UserLogin
 from app.core.errors import APIError
+from app.modules.diagram_store import DiagramRepository, user_author
 
-def create_initial_diagram(db: Session, user: User):
-    empty_diagram_data = {
-        "classes": [],
-        "associations": [],
-        "generalizations": [],
-        "interfaces": [],
-        "realizations": [],
-        "dependencies": [],
-        "packages": [],
-        "components": [],
-        "ports": [],
-        "connectors": [],
-    }
-    diagram = Diagram(
-        name=f"Diagrama de {user.username}",
-        data=empty_diagram_data,
-        owner_id=user.id
-    )
+EMPTY_DIAGRAM_DATA = {
+    "classes": [],
+    "associations": [],
+    "generalizations": [],
+    "interfaces": [],
+    "realizations": [],
+    "dependencies": [],
+    "packages": [],
+    "components": [],
+    "ports": [],
+    "connectors": [],
+}
+
+
+def create_initial_diagram(db: Session, user: User, repo: DiagramRepository) -> Diagram:
+    """Crea la fila índice (PostgreSQL), el permiso OWNER y el documento (MongoDB)."""
+    diagram = Diagram(name=f"Diagrama de {user.username}", owner_id=user.id)
     db.add(diagram)
-    db.flush() # Para obtener el ID del diagrama
-    
-    permission = DiagramPermission(
-        diagram_id=diagram.id,
-        user_id=user.id,
-        role="OWNER"
-    )
-    db.add(permission)
+    db.flush()  # Para obtener el ID del diagrama
 
-def register_user(db: Session, user_in: UserCreate) -> User:
+    db.add(DiagramPermission(diagram_id=diagram.id, user_id=user.id, role="OWNER"))
+    repo.create(
+        diagram.id,
+        dict(EMPTY_DIAGRAM_DATA),
+        user_author(user.id, user.display_name or user.username),
+    )
+    return diagram
+
+
+def register_user(db: Session, user_in: UserCreate, repo: DiagramRepository) -> User:
     # Verificar si email o username ya existen
     existing = db.query(User).filter(
         or_(User.email == user_in.email, User.username == user_in.username)
@@ -53,9 +55,13 @@ def register_user(db: Session, user_in: UserCreate) -> User:
     db.add(db_user)
     db.flush() # para obtener db_user.id
     
-    create_initial_diagram(db, db_user)
-    
-    db.commit()
+    diagram = create_initial_diagram(db, db_user, repo)
+
+    try:
+        db.commit()
+    except Exception:
+        repo.delete(diagram.id)
+        raise
     db.refresh(db_user)
     return db_user
 

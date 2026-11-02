@@ -9,6 +9,7 @@ import {
   logAuditEvent,
 } from '../api/ai-api';
 import { useModelStore } from '../../../store/model-store';
+import { markAiChange } from '../../versioning';
 import { UMLModel, UMLClass, UMLRelationship } from '../../../types/canonical-model';
 
 function generateRandomId(): string {
@@ -311,7 +312,8 @@ export const useAIAssistantStore = create<AIAssistantState>((set, get) => ({
       );
     }
 
-    // Actualizar el lienzo definitivo
+    // Actualizar el lienzo definitivo (el autoguardado atribuirá la versión a la IA)
+    markAiChange();
     useModelStore.getState().setModel(currentModel);
 
     // Quitar sugerencia de Yjs o store local

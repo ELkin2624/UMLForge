@@ -61,13 +61,14 @@ class Diagram(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    data = Column(JSON_TYPE, nullable=False, default={})
+    # El contenido del diagrama y su historial viven en MongoDB (diagram_store).
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
     permissions = relationship("DiagramPermission", back_populates="diagram", cascade="all, delete-orphan")
     invitations = relationship("DiagramInvitation", back_populates="diagram", cascade="all, delete-orphan")
+    share_link = relationship("DiagramShareLink", back_populates="diagram", uselist=False, cascade="all, delete-orphan")
     owner = relationship("User")
 
 class DiagramPermission(Base):
@@ -85,6 +86,26 @@ class DiagramPermission(Base):
 
     diagram = relationship("Diagram", back_populates="permissions")
     user = relationship("User", back_populates="diagram_permissions")
+
+class DiagramShareLink(Base):
+    """Enlace de acceso general ("cualquiera con el enlace"). Uno por diagrama.
+
+    El token es secreto: solo el propietario puede verlo. Quien lo presenta con
+    sesión iniciada obtiene un DiagramPermission con el rol del enlace.
+    """
+    __tablename__ = "diagram_share_links"
+
+    id = Column(Integer, primary_key=True, index=True)
+    diagram_id = Column(Integer, ForeignKey("diagrams.id"), nullable=False, unique=True, index=True)
+    token = Column(String, nullable=False, unique=True, index=True)
+    role = Column(String, nullable=False, default=DiagramRole.EDITOR.value)  # EDITOR | READER
+    enabled = Column(Boolean, nullable=False, default=False)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    diagram = relationship("Diagram", back_populates="share_link")
+
 
 class DiagramInvitation(Base):
     __tablename__ = "diagram_invitations"

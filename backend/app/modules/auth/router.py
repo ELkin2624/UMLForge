@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from app.core.database.session import get_db
 from app.core.database.models import User
 from app.core.auth_deps import get_current_user
+from app.core.dependencies import get_diagram_repo
 from app.core.errors import APIError
+from app.modules.diagram_store import DiagramRepository
 from app.core.security import decode_token
 from app.modules.auth.schemas import UserCreate, UserLogin, UserResponse, Token
 from app.modules.auth.service import register_user, authenticate_user, create_session_for_user, rotate_refresh_token, revoke_token
@@ -22,8 +24,12 @@ def set_refresh_cookie(response: Response, refresh_token: str):
     )
 
 @router.post("/register", response_model=UserResponse)
-def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    return register_user(db, user_in)
+def register(
+    user_in: UserCreate,
+    db: Session = Depends(get_db),
+    repo: DiagramRepository = Depends(get_diagram_repo),
+):
+    return register_user(db, user_in, repo)
 
 @router.post("/login", response_model=Token)
 def login(login_data: UserLogin, response: Response, db: Session = Depends(get_db)):

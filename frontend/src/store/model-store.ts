@@ -6,6 +6,15 @@ import type { CollaborationStatus, CollaborationUiState, PeerInfo } from '../fea
 
 export type DiagramViewType = 'class' | 'component';
 
+// Profundidad de aplicación de cambios remotos (Yjs). Los suscriptores de `model`
+// corren de forma síncrona dentro de set(), así que basta con un contador.
+let remoteApplyDepth = 0;
+
+/** true mientras el modelo se está reemplazando por un cambio recibido de otro usuario. */
+export function isApplyingRemoteModel(): boolean {
+  return remoteApplyDepth > 0;
+}
+
 const DEFAULT_COLLABORATION: CollaborationUiState = {
   status: 'idle',
   roomName: null,
@@ -21,6 +30,8 @@ interface ModelStore {
   diagramType: DiagramViewType;
   selectedNodeId: string | null;
   setModel: (model: UMLModel | null) => void;
+  /** Igual que setModel, pero marca el cambio como remoto (no debe autoguardarse). */
+  setModelFromRemote: (model: UMLModel | null) => void;
   setDiagramType: (diagramType: DiagramViewType) => void;
   setSelectedNodeId: (id: string | null) => void;
   clearModel: () => void;
@@ -69,6 +80,14 @@ export const useModelStore = create<ModelStore>()(
     diagramType: 'class',
     selectedNodeId: null,
     setModel: (model) => set({ model }),
+    setModelFromRemote: (model) => {
+      remoteApplyDepth++;
+      try {
+        set({ model });
+      } finally {
+        remoteApplyDepth--;
+      }
+    },
     setDiagramType: (diagramType) => set({ diagramType }),
     setSelectedNodeId: (selectedNodeId) => set({ selectedNodeId }),
     clearModel: () => set({ model: null, selectedNodeId: null }),

@@ -101,7 +101,6 @@ def auth_headers(test_users):
 def test_diagram(db_session, test_users):
     diagram = Diagram(
         name="Proyecto Ecommerce UML",
-        data={"classes": [{"id": "c1", "name": "Producto", "attributes": [], "methods": []}]},
         owner_id=test_users["owner"].id
     )
     db_session.add(diagram)

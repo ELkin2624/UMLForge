@@ -59,7 +59,7 @@ export function bindYjsToStore(doc: Y.Doc): () => void {
     try {
       const model = JSON.parse(json) as UMLModel;
       isApplyingRemote = true;
-      useModelStore.getState().setModel(model);
+      useModelStore.getState().setModelFromRemote(model);
     } catch {
       console.warn('[UMLForge Collaboration] JSON inválido recibido desde Y.Doc:', json);
     } finally {

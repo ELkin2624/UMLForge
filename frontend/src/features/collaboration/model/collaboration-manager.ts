@@ -19,7 +19,25 @@ import type { CollaborationStatus, PeerInfo } from './types';
  *   (isSynced=true), nunca antes (para no asumir sala vacía durante la sincronización).
  * - Solo expone estado de UI; Y.Doc, provider y awareness son privados.
  */
+/** Tiempo máximo esperando la conexión inicial antes de avisar al usuario. */
+export const CONNECT_TIMEOUT_MS = 8000;
+
+export const CONNECT_ERROR_MESSAGE =
+  'No se pudo conectar al servidor de colaboración. Verifica que esté en ejecución ' +
+  '(infra/collaboration-server) y que tu sesión siga activa. Se seguirá reintentando.';
+
+/** Códigos de cierre que envía el servidor Yjs al rechazar una conexión. */
+export const CLOSE_UNAUTHORIZED = 4001;
+export const CLOSE_FORBIDDEN = 4003;
+
+export const FORBIDDEN_MESSAGE =
+  'No tienes permiso para entrar a este diagrama. Pídele al dueño que te invite ' +
+  'desde "Compartir" (buscándote por usuario) y acepta la invitación desde las notificaciones.';
+
 export class CollaborationManager {
+  private _roomName: string | null = null;
+  private _offClose: (() => void) | null = null;
+  private _connectTimer: ReturnType<typeof setTimeout> | null = null;
   private _doc: Y.Doc | null = null;
   private _provider: YWebSocketProvider | null = null;
   private _unbindYjs: (() => void) | null = null;
@@ -43,10 +61,22 @@ export class CollaborationManager {
    * La decisión de autoridad (remoto vs. local) se ejecuta en el handler de 'sync'.
    */
   connect(roomName: string, displayName?: string): void {
-    // Si ya hay una conexión activa, desconectar primero para evitar listeners duplicados
+    // Idempotente: si ya estamos conectados (o conectando) a esta sala, no se recrea nada.
+    // Recrear el Y.Doc cambia el clientID y los demás verían "salió" + "se ha unido".
+    if (this._provider && this._roomName === roomName) {
+      if (displayName) {
+        const awareness = this._provider.getAwareness();
+        const user = (awareness.getLocalState()?.user ?? {}) as Record<string, unknown>;
+        awareness.setLocalStateField('user', { ...user, name: displayName });
+      }
+      return;
+    }
+
+    // Si hay una conexión a otra sala, desconectar primero para evitar listeners duplicados
     if (this._provider) {
       this.disconnect();
     }
+    this._roomName = roomName;
 
     this._syncHandled = false;
 
@@ -63,7 +93,8 @@ export class CollaborationManager {
     this._offStatus = this._provider.onStatus(({ status }) => {
       if (status === 'connected') {
         if (!this._syncHandled) {
-          this._updateStore({ status: 'connected' });
+          this._clearConnectTimer();
+          this._updateStore({ status: 'connected', error: null });
           // Fallback de seguridad: si tras 1s no ha disparado sync, forzar sync si el provider ya sincronizó
           setTimeout(() => {
             if (!this._syncHandled && this._doc && this._provider) {
@@ -83,14 +114,25 @@ export class CollaborationManager {
     const handleSync = () => {
       if (this._syncHandled || !this._doc) return;
       this._syncHandled = true;
+      this._clearConnectTimer();
 
-      this._updateStore({ status: 'synced' });
+      this._updateStore({ status: 'synced', error: null });
       this._applyDocumentAuthority(this._doc);
 
       // 4. Iniciar bindings bidireccionales DESPUÉS de resolver autoridad
       this._unbindYjs = bindYjsToStore(this._doc);
       this._setupVisualStateObserver(this._doc);
     };
+
+    // 3c. Rechazos del servidor. 4003 (sin permiso) es definitivo: se detiene el reintento
+    //     y se explica el motivo. 4001 (token vencido) se reintenta solo con el token nuevo.
+    this._offClose = this._provider.onClose(({ code }) => {
+      if (code === CLOSE_FORBIDDEN && this._provider) {
+        this._clearConnectTimer();
+        this._provider.disconnect(); // detiene los reintentos de y-websocket
+        this._updateStore({ status: 'error', error: FORBIDDEN_MESSAGE });
+      }
+    });
 
     this._offSync = this._provider.onSync((isSynced) => {
       if (!isSynced) return;
@@ -122,8 +164,23 @@ export class CollaborationManager {
       }
     );
 
-    // 5. Conectar
+    // 5. Conectar. Si no hay respuesta a tiempo, avisar en lugar de quedar en "Conectando…".
+    //    y-websocket sigue reintentando; si el servidor aparece después, handleSync limpia el error.
+    this._clearConnectTimer();
+    this._connectTimer = setTimeout(() => {
+      this._connectTimer = null;
+      if (!this._syncHandled && this._provider) {
+        this._updateStore({ status: 'error', error: CONNECT_ERROR_MESSAGE });
+      }
+    }, CONNECT_TIMEOUT_MS);
     this._provider.connect();
+  }
+
+  private _clearConnectTimer(): void {
+    if (this._connectTimer) {
+      clearTimeout(this._connectTimer);
+      this._connectTimer = null;
+    }
   }
 
   /**
@@ -137,6 +194,8 @@ export class CollaborationManager {
    * 7. Resetear store
    */
   disconnect(): void {
+    this._clearConnectTimer();
+
     // 1. Bindings
     if (this._unbindYjs) {
       this._unbindYjs();
@@ -162,6 +221,10 @@ export class CollaborationManager {
       this._offStatus();
       this._offStatus = null;
     }
+    if (this._offClose) {
+      this._offClose();
+      this._offClose = null;
+    }
 
     // 4 + 5. Provider
     if (this._provider) {
@@ -177,6 +240,7 @@ export class CollaborationManager {
     }
 
     // 7. Store
+    this._roomName = null;
     this._syncHandled = false;
     useModelStore.getState().resetCollaboration();
   }
@@ -215,7 +279,7 @@ export class CollaborationManager {
 
         if (!isRemoteEmpty) {
           // La sala tiene elementos válidos -> adoptar el modelo remoto en Zustand
-          useModelStore.getState().setModel(remoteModel);
+          useModelStore.getState().setModelFromRemote(remoteModel);
         } else if (!isLocalEmpty) {
           // La sala está vacía pero localmente tenemos un modelo con clases -> publicar local
           setModelJson(doc, JSON.stringify(localModel), 'umlforge-local');

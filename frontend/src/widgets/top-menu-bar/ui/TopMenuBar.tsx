@@ -6,6 +6,8 @@ import { StatusIndicators } from './StatusIndicators';
 import { useTopMenuState } from '../model/use-top-menu-state';
 import { useTopMenuActions } from '../model/use-top-menu-actions';
 import { TopMenuBarProps } from '../model/types';
+import { useVersioningStore } from '../../../features/versioning';
+import { useDataDesignStore } from '../../../features/data-design';
 import './TopMenuBar.css';
 
 export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
@@ -24,6 +26,14 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
   });
 
   const hasModel = Boolean(actions.model);
+  const openDataDesign = () => {
+    closeMenu();
+    void useDataDesignStore.getState().openDialog();
+  };
+  const openHistory = () => {
+    closeMenu();
+    useVersioningStore.getState().openHistory();
+  };
 
   return (
     <header className="top-menu-bar">
@@ -44,6 +54,8 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
           isBusy={actions.isBusy}
           hasModel={hasModel}
           onSave={actions.handleSave}
+          onHistory={openHistory}
+          onDataDesign={openDataDesign}
           onImportXMI={actions.handleImportXMIClick}
           onExportXMI={actions.handleExportXMI}
           onGenerate={actions.handleGenerate}
@@ -67,6 +79,8 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
         isBusy={actions.isBusy}
         hasModel={hasModel}
         onSave={actions.handleSave}
+        onHistory={openHistory}
+        onDataDesign={openDataDesign}
         onImportXMI={actions.handleImportXMIClick}
         onExportXMI={actions.handleExportXMI}
         onGenerate={actions.handleGenerate}
