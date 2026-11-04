@@ -4,6 +4,7 @@ import {
   X,
   Save,
   History,
+  FolderOpen,
   Database,
   FileUp,
   FileDown,
@@ -52,6 +53,7 @@ interface MobileDrawerProps {
   isBusy: boolean;
   hasModel: boolean;
   onSave: () => void;
+  onDiagrams: () => void;
   onHistory: () => void;
   onDataDesign: () => void;
   onImportXMI: () => void;
@@ -70,6 +72,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   isBusy,
   hasModel,
   onSave,
+  onDiagrams,
   onHistory,
   onDataDesign,
   onImportXMI,
@@ -252,6 +255,18 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 <span>Archivo &amp; Modelo</span>
               </div>
               <div className="mobile-drawer-items">
+                <button
+                  onClick={() => handleAction(onDiagrams)}
+                  className="mobile-drawer-btn"
+                >
+                  <div className="drawer-btn-icon badge-sky">
+                    <FolderOpen size={16} color="#1a1a1a" />
+                  </div>
+                  <div className="drawer-btn-content">
+                    <span className="drawer-btn-label">Mis diagramas</span>
+                  </div>
+                </button>
+
                 <button
                   onClick={() => handleAction(onSave)}
                   disabled={!hasModel || isBusy}

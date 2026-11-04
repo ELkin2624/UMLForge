@@ -89,3 +89,47 @@ export async function restoreVersion(
     method: 'POST',
   });
 }
+
+/** Fila del listado de diagramas del usuario (propios y compartidos). */
+export interface DiagramSummary {
+  id: number;
+  name: string;
+  owner_id: number;
+  created_at: string;
+  updated_at: string;
+  my_role: string | null;
+}
+
+/** Diagramas a los que el usuario tiene acceso, con su rol en cada uno. */
+export async function listDiagrams(): Promise<DiagramSummary[]> {
+  return request<DiagramSummary[]>('/diagrams');
+}
+
+/** Un diagrama con su modelo canónico completo. */
+export async function getDiagram(id: number | string): Promise<DiagramSaveResult> {
+  return request<DiagramSaveResult>(`/diagrams/${id}`);
+}
+
+/** Crea un diagrama; el usuario queda como OWNER. */
+export async function createDiagram(
+  name: string,
+  data: UMLModel | Record<string, never> = {}
+): Promise<DiagramSaveResult> {
+  return request<DiagramSaveResult>('/diagrams', {
+    method: 'POST',
+    body: JSON.stringify({ name, data }),
+  });
+}
+
+/** Cambia solo el nombre (requiere rol EDITOR u OWNER). */
+export async function renameDiagram(id: number | string, name: string): Promise<DiagramSaveResult> {
+  return request<DiagramSaveResult>(`/diagrams/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ name }),
+  });
+}
+
+/** Elimina el diagrama y su historial (solo OWNER). */
+export async function deleteDiagram(id: number | string): Promise<void> {
+  await request<void>(`/diagrams/${id}`, { method: 'DELETE' });
+}

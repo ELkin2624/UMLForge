@@ -3,3 +3,4 @@ export { markAiChange } from './model/save-source';
 export { useVersioningStore } from './model/versioning-store';
 export { HistoryDialog } from './ui/HistoryDialog';
 export { SaveStatus } from './ui/SaveStatus';
+export { formatWhen } from './ui/HistoryDialog';

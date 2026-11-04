@@ -16,6 +16,7 @@ import { useCollaboration } from './hooks/use-collaboration';
 import { useAuthStore } from './features/auth/store';
 import { AuthPage } from './features/auth/ui/AuthPage';
 import { useAutosave, HistoryDialog } from './features/versioning';
+import { DiagramManagerDialog } from './features/diagram-manager';
 import { DataDesignDialog } from './features/data-design';
 import './style.css';
 
@@ -338,6 +339,9 @@ function App() {
 
       {/* ── Diálogo de Compartir (Google Docs style) — portal modal ── */}
       <ShareDialog />
+
+      {/* ── Administrador de diagramas (listar, abrir, crear, renombrar, eliminar) ── */}
+      <DiagramManagerDialog />
 
       {/* ── Historial de versiones (quién hizo qué, vista previa, restaurar) ── */}
       <HistoryDialog />

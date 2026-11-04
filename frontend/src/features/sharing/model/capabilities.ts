@@ -32,6 +32,14 @@ export function canShare(role: Role): boolean {
 }
 
 /**
+ * ¿El usuario puede eliminar el diagrama?
+ * Solo OWNER.
+ */
+export function canDeleteDiagram(role: Role): boolean {
+  return role === 'OWNER';
+}
+
+/**
  * ¿El usuario puede gestionar el acceso (cambiar roles, revocar)?
  * Solo OWNER.
  */

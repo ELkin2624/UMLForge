@@ -7,6 +7,7 @@ import { useTopMenuState } from '../model/use-top-menu-state';
 import { useTopMenuActions } from '../model/use-top-menu-actions';
 import { TopMenuBarProps } from '../model/types';
 import { useVersioningStore } from '../../../features/versioning';
+import { useDiagramManagerStore } from '../../../features/diagram-manager';
 import { useDataDesignStore } from '../../../features/data-design';
 import './TopMenuBar.css';
 
@@ -29,6 +30,10 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
   const openDataDesign = () => {
     closeMenu();
     void useDataDesignStore.getState().openDialog();
+  };
+  const openDiagrams = () => {
+    closeMenu();
+    useDiagramManagerStore.getState().openManager();
   };
   const openHistory = () => {
     closeMenu();
@@ -54,6 +59,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
           isBusy={actions.isBusy}
           hasModel={hasModel}
           onSave={actions.handleSave}
+          onDiagrams={openDiagrams}
           onHistory={openHistory}
           onDataDesign={openDataDesign}
           onImportXMI={actions.handleImportXMIClick}
@@ -79,6 +85,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
         isBusy={actions.isBusy}
         hasModel={hasModel}
         onSave={actions.handleSave}
+        onDiagrams={openDiagrams}
         onHistory={openHistory}
         onDataDesign={openDataDesign}
         onImportXMI={actions.handleImportXMIClick}

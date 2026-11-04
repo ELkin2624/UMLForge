@@ -3,6 +3,7 @@ import {
   ChevronDown,
   Save,
   History,
+  FolderOpen,
   Database,
   FileUp,
   FileDown,
@@ -20,6 +21,7 @@ interface DesktopNavProps {
   isBusy: boolean;
   hasModel: boolean;
   onSave: () => void;
+  onDiagrams: () => void;
   onHistory: () => void;
   onDataDesign: () => void;
   onImportXMI: () => void;
@@ -36,6 +38,7 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
   isBusy,
   hasModel,
   onSave,
+  onDiagrams,
   onHistory,
   onDataDesign,
   onImportXMI,
@@ -61,6 +64,21 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
         {activeMenu === 'file' && (
           <div className="top-menu-dropdown">
             <div className="top-dropdown-header">Gestión de Diagrama</div>
+
+            <button
+              onClick={onDiagrams}
+              className="top-dropdown-item"
+            >
+              <div className="top-dropdown-item-left">
+                <div className="dropdown-icon-badge badge-sky">
+                  <FolderOpen size={14} color="#1a1a1a" />
+                </div>
+                <div className="dropdown-text-stack">
+                  <span className="dropdown-item-title">Mis diagramas</span>
+                  <span className="dropdown-item-desc">Abrir, crear, renombrar o eliminar</span>
+                </div>
+              </div>
+            </button>
 
             <button
               onClick={onSave}

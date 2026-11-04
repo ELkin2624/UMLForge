@@ -21,7 +21,7 @@ src/
   main.tsx, App.tsx       # raíz: sesión, invitaciones, layout, paneles
   features/               # lógica de negocio por capacidad
     auth, sharing, collaboration, ai-assistant, voice,
-    model-validation, project-deployment, versioning, data-design
+    model-validation, project-deployment, versioning, data-design, diagram-manager
     (cada una: api/ model/ ui/ index.ts)
   widgets/                # bloques compuestos: diagram-editor, top-menu-bar
   shared/ui/              # UI reutilizable (Notification)
@@ -42,6 +42,7 @@ Reglas de capas: `shared` no importa de `features`; `features` no importa de otr
 - El modelo canónico (`types/canonical-model.ts`) es la fuente de verdad en el cliente; Apollon es solo una vista, y la conversión vive en `adapters/`. Mantenlo en espejo con `backend/app/core/canonical_model`.
 - Permisos: usa `features/sharing/model/capabilities.ts` (`canEdit`, `canShare`, `canManageAccess`, `canUseMutatingVoiceCommands`). No compares roles con cadenas sueltas.
 - Versionado (`features/versioning`): `useAutosave()` (montado en `App.tsx`) guarda 3 s después de un cambio **local** del `model-store`; los cambios que llegan por Yjs usan `setModelFromRemote` y **no** se guardan (así cada versión queda atribuida a quien la hizo). Si aplicas cambios del lado de la IA, llama antes a `markAiChange()` para atribuirlos a la IA. `HistoryDialog` lista versiones, muestra una vista previa de solo lectura (Apollon `readonly`) y restaura; al restaurar se hace `setModel(res.data)`, que lo publica al Y.Doc.
+- Administrador de diagramas (`features/diagram-manager`): diálogo "Mis diagramas" (Archivo → Mis diagramas) para listar, abrir, crear, renombrar y eliminar. Para cambiar de diagrama usa **siempre** `switchToDiagram(id)`: guarda el actual, sale de la sala Yjs, cambia `roomId`/rol y solo después carga el modelo (si no, el autosave podría escribir el modelo de un diagrama en otro). Un diagrama vacío se carga como `emptyModel()`, no `null` (el editor ignora `null`).
 - Diseño de datos (`features/data-design`): diálogo con 3 pestañas (modelo lógico, normalización, diagrama BD). Se abre desde **Validación → Diseño de datos** y analiza el modelo actual del `model-store` en el backend (`POST /data-design/analyze`). El diagrama BD usa `@xyflow/react` + `dagre` con nodos de tabla propios (`layoutTables`); no toca Apollon ni Yjs. Las decisiones sobre dependencias se guardan en el backend solo si el rol puede editar.
 - Si necesitas reemplazar el modelo con datos recibidos de otro usuario o de la sala, usa `setModelFromRemote`, no `setModel`.
 - Colaboración: el modelo se comparte como JSON completo en un `Y.Map` (último en escribir gana). Toda la lógica Yjs va en `features/collaboration`.
