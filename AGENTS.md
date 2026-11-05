@@ -33,7 +33,7 @@ Capacidades:
 | Colaboración en tiempo real (Yjs) y presencia | `frontend/features/collaboration` + `infra/collaboration-server` |
 | Voz (Whisper local + intérprete de comandos) | `backend/modules/voice`, `frontend/features/voice` |
 | Agente de IA grupal (Gemini, memoria privada y compartida en MongoDB) | `backend/modules/ai_agent`, `frontend/features/ai-assistant` |
-| Ecosistema móvil (runtime dinámico, "Golden Template" Expo, IA on-device) | `mobile/` |
+| **App móvil de solo lectura** (Expo): login, proyectos, visor de diagramas, versiones, análisis, IA, notificaciones | `mobile/` |
 
 ## Estado actual (a 2026-11-02)
 
@@ -51,13 +51,14 @@ Historial: 11 commits, del 2026-08-30 al 2026-10-29. Las fases del plan (`docs/p
 
 **Incompleto o pendiente:**
 - **Diseño de datos** (2026-11-02): implementado (modelo lógico, normalización con dependencias inferidas + confirmadas por el usuario, diagrama BD). Pendientes dentro de este bloque: la "medición" del diseño y el diagrama de secuencia (sin definir con el profesor), y aplicar la descomposición propuesta al diagrama de clases (hoy solo se muestra).
-- Pendientes de los parciales: chat de IA **grupal**, vista móvil de solo lectura con notificaciones push, IA/voz sin internet.
-- `docs/obsidian/01_Project_Brain.md` está desactualizado: lista como "próximos pasos" la verificación manual del Modal de Compartir y la IA local móvil (AURA), y no menciona la IA grupal ni XMI. AURA (`03_Estrategia_IA_Local_AURA.md`) es una estrategia sin implementación visible en backend/frontend; `mobile/packages/ai-runtime` es lo más cercano.
+- Pendientes de los parciales: notificaciones push en el móvil, IA/voz sin internet.
+- **App móvil** (2026-11-04): visor de solo lectura en `mobile/` (Expo SDK 58). Reemplaza al antiguo "Golden Template"/workspace de runtime dinámico, que se eliminó. Sin edición: ni crear, renombrar, borrar, compartir ni restaurar; los parches de la IA se muestran pero no se aplican. Solo escribe estado de cuenta (marcar notificaciones, aceptar/rechazar invitaciones). Verificada con `tsc`, ESLint, 15 tests y `expo export`; **sin probar aún en un dispositivo real**.
+- El generador (`backend/app/modules/generator`) todavía produce `schema.json`/`ai-tools.json`/`manifest.json` para el móvil antiguo; hoy ninguna app los consume.
+- `docs/obsidian/01_Project_Brain.md` está desactualizado: lista como "próximos pasos" la verificación manual del Modal de Compartir y la IA local móvil (AURA), y no menciona la IA grupal ni XMI. AURA (`03_Estrategia_IA_Local_AURA.md`) es una estrategia sin implementación visible en backend/frontend.
 - La IA grupal es muy reciente (último commit): sin evidencia de tests más allá de `tests/test_ai_agent.py`; trátala como la zona menos estable.
 - El servidor Yjs no persiste el Y.Doc (en memoria). La persistencia real es el autoguardado en MongoDB. Sí valida el token contra FastAPI antes de unir a una sala (`server.js`); el README del servidor está desactualizado en ese punto.
 - Hay un solo workflow de CI (E2E); no hay CI de tests unitarios ni del frontend.
 - En el último commit se borró `backend-examen/` y la salida generada pasó a `backend-springboot/` (**no** está en `.gitignore`: sus 81 archivos están versionados; decide si debe ignorarse).
-- Las carpetas dentro de `mobile/apps/` son proyectos generados de ejemplo (barberia, FacturacionProject, etc.), no código a mantener a mano.
 
 **Cuando trabajes aquí**, asume que el proyecto está en fase de **estabilización y cierre**, no de construcción desde cero: prioriza arreglar, limpiar y probar sobre añadir funcionalidades nuevas, salvo que se pida.
 
@@ -69,7 +70,7 @@ Historial: 11 commits, del 2026-08-30 al 2026-10-29. Las fases del plan (`docs/p
 | `frontend/` | SPA React 19 + Vite + Apollon (editor UML) | `frontend/AGENTS.md`, `frontend/DESIGN.md` |
 | `infra/collaboration-server/` | Servidor WebSocket Yjs (en memoria; valida el token contra FastAPI) | `infra/collaboration-server/README.md` |
 | `backend-springboot/` | **Salida generada** por el backend (proyectos Spring Boot y reportes E2E). No editar a mano | — |
-| `mobile/` | Workspace pnpm móvil (`apps`, `packages`, `template`) | — |
+| `mobile/` | App Expo (expo-router) de solo lectura para ver diagramas | `mobile/AGENTS.md` |
 | `docs/` | `plan-definicion.md`, `xmi_ea_profile.md`, `obsidian/` (reglas y arquitectura) | — |
 
 Antes de tocar un área, lee la guía de su carpeta. Las reglas de arquitectura de fondo están en `docs/obsidian/02_Reglas_y_Arquitectura.md`.

@@ -263,7 +263,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                     <FolderOpen size={16} color="#1a1a1a" />
                   </div>
                   <div className="drawer-btn-content">
-                    <span className="drawer-btn-label">Mis diagramas</span>
+                    <span className="drawer-btn-label">Mis proyectos</span>
                   </div>
                 </button>
 

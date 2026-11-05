@@ -74,8 +74,8 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
                   <FolderOpen size={14} color="#1a1a1a" />
                 </div>
                 <div className="dropdown-text-stack">
-                  <span className="dropdown-item-title">Mis diagramas</span>
-                  <span className="dropdown-item-desc">Abrir, crear, renombrar o eliminar</span>
+                  <span className="dropdown-item-title">Mis proyectos</span>
+                  <span className="dropdown-item-desc">Volver a tus diagramas, versiones y enlaces</span>
                 </div>
               </div>
             </button>

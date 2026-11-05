@@ -7,7 +7,7 @@ import { useTopMenuState } from '../model/use-top-menu-state';
 import { useTopMenuActions } from '../model/use-top-menu-actions';
 import { TopMenuBarProps } from '../model/types';
 import { useVersioningStore } from '../../../features/versioning';
-import { useDiagramManagerStore } from '../../../features/diagram-manager';
+import { useDashboardStore } from '../../../features/projects-dashboard';
 import { useDataDesignStore } from '../../../features/data-design';
 import './TopMenuBar.css';
 
@@ -33,7 +33,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
   };
   const openDiagrams = () => {
     closeMenu();
-    useDiagramManagerStore.getState().openManager();
+    useDashboardStore.getState().showDashboard();
   };
   const openHistory = () => {
     closeMenu();

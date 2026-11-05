@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ApollonEditor } from './components/ApollonEditor';
 import { TopMenuBar } from './components/TopMenuBar';
 import { ValidationPanel, E2EResultPanel, LoadingOverlay } from './features/model-validation';
@@ -18,6 +18,7 @@ import { AuthPage } from './features/auth/ui/AuthPage';
 import { useAutosave, HistoryDialog } from './features/versioning';
 import { DiagramManagerDialog } from './features/diagram-manager';
 import { DataDesignDialog } from './features/data-design';
+import { ProjectsDashboard, useDashboardStore } from './features/projects-dashboard';
 import './style.css';
 
 function App() {
@@ -36,6 +37,17 @@ function App() {
 
   const token = useAuthStore(s => s.token);
   const [authChecked, setAuthChecked] = useState(false);
+
+  const screen = useDashboardStore(s => s.screen);
+  const showEditor = useDashboardStore(s => s.showEditor);
+  const showDashboard = useDashboardStore(s => s.showDashboard);
+
+  // Al cerrar sesión, el próximo inicio de sesión vuelve a la pantalla de proyectos.
+  const hadToken = useRef(Boolean(token));
+  useEffect(() => {
+    if (hadToken.current && !token) showDashboard();
+    hadToken.current = Boolean(token);
+  }, [token, showDashboard]);
 
   // Inicialización de sesión: verificar cookies activas o hidratar perfil si token existe
   useEffect(() => {
@@ -112,6 +124,7 @@ function App() {
               window.history.replaceState({}, '', url.toString());
             } catch {}
 
+            showEditor();
             useShareStore.getState().setRoomId(roomStr);
             joinSession(roomStr, res.role as any);
             connect(roomStr);
@@ -155,6 +168,7 @@ function App() {
                 window.history.replaceState({}, '', url.toString());
               } catch {}
 
+              showEditor();
               joinSession(roomStr, res.role as any);
               connect(roomStr);
               // Cargar datos del diagrama
@@ -278,8 +292,14 @@ function App() {
     return <AuthPage />;
   }
 
+  const inEditor = screen === 'editor';
+
   return (
     <div className="case-app">
+
+      {!inEditor && <ProjectsDashboard />}
+
+      {inEditor && (<>
 
       {/* ── Barra de Menús Superior (Estilo IDE / StarUML) ── */}
       <TopMenuBar
@@ -304,9 +324,31 @@ function App() {
       {/* LoadingOverlay */}
       <LoadingOverlay />
 
+      {/* Panel E2E — position:fixed bottom, clase case-result-panel */}
+      {/* No toca el layout del editor Apollon en absoluto */}
+      <E2EResultPanel result={e2eResult} onClose={() => setE2EResult(null)} />
+
+      {/* ── Colaboración — position:fixed inferior-izquierda ── */}
+      {/* No modifica el layout del lienzo. No provoca resize/reflow del editor. */}
+      <CollaborationPanel />
+
+      {/* ── Modo Sugerencias IA (Google Docs style) ── */}
+      <AISuggestionsOverlay />
+
+      {/* ── Arquitecto IA Omnisciente (Chat Privado + Muro de Auditoría + Sugerencias) ── */}
+      <AIAssistantSidebar />
+
+      {/* ── Administrador de diagramas (listar, abrir, crear, renombrar, eliminar) ── */}
+      <DiagramManagerDialog />
+
+      {/* ── Diseño de datos (modelo lógico, normalización, diagrama BD) ── */}
+      <DataDesignDialog />
+
+      </>)}
+
       {/* Notificaciones flotantes top-right */}
       <div className="case-notifications">
-        <PresenceToasts />
+        {inEditor && <PresenceToasts />}
         {errorMsg && (
           <Notification
             type="error"
@@ -323,31 +365,9 @@ function App() {
         )}
       </div>
 
-      {/* Panel E2E — position:fixed bottom, clase case-result-panel */}
-      {/* No toca el layout del editor Apollon en absoluto */}
-      <E2EResultPanel result={e2eResult} onClose={() => setE2EResult(null)} />
-
-      {/* ── Colaboración — position:fixed inferior-izquierda ── */}
-      {/* No modifica el layout del lienzo. No provoca resize/reflow del editor. */}
-      <CollaborationPanel />
-
-      {/* ── Modo Sugerencias IA (Google Docs style) ── */}
-      <AISuggestionsOverlay />
-
-      {/* ── Arquitecto IA Omnisciente (Chat Privado + Muro de Auditoría + Sugerencias) ── */}
-      <AIAssistantSidebar />
-
-      {/* ── Diálogo de Compartir (Google Docs style) — portal modal ── */}
+      {/* ── Compartir e Historial: disponibles también desde la pantalla de proyectos ── */}
       <ShareDialog />
-
-      {/* ── Administrador de diagramas (listar, abrir, crear, renombrar, eliminar) ── */}
-      <DiagramManagerDialog />
-
-      {/* ── Historial de versiones (quién hizo qué, vista previa, restaurar) ── */}
       <HistoryDialog />
-
-      {/* ── Diseño de datos (modelo lógico, normalización, diagrama BD) ── */}
-      <DataDesignDialog />
 
     </div>
   );
