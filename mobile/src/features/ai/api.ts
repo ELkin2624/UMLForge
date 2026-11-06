@@ -12,18 +12,16 @@ export function askAI(params: {
   return request<CollaborateResponse>('/ai/collaborate', {
     method: 'POST',
     body: JSON.stringify({
-      diagram_id: params.diagramId,
-      user_id: params.userId,
-      user_name: params.userName,
+      diagram_id: Number(params.diagramId),
       prompt: params.prompt,
       current_canvas_snapshot: params.snapshot,
     }),
   });
 }
 
-export async function fetchPrivateHistory(diagramId: string, userId: string): Promise<ChatMessage[]> {
+export async function fetchPrivateHistory(diagramId: string, _userId?: string): Promise<ChatMessage[]> {
   const raw = await request<ChatMessage[]>(
-    `/ai/history/${encodeURIComponent(diagramId)}?user_id=${encodeURIComponent(userId)}`
+    `/ai/history/${encodeURIComponent(diagramId)}`
   );
   return raw.map((m, i) => ({ ...m, id: m.id ?? `msg-${i}`, patches: m.patches ?? [] }));
 }

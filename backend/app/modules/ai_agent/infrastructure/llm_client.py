@@ -3,7 +3,7 @@ import logging
 from typing import List, Dict, Any, Optional
 from google import genai
 from google.genai import types
-from ..schemas import AgentStructuredOutput, CanvasPatchOperation
+from ..schemas import PAYLOAD_CONTRACT, AgentResult, AgentStructuredOutput, CanvasPatchOperation
 
 logger = logging.getLogger(__name__)
 
@@ -24,16 +24,19 @@ class LLMClient:
         recent_audit_logs: List[Dict[str, Any]],
         canvas_snapshot: Dict[str, Any],
         image_base64: Optional[str] = None,
-    ) -> AgentStructuredOutput:
+        diagram_context: str = "",
+    ) -> AgentResult:
         """Invoca a Gemini con el rol de Arquitecto Omnisciente y salida fuertemente estructurada."""
         if not self.client or not self.api_key:
             logger.info("Sin GEMINI_API_KEY configurada. Generando respuesta contextual simulada.")
-            return self._simulate_architect_response(
-                user_name=user_name,
-                user_prompt=user_prompt,
-                shared_decisions=shared_decisions,
-                canvas_snapshot=canvas_snapshot,
-                image_base64=image_base64,
+            return self._as_simulated(
+                self._simulate_architect_response(
+                    user_name=user_name,
+                    user_prompt=user_prompt,
+                    shared_decisions=shared_decisions,
+                    canvas_snapshot=canvas_snapshot,
+                    image_base64=image_base64,
+                )
             )
 
         system_instruction = f"""
@@ -46,13 +49,17 @@ MEMORIA COMPARTIDA DEL EQUIPO (Decisiones arquitectónicas tomadas por los miemb
 ACTIVIDAD RECIENTE EN EL LIENZO (Historial de cambios):
 {json.dumps(recent_audit_logs, default=str, ensure_ascii=False)}
 
-ESTADO ACTUAL DEL DIAGRAMA UML (Snapshot del lienzo):
-{json.dumps(canvas_snapshot, ensure_ascii=False)}
+ESTADO ACTUAL DEL DIAGRAMA UML (resumen; las clases se identifican por NOMBRE):
+{diagram_context or json.dumps(canvas_snapshot, ensure_ascii=False)}
 
 Actualmente estás conversando en privado con: {user_name}.
 - Si el usuario te envía una imagen (ej: boceto hecho a mano, foto de pizarra o diagrama capturado), analízala cuidadosamente, extrae las entidades, atributos, tipos y relaciones observadas y genera los 'canvas_patches' correspondientes.
 - Si {user_name} te pide diseñar, crear o refactorizar clases o relaciones, genera las operaciones en 'canvas_patches' y registra una breve justificación en 'shared_decision_note' para que cuando otro compañero te consulte, puedas explicar exactamente qué diseñó {user_name} y por qué.
 - Si {user_name} te pregunta sobre por qué existe una clase, interfaz o relación en el lienzo, consulta la MEMORIA COMPARTIDA y la ACTIVIDAD RECIENTE para explicarle quién la solicitó y la justificación arquitectónica.
+- Si el resumen incluye una SELECCIÓN DEL USUARIO, interpreta "esto", "esta tabla" o "la clase seleccionada" como esos elementos.
+- Si el resumen indica que parte del diagrama se omitió por tamaño, dilo y no inventes lo que no ves.
+- Operaciones disponibles en 'canvas_patches' y su 'payload': {PAYLOAD_CONTRACT}
+- Usa UPDATE_CLASS (no DELETE_CLASS + ADD_CLASS) para renombrar o cambiar atributos de una clase existente.
 - Sé claro, técnico, conciso y profesional.
 """
 
@@ -98,20 +105,28 @@ Actualmente estás conversando en privado con: {user_name}.
                     ),
                 )
                 if response and response.text:
-                    return AgentStructuredOutput.model_validate_json(response.text)
+                    parsed = AgentStructuredOutput.model_validate_json(response.text)
+                    return AgentResult(**parsed.model_dump(), simulated=False)
             except Exception as e:
                 logger.warning(f"Error llamando a Gemini con modelo {model}: {e}")
                 last_error = e
 
         logger.error(f"Fallo en llamada a Gemini con todos los modelos: {last_error}")
         # En caso de fallo de red o cuota en Gemini, fallback inteligente
-        return self._simulate_architect_response(
-            user_name=user_name,
-            user_prompt=user_prompt,
-            shared_decisions=shared_decisions,
-            canvas_snapshot=canvas_snapshot,
-            image_base64=image_base64,
+        return self._as_simulated(
+            self._simulate_architect_response(
+                user_name=user_name,
+                user_prompt=user_prompt,
+                shared_decisions=shared_decisions,
+                canvas_snapshot=canvas_snapshot,
+                image_base64=image_base64,
+            )
         )
+
+    @staticmethod
+    def _as_simulated(output: AgentStructuredOutput) -> AgentResult:
+        """El respaldo local nunca se hace pasar por una respuesta real del modelo."""
+        return AgentResult(**output.model_dump(), simulated=True)
 
     def _simulate_architect_response(
         self,

@@ -14,6 +14,8 @@ import {
   X,
   ChevronRight,
   Loader2,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
 import { useAIAssistantStore } from '../model/ai-store';
 import { useAuthStore } from '../../auth/store';
@@ -21,7 +23,9 @@ import { useShareStore } from '../../sharing/model/share-store';
 import { getSharedCollaborationManager } from '../../collaboration';
 import { SpeechEngine } from '../../voice/api/speech-engine';
 import { WhisperEngine } from '../../voice/api/whisper-engine';
+import { useCommandHistory } from '../../uml-commands';
 import { AuditFeedTab } from './AuditFeedTab';
+import { PatchPreview } from './PatchPreview';
 import './AIAssistantSidebar.css';
 
 export const AIAssistantSidebar: React.FC = () => {
@@ -35,6 +39,8 @@ export const AIAssistantSidebar: React.FC = () => {
     clearHistory,
     sendMessage,
     approvePatch,
+    approveAll,
+    reproposePatch,
     rejectPatch,
     syncWithYjs,
   } = useAIAssistantStore();
@@ -54,6 +60,10 @@ export const AIAssistantSidebar: React.FC = () => {
   const recognitionRef = useRef<any>(null);
 
   const roomId = useShareStore((s) => s.roomId) || 'default-room';
+  const history = useCommandHistory();
+  const sameDiagram = history.diagramId === roomId;
+  const lastUndo = sameDiagram ? history.undoStack.at(-1) : undefined;
+  const lastRedo = sameDiagram ? history.redoStack.at(-1) : undefined;
   const currentUser = useAuthStore((s) => s.user);
   const userId = currentUser?.id ? String(currentUser.id) : 'guest_user';
   const userName = currentUser?.display_name || currentUser?.username || 'Usuario';
@@ -203,6 +213,7 @@ export const AIAssistantSidebar: React.FC = () => {
   };
 
   const patchCount = Object.keys(suggestions).length;
+  const approvableCount = Object.values(suggestions).filter((p) => p.status !== 'stale').length;
 
   return (
     <>
@@ -456,6 +467,43 @@ export const AIAssistantSidebar: React.FC = () => {
               background: '#fafaf9',
             }}
           >
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              <button
+                type="button"
+                className="ai-patch-btn-reject"
+                disabled={!lastUndo}
+                onClick={() => history.undo(roomId)}
+                aria-label="Deshacer el último cambio aplicado por la IA"
+                title={lastUndo ? `Deshacer: ${lastUndo.label}` : 'Nada que deshacer'}
+              >
+                <Undo2 size={14} /> Deshacer
+              </button>
+              <button
+                type="button"
+                className="ai-patch-btn-approve"
+                disabled={!lastRedo}
+                onClick={() => history.redo(roomId)}
+                aria-label="Rehacer el cambio deshecho"
+                title={lastRedo ? `Rehacer: ${lastRedo.label}` : 'Nada que rehacer'}
+              >
+                <Redo2 size={14} /> Rehacer
+              </button>
+            </div>
+            {approvableCount > 1 && (
+              <button
+                type="button"
+                className="ai-patch-btn-approve"
+                onClick={() => approveAll({ diagramId: roomId, ydoc })}
+                title="Aplica todas las sugerencias vigentes como un solo cambio (todas o ninguna)"
+              >
+                Aprobar todas ({approvableCount})
+              </button>
+            )}
+            {history.error && (
+              <div role="alert" style={{ fontSize: '11.5px', color: '#991b1b', background: '#fee2e2', border: '1.5px solid #1a1a1a', borderRadius: '8px', padding: '6px 8px' }}>
+                {history.error}
+              </div>
+            )}
             {patchCount === 0 ? (
               <div style={{ textAlign: 'center', color: '#64748b', fontSize: '12px', marginTop: '30px' }}>
                 No hay sugerencias pendientes en el lienzo.
@@ -488,6 +536,9 @@ export const AIAssistantSidebar: React.FC = () => {
                   <p style={{ margin: '0 0 8px 0', fontSize: '11.5px', color: '#475569', lineHeight: 1.4 }}>
                     {patch.reason}
                   </p>
+                  <div style={{ marginBottom: '8px' }}>
+                    <PatchPreview patch={patch} />
+                  </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#7c3aed' }}>
                       Por: {patch.requested_by}
@@ -503,9 +554,27 @@ export const AIAssistantSidebar: React.FC = () => {
                           })
                         }
                         className="ai-patch-btn-approve"
+                        disabled={patch.status === 'stale'}
                       >
                         Aprobar
                       </button>
+                      {patch.status === 'stale' && (
+                        <button
+                          onClick={() =>
+                            reproposePatch({
+                              diagramId: roomId,
+                              patchId: patch.patch_id,
+                              userId,
+                              userName,
+                              ydoc,
+                            })
+                          }
+                          className="ai-patch-btn-approve"
+                          title="Pedir al agente que la proponga de nuevo sobre el estado actual"
+                        >
+                          Re-proponer
+                        </button>
+                      )}
                       <button
                         onClick={() =>
                           rejectPatch({

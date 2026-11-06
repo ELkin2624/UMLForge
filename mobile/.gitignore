@@ -44,3 +44,7 @@ example
 
 # local env
 .env
+
+# Credenciales y artefactos locales (nunca versionar)
+*-firebase-adminsdk-*.json
+eas-archive/

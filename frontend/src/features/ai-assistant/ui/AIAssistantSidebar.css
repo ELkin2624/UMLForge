@@ -480,3 +480,11 @@
   background: #fca5a5;
   transform: translate(-1px, -1px);
 }
+
+.ai-patch-btn-approve:disabled,
+.ai-patch-btn-reject:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

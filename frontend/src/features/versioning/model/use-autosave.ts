@@ -5,6 +5,7 @@ import { canEdit } from '../../sharing/model/capabilities';
 import { saveDiagram } from '../../../api/diagrams-api';
 import { consumeSaveSource, markAiChange } from './save-source';
 import { useVersioningStore } from './versioning-store';
+import { registerFlushHandler } from './flush';
 
 export const AUTOSAVE_DEBOUNCE_MS = 3000;
 export const AUTOSAVE_RETRY_MS = 10000;
@@ -74,6 +75,14 @@ export function useAutosave(): void {
       }
     }
 
+    // Guardar ya y esperar a que termine (también si ya había un guardado en curso).
+    const flushAndWait = async (): Promise<void> => {
+      await flush();
+      while (inFlight) await new Promise((resolve) => setTimeout(resolve, 50));
+      if (dirty) await flush();
+    };
+    registerFlushHandler(flushAndWait);
+
     const unsubscribe = useModelStore.subscribe(
       (state) => state.model,
       (model) => {
@@ -90,6 +99,7 @@ export function useAutosave(): void {
 
     return () => {
       disposed = true;
+      registerFlushHandler(null);
       unsubscribe();
       window.removeEventListener('beforeunload', onBeforeUnload);
       if (timer) clearTimeout(timer);

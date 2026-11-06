@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "95463911455",
+    "project_id": "umlforge-4334e",
+    "storage_bucket": "umlforge-4334e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:95463911455:android:dd662005c3e4d4a92b252a",
+        "android_client_info": {
+          "package_name": "com.umlforge.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdO2WUr-0PEltBKP7UXJK-IYgX_CRvnEI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

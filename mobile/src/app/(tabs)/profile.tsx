@@ -2,6 +2,7 @@ import { View } from 'react-native';
 
 import { logout } from '@/features/auth/api';
 import { useAuthStore } from '@/features/auth/store';
+import { unregisterPush } from '@/features/notifications/push';
 import { API_ORIGIN } from '@/shared/api/config';
 import { spacing } from '@/shared/theme/tokens';
 import { Avatar, Button, Card, Chip, Screen, Text } from '@/shared/ui';
@@ -35,7 +36,7 @@ export default function ProfileScreen() {
         label="Cerrar sesión"
         variant="secondary"
         onPress={() => {
-          void logout().finally(clearAuth);
+          void unregisterPush().then(logout).finally(clearAuth);
         }}
       />
     </Screen>

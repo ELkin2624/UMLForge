@@ -12,8 +12,12 @@ export interface AIPatch {
   data: Record<string, any>;
   reason: string;
   requested_by: string;
-  status: 'pending_approval' | 'approved' | 'rejected';
+  status: 'pending_approval' | 'approved' | 'rejected' | 'stale';
   timestamp?: string | number;
+  /** Huellas (id -> huella) de los elementos que toca, capturadas al recibir la sugerencia. */
+  base?: Record<string, string>;
+  /** Por qué quedó obsoleta (solo con status 'stale'). */
+  stale_reason?: string;
 }
 
 export interface AIPresenceState {
@@ -39,9 +43,23 @@ export interface ChatMessage {
   timestamp?: string;
 }
 
+/** Metadatos del contexto que el backend usó para responder. */
+export interface ContextInfo {
+  source: 'server' | 'client';
+  version: number;
+  classes: number;
+  relationships: number;
+  approx_tokens: number;
+  truncated: boolean;
+  warnings: string[];
+}
+
 export interface CollaborateResponse {
   reply: string;
   patches: AIPatch[];
   execution_mode: 'DIRECT' | 'SUGGESTION';
   shared_decision_note?: string;
+  /** true si la respuesta no vino del modelo real (modo de respaldo sin conexión). */
+  simulated?: boolean;
+  context?: ContextInfo;
 }

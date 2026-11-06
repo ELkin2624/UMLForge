@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 from typing import List
@@ -14,6 +14,7 @@ from app.modules.sharing.schemas import (
     ShareRequest, CreateInvitationRequest, CollaboratorResponse, ChangeRoleRequest, InvitationResponse
 )
 from app.core.errors import APIError
+from app.modules.notifications.push import send_expo_push, tokens_for_user
 
 router = APIRouter(prefix="/api/v1/diagrams/{diagram_id}", tags=["sharing"])
 
@@ -36,6 +37,7 @@ def require_owner(diagram_id: int, db: Session, user: User) -> Diagram:
 def create_invitation(
     diagram_id: int, 
     request: CreateInvitationRequest, 
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(require_authenticated_user), 
     db: Session = Depends(get_db)
 ):
@@ -125,6 +127,13 @@ def create_invitation(
         )
         db.add(notification)
         db.commit()
+        background_tasks.add_task(
+            send_expo_push,
+            tokens_for_user(db, target_user.id),
+            notification.title,
+            notification.message,
+            {"type": notification.type, **notification.data},
+        )
 
         return CollaboratorResponse(
             user_id=target_user.id,
@@ -223,6 +232,7 @@ def change_role(
 def revoke_access(
     diagram_id: int, 
     user_id: int, 
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(require_authenticated_user), 
     db: Session = Depends(get_db)
 ):
@@ -261,6 +271,13 @@ def revoke_access(
     )
     db.add(notification)
     db.commit()
+    background_tasks.add_task(
+        send_expo_push,
+        tokens_for_user(db, user_id),
+        notification.title,
+        notification.message,
+        {"type": notification.type, **notification.data},
+    )
     return None
 
 @router.post("/invitations/{invitation_id}/cancel", status_code=status.HTTP_200_OK)
