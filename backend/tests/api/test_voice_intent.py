@@ -5,7 +5,10 @@ def test_parse_intent_gemini_success(client):
     mock_response = MagicMock()
     mock_response.text = '{"commands": [{"type": "CREATE_CLASS", "className": "Rol"}]}'
 
-    with patch("google.generativeai.GenerativeModel") as mock_model_cls:
+    with patch("google.generativeai.GenerativeModel") as mock_model_cls, \
+         patch("app.modules.voice.router.settings") as mock_settings:
+        mock_settings.GEMINI_API_KEY = "dummy_gemini"
+        mock_settings.COHERE_API_KEY = "dummy_cohere"
         mock_model_instance = MagicMock()
         mock_model_instance.generate_content.return_value = mock_response
         mock_model_cls.return_value = mock_model_instance

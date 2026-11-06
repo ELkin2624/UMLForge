@@ -123,7 +123,7 @@ postgres_data/
 generated/
 generated_test/
 generated_projects/
-projects/
+/projects/
 reports/
 temp/
 tmp/
