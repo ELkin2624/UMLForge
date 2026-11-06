@@ -10,7 +10,11 @@ import {
 } from '../api/ai-api';
 import { useModelStore } from '../../../store/model-store';
 import { markAiChange } from '../../versioning';
-import { UMLModel, UMLClass, UMLRelationship } from '../../../types/canonical-model';
+import { UMLModel } from '../../../types/canonical-model';
+import { applyCommands } from '../../uml-commands';
+import { useShareStore } from '../../sharing/model/share-store';
+import { canEdit } from '../../sharing/model/capabilities';
+import { patchToCommands } from './patch-to-commands';
 
 function generateRandomId(): string {
   return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 7);
@@ -247,6 +251,12 @@ export const useAIAssistantStore = create<AIAssistantState>((set, get) => ({
     const patch = get().suggestions[patchId];
     if (!patch) return;
 
+    // Solo OWNER/EDITOR pueden aplicar cambios (el servidor Yjs también descarta los de un lector)
+    if (!canEdit(useShareStore.getState().localRole)) {
+      set({ error: 'Tu rol es de solo lectura: no puedes aprobar cambios.' });
+      return;
+    }
+
     // Aplicar patch al modelo UML en Zustand
     const currentModel: UMLModel = JSON.parse(
       JSON.stringify(
@@ -260,61 +270,22 @@ export const useAIAssistantStore = create<AIAssistantState>((set, get) => ({
       )
     );
 
-    if (patch.operation === 'ADD_CLASS') {
-      const clsName = patch.target;
-      const alreadyExists = currentModel.classes.some(
-        (c) => c.name.toLowerCase() === clsName.toLowerCase()
-      );
-      if (!alreadyExists) {
-        const newClass: UMLClass = {
-          id: generateRandomId(),
-          name: clsName,
-          attributes: (patch.data?.attributes || []).map((att: any) => ({
-            id: generateRandomId(),
-            name: typeof att === 'string' ? att : att.name,
-            type: typeof att === 'string' ? 'String' : att.type || 'String',
-            visibility: 'private',
-          })),
-          operations: (patch.data?.operations || []).map((op: any) => ({
-            id: generateRandomId(),
-            name: typeof op === 'string' ? op : op.name,
-            return_type: typeof op === 'string' ? 'void' : op.return_type || 'void',
-            visibility: 'public',
-            parameters: [],
-          })),
-        };
-        currentModel.classes.push(newClass);
-      }
-    } else if (patch.operation === 'ADD_RELATION') {
-      const sourceName = patch.data?.source;
-      const targetName = patch.data?.target;
-      const sourceCls = currentModel.classes.find(
-        (c) => c.name.toLowerCase() === (sourceName || '').toLowerCase()
-      );
-      const targetCls = currentModel.classes.find(
-        (c) => c.name.toLowerCase() === (targetName || '').toLowerCase()
-      );
-
-      if (sourceCls && targetCls) {
-        const newRel: UMLRelationship = {
-          id: generateRandomId(),
-          source_id: sourceCls.id,
-          target_id: targetCls.id,
-          type: patch.data?.type || 'realization',
-          source_multiplicity: '1',
-          target_multiplicity: '1',
-        };
-        currentModel.relationships.push(newRel);
-      }
-    } else if (patch.operation === 'DELETE_CLASS') {
-      currentModel.classes = currentModel.classes.filter(
-        (c) => c.name.toLowerCase() !== patch.target.toLowerCase()
-      );
+    // La traducción (nombres -> ids) y la validación viven en el motor de comandos
+    const translation = patchToCommands(currentModel, patch, generateRandomId);
+    if (!translation.ok) {
+      set({ error: translation.message });
+      return;
     }
+    const result = applyCommands(currentModel, translation.commands);
+    if (!result.ok) {
+      set({ error: result.message });
+      return;
+    }
+    set({ error: null });
 
     // Actualizar el lienzo definitivo (el autoguardado atribuirá la versión a la IA)
     markAiChange();
-    useModelStore.getState().setModel(currentModel);
+    useModelStore.getState().setModel(result.model);
 
     // Quitar sugerencia de Yjs o store local
     if (ydoc) {

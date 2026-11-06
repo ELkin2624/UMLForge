@@ -7,7 +7,8 @@ Servidor WebSocket basado en `@y/websocket-server` (Yjs) que permite a múltiple
 ## ⚠️ Advertencias importantes
 
 - **Sin persistencia**: Los documentos colaborativos se almacenan **en memoria**. Al reiniciar el servidor, todos los documentos y el historial de cambios se pierden. Si deseas persistencia, necesitas un servidor personalizado con `@y/websocket-server/utils` + LevelDB.
-- **Sin autenticación**: El acceso a una sala se controla únicamente por nombre. Cualquier cliente que conozca el nombre de sala puede unirse.
+- **Autenticación y roles**: cada conexión exige `?token=` y se valida contra FastAPI (`GET /diagrams/{id}`). Los lectores (`READER`) reciben el documento y comparten presencia, pero el servidor **descarta sus cambios**. Las salas no numéricas solo exigen sesión válida. El rol se lee al conectar: si cambia, hay que reconectar.
+- **Agente de IA (solo presencia)**: si el propietario lo activa (`PUT /api/v1/diagrams/{id}/agent`), el servidor lo publica como un peer más en el awareness (`user.isAgent`). `POST /agent/{id}/refresh` (con `Authorization: Bearer`) hace que el servidor relea el estado real desde FastAPI. El agente aún no escribe en el documento.
 - **Sin granularidad CRDT por campo**: UMLForge almacena el modelo como un JSON completo en `Y.Map`. El último en escribir gana a nivel de documento.
 
 ---
@@ -120,3 +121,10 @@ Vite Dev Server → http://localhost:5173   (frontend React)
 ```
 
 El servidor de colaboración **no interactúa con FastAPI**. Son servicios completamente independientes.
+
+
+## Pruebas
+
+```bash
+npm test   # node:test; levanta el servidor con un backend simulado
+```

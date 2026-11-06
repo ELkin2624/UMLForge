@@ -35,6 +35,8 @@ export interface PeerInfo {
   clientId: number;
   name: string;
   color: string;
+  /** true si es el agente de IA (no una persona). */
+  isAgent?: boolean;
   cursor?: { x: number; y: number };
   selectedNode?: string;
   editingNode?: string;
