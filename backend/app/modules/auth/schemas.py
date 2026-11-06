@@ -13,6 +13,15 @@ class Token(BaseModel):
     token_type: str = "bearer"
     user: UserResponse | None = None
 
+
+class MobileToken(Token):
+    """Sesión para cliente nativo; el refresh se guarda en SecureStore."""
+    refresh_token: str
+
+
+class MobileRefreshRequest(BaseModel):
+    refresh_token: str
+
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr

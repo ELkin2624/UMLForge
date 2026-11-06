@@ -73,6 +73,7 @@ export interface ChatMessage {
   content: string;
   patches?: AIPatch[];
   timestamp?: string;
+  simulated?: boolean;
 }
 
 export interface CollaborateResponse {
@@ -80,6 +81,7 @@ export interface CollaborateResponse {
   patches: AIPatch[];
   execution_mode: 'DIRECT' | 'SUGGESTION';
   shared_decision_note?: string | null;
+  simulated: boolean;
 }
 
 export interface AuditLogEntry {

@@ -37,8 +37,9 @@ Ollama **no tiene autenticación**. No abras el puerto a internet ni en tu route
 1. Instala Tailscale en esta máquina y en la que corre el backend.
 2. En `.env`: `OLLAMA_BIND=<IP de Tailscale de esta máquina>` (la ves con `tailscale ip -4`), y
    `docker compose up -d`.
-3. En el backend: `OLLAMA_BASE_URL=http://<esa IP>:11434` (variable que usará el proveedor de IA
-   local; ver `docs/plan-agente-colaborativo.md`, Fase 4).
+3. En `backend/.env`, configura `AI_PROVIDER=ollama`,
+   `OLLAMA_BASE_URL=http://<esa IP>:11434` y el nombre exacto del modelo en
+   `OLLAMA_MODEL` (variable que usará el proveedor de IA local).
 
 Alternativa sin Tailscale: túnel SSH desde el equipo del backend,
 `ssh -N -L 11434:127.0.0.1:11434 usuario@maquina`, y `OLLAMA_BASE_URL=http://127.0.0.1:11434`.

@@ -60,7 +60,16 @@ export function ChatView() {
         snapshot: (data?.data ?? {}) as unknown as Record<string, unknown>,
       });
       // Los parches se muestran como sugerencias: el móvil nunca modifica el diagrama.
-      setAdded((m) => [...m, { id: `m-${Date.now()}`, role: 'model', content: res.reply, patches: res.patches }]);
+      setAdded((m) => [
+        ...m,
+        {
+          id: `m-${Date.now()}`,
+          role: 'model',
+          content: res.reply,
+          patches: res.patches,
+          simulated: res.simulated,
+        },
+      ]);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'La IA no pudo responder');
     } finally {
@@ -88,6 +97,7 @@ export function ChatView() {
               <View style={[styles.bubble, mine ? styles.mine : styles.theirs]}>
                 <Text>{item.content}</Text>
               </View>
+              {item.simulated ? <Chip label="Respuesta simulada: revisa Ollama" tone="peach" /> : null}
               {item.patches && item.patches.length > 0 ? (
                 <View style={{ gap: spacing.sm, alignSelf: 'stretch' }}>
                   <Chip label="Sugerencias de la IA · no se aplican en móvil" tone="lilac" />

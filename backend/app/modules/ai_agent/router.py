@@ -1,13 +1,16 @@
 import logging
-from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Depends, Query, HTTPException
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+
 from app.core.auth_deps import require_authenticated_user
 from app.core.config import settings
 from app.core.database.models import User
 from app.core.database.session import get_db
 from app.core.dependencies import get_diagram_repo
 from app.modules.diagram_store import DiagramRepository
+
 from .access import (
     READ_ROLES,
     WRITE_ROLES,
@@ -15,10 +18,10 @@ from .access import (
     display_name,
     require_ai_access,
 )
-from .schemas import CollaborateRequest, CollaborateResponse, AuditEventCreate
-from .infrastructure.nosql_repository import NoSQLRepository
-from .infrastructure.llm_client import LLMClient
 from .context_service import ContextService
+from .infrastructure.llm_client import LLMClient
+from .infrastructure.nosql_repository import NoSQLRepository
+from .schemas import AuditEventCreate, CollaborateRequest, CollaborateResponse
 from .service import AIAgentService
 
 logger = logging.getLogger(__name__)
@@ -42,7 +45,13 @@ def get_nosql_repo() -> NoSQLRepository:
 def get_llm_client() -> LLMClient:
     global _llm_instance
     if _llm_instance is None:
-        _llm_instance = LLMClient(api_key=settings.GEMINI_API_KEY)
+        _llm_instance = LLMClient(
+            api_key=settings.GEMINI_API_KEY,
+            provider=settings.AI_PROVIDER,
+            ollama_base_url=settings.OLLAMA_BASE_URL,
+            ollama_model=settings.OLLAMA_MODEL,
+            ollama_timeout_seconds=settings.OLLAMA_TIMEOUT_SECONDS,
+        )
     return _llm_instance
 
 

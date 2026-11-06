@@ -1,5 +1,5 @@
 import json
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import List, Literal, Optional, Dict, Any
 
 MAX_PROMPT_CHARS = 4_000
@@ -28,6 +28,17 @@ class CanvasPatchOperation(BaseModel):
         description=PAYLOAD_CONTRACT,
     )
     reason: str = Field(description="Breve justificación arquitectónica del cambio")
+
+    @model_validator(mode="after")
+    def normalize_uml_visibility(self) -> "CanvasPatchOperation":
+        """Adapta la notación UML (+, -, #, ~) al contrato canónico del editor."""
+        visibility = {"+": "public", "-": "private", "#": "protected", "~": "package"}
+        attributes = self.payload.get("attributes")
+        if isinstance(attributes, list):
+            for attribute in attributes:
+                if isinstance(attribute, dict) and attribute.get("visibility") in visibility:
+                    attribute["visibility"] = visibility[attribute["visibility"]]
+        return self
 
 
 class AgentStructuredOutput(BaseModel):

@@ -2,6 +2,7 @@
 
 import asyncio
 from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.modules.ai_agent.infrastructure.llm_client import LLMClient
 from app.modules.ai_agent.schemas import AgentStructuredOutput
@@ -77,5 +78,71 @@ def test_el_prompt_del_sistema_incluye_el_contrato_de_operaciones():
 
     fake_gemini(client, generate)
     invoke(client)
-    for op in ("UPDATE_CLASS", "DELETE_RELATION", "remove_attributes"):
+    for op in ("UPDATE_CLASS", "DELETE_RELATION", "remove_attributes", "COBERTURA OBLIGATORIA"):
         assert op in seen["system"]
+
+
+def test_ollama_local_devuelve_una_respuesta_real_y_esquema_estructurado():
+    payload = AgentStructuredOutput(reply_to_user="Listo desde Ollama", canvas_patches=[])
+    response = MagicMock()
+    response.json.return_value = {"message": {"content": payload.model_dump_json()}}
+    response.raise_for_status.return_value = None
+    http = AsyncMock()
+    http.post.return_value = response
+    context = MagicMock()
+    context.__aenter__ = AsyncMock(return_value=http)
+    context.__aexit__ = AsyncMock(return_value=None)
+
+    with patch("app.modules.ai_agent.infrastructure.llm_client.httpx.AsyncClient", return_value=context):
+        result = invoke(LLMClient(api_key="", provider="ollama", ollama_model="qwen3.5:4b"))
+
+    assert result.simulated is False
+    assert result.reply_to_user == "Listo desde Ollama"
+    sent = http.post.call_args.kwargs["json"]
+    assert sent["model"] == "qwen3.5:4b"
+    assert sent["stream"] is False
+    assert sent["format"]
+
+
+def test_ollama_reintenta_si_se_piden_atributos_y_el_parche_llega_vacio():
+    first = AgentStructuredOutput(
+        reply_to_user="Creé Perro con atributos.",
+        canvas_patches=[{"op": "ADD_CLASS", "target_name": "Perro", "payload": {}, "reason": "x"}],
+    )
+    repaired = AgentStructuredOutput(
+        reply_to_user="Creé Perro.",
+        canvas_patches=[
+            {
+                "op": "ADD_CLASS",
+                "target_name": "Perro",
+                "payload": {"attributes": [{"name": "nombre", "type": "String"}]},
+                "reason": "x",
+            }
+        ],
+    )
+    client = LLMClient(api_key="", provider="ollama")
+    client._ollama_structured_response = AsyncMock(side_effect=[first, repaired])  # type: ignore[method-assign]
+
+    result = asyncio.run(
+        client.invoke_architect_agent(
+            **{**CALL, "user_prompt": "Crea Perro con atributos nombre y edad"}
+        )
+    )
+    assert result.simulated is False
+    assert result.canvas_patches[0].payload["attributes"][0]["name"] == "nombre"
+    assert client._ollama_structured_response.await_count == 2
+
+
+def test_la_notacion_uml_de_visibilidad_se_normaliza_para_el_editor():
+    output = AgentStructuredOutput(
+        reply_to_user="ok",
+        canvas_patches=[
+            {
+                "op": "ADD_CLASS",
+                "target_name": "Perro",
+                "payload": {"attributes": [{"name": "nombre", "type": "String", "visibility": "+"}]},
+                "reason": "x",
+            }
+        ],
+    )
+    assert output.canvas_patches[0].payload["attributes"][0]["visibility"] == "public"

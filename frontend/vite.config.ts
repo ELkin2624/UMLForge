@@ -14,6 +14,10 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        // Ollama local en CPU puede tardar más de un minuto en generar un
+        // conjunto de parches; no cerrar el proxy antes de que FastAPI responda.
+        timeout: 180_000,
+        proxyTimeout: 180_000,
       },
     },
   },

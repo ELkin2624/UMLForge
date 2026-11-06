@@ -48,7 +48,7 @@ def create_invitation(
     if request.user_id:
         target_user = db.query(User).filter(User.id == request.user_id).first()
     elif request.identifier:
-        clean_ident = request.identifier.strip()
+        clean_ident = request.identifier.strip().removeprefix("@").strip()
         target_user = db.query(User).filter(
             or_(User.email == clean_ident, User.username == clean_ident)
         ).first()

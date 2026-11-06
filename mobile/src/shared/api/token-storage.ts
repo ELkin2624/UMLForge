@@ -4,6 +4,7 @@ const KEY = 'umlforge.session';
 
 export interface StoredSession {
   token: string;
+  refreshToken: string;
   user: { id: number; username: string; email?: string; display_name: string | null };
 }
 
