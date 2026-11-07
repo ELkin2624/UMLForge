@@ -3,4 +3,5 @@ export { AIPresenceIndicator } from './ui/AIPresenceIndicator';
 export { AISuggestionsOverlay } from './ui/AISuggestionsOverlay';
 export { AuditFeedTab } from './ui/AuditFeedTab';
 export { useAIAssistantStore } from './model/ai-store';
+export { AICursor } from './ui/AICursor';
 export * from './types';

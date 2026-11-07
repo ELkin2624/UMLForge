@@ -360,7 +360,7 @@ export const AIAssistantSidebar: React.FC = () => {
                     style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#7c3aed', fontWeight: 600 }}
                   >
                     <Sparkles size={15} className="animate-spin" />
-                    <span>Gemini analizando contexto, memoria y diseñando arquitectura...</span>
+                    <span>IA analizando el contexto y preparando cambios...</span>
                   </div>
                 </div>
               )}

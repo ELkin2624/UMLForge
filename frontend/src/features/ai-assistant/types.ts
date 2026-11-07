@@ -25,6 +25,8 @@ export interface AIPresenceState {
   consultingWith: string | null;
   color: string;
   timestamp: number;
+  targetId?: string;
+  expiresAt?: number;
 }
 
 export interface AuditLogEntry {

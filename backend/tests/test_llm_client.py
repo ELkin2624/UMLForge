@@ -94,7 +94,14 @@ def test_ollama_local_devuelve_una_respuesta_real_y_esquema_estructurado():
     context.__aexit__ = AsyncMock(return_value=None)
 
     with patch("app.modules.ai_agent.infrastructure.llm_client.httpx.AsyncClient", return_value=context):
-        result = invoke(LLMClient(api_key="", provider="ollama", ollama_model="qwen3.5:4b"))
+        result = invoke(
+            LLMClient(
+                api_key="",
+                provider="ollama",
+                ollama_model="qwen3.5:4b",
+                ollama_api_token="test-token",
+            )
+        )
 
     assert result.simulated is False
     assert result.reply_to_user == "Listo desde Ollama"
@@ -102,6 +109,7 @@ def test_ollama_local_devuelve_una_respuesta_real_y_esquema_estructurado():
     assert sent["model"] == "qwen3.5:4b"
     assert sent["stream"] is False
     assert sent["format"]
+    assert http.post.call_args.kwargs["headers"] == {"Authorization": "Bearer test-token"}
 
 
 def test_ollama_reintenta_si_se_piden_atributos_y_el_parche_llega_vacio():

@@ -24,6 +24,7 @@ class LLMClient:
         ollama_base_url: str = "http://127.0.0.1:11434",
         ollama_model: str = "qwen3.5:4b",
         ollama_timeout_seconds: float = 180.0,
+        ollama_api_token: str = "",
     ):
         self.api_key = api_key or ""
         self.provider = provider
@@ -33,6 +34,7 @@ class LLMClient:
         self.ollama_base_url = ollama_base_url.rstrip("/")
         self.ollama_model = ollama_model
         self.ollama_timeout_seconds = ollama_timeout_seconds
+        self.ollama_api_token = ollama_api_token
 
     async def invoke_architect_agent(
         self,
@@ -74,6 +76,8 @@ ESTADO ACTUAL DEL DIAGRAMA UML (resumen; las clases se identifican por NOMBRE):
 Actualmente estás conversando en privado con: {user_name}.
 - Si el usuario te envía una imagen (ej: boceto hecho a mano, foto de pizarra o diagrama capturado), analízala cuidadosamente, extrae las entidades, atributos, tipos y relaciones observadas y genera los 'canvas_patches' correspondientes.
 - Si {user_name} te pide diseñar, crear o refactorizar clases o relaciones, genera las operaciones en 'canvas_patches' y registra una breve justificación en 'shared_decision_note' para que cuando otro compañero te consulte, puedas explicar exactamente qué diseñó {user_name} y por qué.
+- Una orden explícita de crear, agregar, modificar o eliminar usa execution_mode DIRECT. Una pregunta de opinión, propuesta o pedido ambiguo usa SUGGESTION y no afirma haber aplicado cambios.
+- Si pide un sistema o base de datos de forma amplia, interpreta el dominio y propone un modelo UML útil con clases, atributos tipados y relaciones razonables; explica brevemente tus supuestos. Si falta información indispensable, pregunta.
 - COBERTURA OBLIGATORIA: convierte CADA elemento solicitado en una operación. Una petición con varias clases exige un ADD_CLASS por clase; los atributos pedidos deben ir en el payload de su clase; cada relación pedida exige su propio ADD_RELATION. No resumas varias entidades en una sola clase ni describas en 'reply_to_user' algo que no esté también en 'canvas_patches'.
 - Antes de responder, revisa que todos los nombres, atributos y relaciones explícitos del pedido estén cubiertos por los parches. Si falta información indispensable, pregunta en 'reply_to_user' y no inventes requisitos no solicitados.
 - Si {user_name} te pregunta sobre por qué existe una clase, interfaz o relación en el lienzo, consulta la MEMORIA COMPARTIDA y la ACTIVIDAD RECIENTE para explicarle quién la solicitó y la justificación arquitectónica.
@@ -177,6 +181,9 @@ Actualmente estás conversando en privado con: {user_name}.
                     "incluir payload.attributes con todos los atributos pedidos. No dejes payload vacío."
                 )
                 parsed = await self._ollama_structured_response(system_instruction, repair_prompt)
+            if self._needs_attribute_repair(parsed, user_prompt):
+                parsed.reply_to_user += " No pude completar los atributos solicitados; revisa la propuesta antes de aplicarla."
+                parsed.execution_mode = "SUGGESTION"
             return AgentResult(**parsed.model_dump(), simulated=False)
         except Exception as exc:
             logger.error("Error llamando a Ollama local (%s): %s", self.ollama_base_url, exc)
@@ -206,8 +213,15 @@ Actualmente estás conversando en privado con: {user_name}.
             "think": False,
             "options": {"temperature": 0.2, "num_predict": 700},
         }
+        headers = (
+            {"Authorization": f"Bearer {self.ollama_api_token}"}
+            if self.ollama_api_token
+            else None
+        )
         async with httpx.AsyncClient(timeout=self.ollama_timeout_seconds) as client:
-            response = await client.post(f"{self.ollama_base_url}/api/chat", json=payload)
+            response = await client.post(
+                f"{self.ollama_base_url}/api/chat", json=payload, headers=headers
+            )
             response.raise_for_status()
         content = response.json().get("message", {}).get("content")
         if not isinstance(content, str) or not content.strip():

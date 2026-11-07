@@ -51,6 +51,7 @@ def get_llm_client() -> LLMClient:
             ollama_base_url=settings.OLLAMA_BASE_URL,
             ollama_model=settings.OLLAMA_MODEL,
             ollama_timeout_seconds=settings.OLLAMA_TIMEOUT_SECONDS,
+            ollama_api_token=settings.OLLAMA_API_TOKEN,
         )
     return _llm_instance
 

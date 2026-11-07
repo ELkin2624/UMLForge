@@ -247,13 +247,31 @@ export const useAIAssistantStore = create<AIAssistantState>((set, get) => ({
         }
       }
 
+      // Las eliminaciones siempre requieren aprobación explícita, incluso en modo directo.
+      const direct = !res.simulated && res.execution_mode === 'DIRECT'
+        ? rawPatches.filter((p) => !p.operation.startsWith('DELETE_'))
+        : [];
+      if (direct.length && ydoc) {
+        set({ suggestions: ydoc.getMap<AIPatch>('ai_suggestions').toJSON() });
+      }
+      if (direct.length) {
+        await get().approvePatches({ diagramId, patchIds: direct.map((p) => p.patch_id), ydoc });
+      }
+      const applyError = direct.length ? get().error : null;
+      const pendingCount = rawPatches.length - (applyError ? 0 : direct.length);
+      const outcome = [
+        direct.length && !applyError ? `Se aplicaron ${direct.length} cambios.` : '',
+        pendingCount ? `${pendingCount} cambios quedan pendientes de aprobación.` : '',
+        applyError ? `No se aplicaron los cambios: ${applyError}` : '',
+      ].filter(Boolean).join(' ');
+
       // 6. Agregar respuesta de la IA al historial privado del usuario
       const assistantMsg: ChatMessage = {
         id: 'model-' + Date.now(),
         role: 'model',
         content: res.simulated
           ? `⚠️ Respuesta simulada: no se pudo contactar al modelo de IA.\n\n${res.reply}`
-          : res.reply,
+          : `${res.reply}${outcome ? `\n\n${outcome}` : ''}`,
         patches: rawPatches,
         timestamp: new Date().toISOString(),
       };
@@ -302,11 +320,13 @@ export const useAIAssistantStore = create<AIAssistantState>((set, get) => ({
         color: '#8B5CF6',
         timestamp: Date.now(),
       };
-      if (ydoc) {
-        const aiPresenceMap = ydoc.getMap<AIPresenceState>('ai_presence');
-        aiPresenceMap.set('state', finalPresence);
+      if (get().aiPresence.status !== 'editing_canvas') {
+        if (ydoc) {
+          const aiPresenceMap = ydoc.getMap<AIPresenceState>('ai_presence');
+          aiPresenceMap.set('state', finalPresence);
+        }
+        set({ aiPresence: finalPresence });
       }
-      set({ aiPresence: finalPresence });
     }
   },
 
@@ -395,6 +415,19 @@ export const useAIAssistantStore = create<AIAssistantState>((set, get) => ({
       },
       result.model,
     );
+
+    // Anunciar los elementos realmente afectados; cada cliente dibuja su propio cursor.
+    const targets = result.touched.filter((id) => result.model.classes.some((cls) => cls.id === id));
+    targets.forEach((targetId, index) => {
+      setTimeout(() => {
+        const presence: AIPresenceState = {
+          status: 'editing_canvas', consultingWith: null, color: '#8B5CF6',
+          timestamp: Date.now(), targetId, expiresAt: Date.now() + 2500,
+        };
+        if (ydoc) ydoc.getMap<AIPresenceState>('ai_presence').set('state', presence);
+        set({ aiPresence: presence });
+      }, index * 700);
+    });
 
     // Registrar en auditoría (una entrada por sugerencia aprobada)
     try {

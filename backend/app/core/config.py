@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
     OLLAMA_MODEL: str = "qwen3.5:4b"
     OLLAMA_TIMEOUT_SECONDS: float = 180.0
+    # Token opcional para un proxy remoto temporal (p. ej. demostración en Kaggle).
+    # Ollama local no lo necesita.
+    OLLAMA_API_TOKEN: str = ""
 
     model_config = SettingsConfigDict(
         env_file=(str(BACKEND_DIR / ".env"), ".env"), env_file_encoding="utf-8", extra="ignore"

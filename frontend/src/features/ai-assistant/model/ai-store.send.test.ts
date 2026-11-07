@@ -4,6 +4,7 @@ import { useModelStore } from '../../../store/model-store';
 import { collaborateWithAI } from '../api/ai-api';
 import { flushPendingSave } from '../../versioning';
 import { useAIAssistantStore } from './ai-store';
+import { useShareStore } from '../../sharing/model/share-store';
 
 vi.mock('../api/ai-api', () => ({
   collaborateWithAI: vi.fn(),
@@ -89,5 +90,32 @@ describe('sendMessage: contexto', () => {
     await send();
     const roles = useAIAssistantStore.getState().privateHistory.map((m) => m.role);
     expect(roles.at(-1)).toBe('model');
+  });
+
+  it('aplica creaciones directas y deja eliminaciones pendientes', async () => {
+    useShareStore.setState({ localRole: 'OWNER' });
+    useAIAssistantStore.setState({ suggestions: {} });
+    vi.mocked(collaborateWithAI).mockResolvedValue(response({
+      execution_mode: 'DIRECT',
+      patches: [
+        { patch_id: 'new', operation: 'ADD_CLASS', target: 'Pedido', data: { attributes: [{ name: 'total', type: 'Double' }] }, reason: 'pedido', requested_by: 'Ana', status: 'pending_approval' },
+        { patch_id: 'delete', operation: 'DELETE_CLASS', target: 'Usuario', data: {}, reason: 'borrar', requested_by: 'Ana', status: 'pending_approval' },
+      ],
+    }));
+    await send();
+    expect(useModelStore.getState().model?.classes.find((c) => c.name === 'Pedido')?.attributes[0].name).toBe('total');
+    expect(useModelStore.getState().model?.classes.some((c) => c.name === 'Usuario')).toBe(true);
+    expect(useAIAssistantStore.getState().suggestions.delete).toBeDefined();
+  });
+
+  it('no aplica respuestas simuladas aunque declaren modo directo', async () => {
+    useShareStore.setState({ localRole: 'OWNER' });
+    useAIAssistantStore.setState({ suggestions: {} });
+    vi.mocked(collaborateWithAI).mockResolvedValue(response({
+      simulated: true, execution_mode: 'DIRECT',
+      patches: [{ patch_id: 'x', operation: 'ADD_CLASS', target: 'Pedido', data: {}, reason: '', requested_by: 'Ana', status: 'pending_approval' }],
+    }));
+    await send();
+    expect(useModelStore.getState().model?.classes.some((c) => c.name === 'Pedido')).toBe(false);
   });
 });
