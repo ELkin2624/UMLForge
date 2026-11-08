@@ -11,29 +11,37 @@ export interface User {
 
 interface AuthState {
   token: string | null;
+  refreshToken: string | null;
   user: User | null;
   /** false hasta leer el almacenamiento seguro al arrancar. */
   hydrated: boolean;
   hydrate: () => Promise<void>;
-  setAuth: (token: string, user?: User | null) => void;
+  setAuth: (token: string, user?: User | null, refreshToken?: string | null) => void;
   clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
+  refreshToken: null,
   user: null,
   hydrated: false,
   hydrate: async () => {
     const saved = await loadSession();
-    set({ token: saved?.token ?? null, user: saved?.user ?? null, hydrated: true });
+    set({
+      token: saved?.token ?? null,
+      refreshToken: saved?.refreshToken ?? null,
+      user: saved?.user ?? null,
+      hydrated: true,
+    });
   },
-  setAuth: (token, user) => {
+  setAuth: (token, user, refreshToken) => {
     const nextUser = user ?? get().user;
-    set({ token, user: nextUser });
-    if (nextUser) void saveSession({ token, user: nextUser });
+    const nextRefreshToken = refreshToken ?? get().refreshToken;
+    set({ token, refreshToken: nextRefreshToken, user: nextUser });
+    if (nextUser && nextRefreshToken) void saveSession({ token, refreshToken: nextRefreshToken, user: nextUser });
   },
   clearAuth: () => {
-    set({ token: null, user: null });
+    set({ token: null, refreshToken: null, user: null });
     void clearSession();
   },
 }));

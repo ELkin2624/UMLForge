@@ -1,11 +1,27 @@
 import logging
-from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, Depends, Query, HTTPException, Request
+from typing import Any, Dict, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
+
+from app.core.auth_deps import require_authenticated_user
 from app.core.config import settings
-from app.core.security import decode_token
-from .schemas import CollaborateRequest, CollaborateResponse, AuditEventCreate
-from .infrastructure.nosql_repository import NoSQLRepository
+from app.core.database.models import User
+from app.core.database.session import get_db
+from app.core.dependencies import get_diagram_repo
+from app.modules.diagram_store import DiagramRepository
+
+from .access import (
+    READ_ROLES,
+    WRITE_ROLES,
+    collaborate_limiter,
+    display_name,
+    require_ai_access,
+)
+from .context_service import ContextService
 from .infrastructure.llm_client import LLMClient
+from .infrastructure.nosql_repository import NoSQLRepository
+from .schemas import AuditEventCreate, CollaborateRequest, CollaborateResponse
 from .service import AIAgentService
 
 logger = logging.getLogger(__name__)
@@ -29,108 +45,121 @@ def get_nosql_repo() -> NoSQLRepository:
 def get_llm_client() -> LLMClient:
     global _llm_instance
     if _llm_instance is None:
-        _llm_instance = LLMClient(api_key=settings.GEMINI_API_KEY)
+        _llm_instance = LLMClient(
+            api_key=settings.GEMINI_API_KEY,
+            provider=settings.AI_PROVIDER,
+            ollama_base_url=settings.OLLAMA_BASE_URL,
+            ollama_model=settings.OLLAMA_MODEL,
+            ollama_timeout_seconds=settings.OLLAMA_TIMEOUT_SECONDS,
+            ollama_api_token=settings.OLLAMA_API_TOKEN,
+        )
     return _llm_instance
 
 
 def get_ai_service(
     repo: NoSQLRepository = Depends(get_nosql_repo),
     llm: LLMClient = Depends(get_llm_client),
+    diagrams: DiagramRepository = Depends(get_diagram_repo),
 ) -> AIAgentService:
-    return AIAgentService(repo=repo, llm=llm)
-
-
-def extract_user_id_from_request(request: Request, explicit_user_id: Optional[str] = None) -> str:
-    """Extrae el user_id de la query/body o del token Bearer."""
-    if explicit_user_id and explicit_user_id.strip():
-        return explicit_user_id.strip()
-
-    auth_header = request.headers.get("Authorization")
-    if auth_header and auth_header.startswith("Bearer "):
-        token = auth_header.split(" ")[1]
-        try:
-            payload = decode_token(token)
-            sub = payload.get("sub")
-            if sub:
-                return str(sub)
-        except Exception:
-            pass
-
-    return "guest_user"
+    return AIAgentService(repo=repo, llm=llm, contexts=ContextService(diagrams))
 
 
 @router.post("/collaborate", response_model=CollaborateResponse)
 async def collaborate(
     req: CollaborateRequest,
+    current_user: User = Depends(require_authenticated_user),
+    db: Session = Depends(get_db),
     service: AIAgentService = Depends(get_ai_service),
 ) -> CollaborateResponse:
-    """Endpoint principal: Procesa la interacción privada de un usuario manteniendo la memoria compartida."""
+    """Interacción privada con el agente. Requiere rol OWNER o EDITOR sobre el diagrama."""
+    require_ai_access(db, req.diagram_id, current_user, WRITE_ROLES)
+    collaborate_limiter.enforce(current_user.id)
     try:
-        result = await service.process_private_interaction(req)
+        result = await service.process_private_interaction(
+            req,
+            user_id=str(current_user.id),
+            user_name=display_name(current_user),
+        )
         return CollaborateResponse(
             reply=result["reply"],
             patches=result["patches"],
             execution_mode=result["execution_mode"],
             shared_decision_note=result.get("shared_decision_note"),
+            simulated=result.get("simulated", False),
+            context=result.get("context", {}),
         )
     except Exception as e:
-        logger.error(f"Error en endpoint /collaborate: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Error al procesar consulta con la IA: {str(e)}")
+        # El detalle técnico va al log, no al cliente.
+        logger.error("Error en endpoint /collaborate: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Error al procesar la consulta con la IA")
 
 
 @router.get("/history/{diagram_id}")
 async def get_private_history(
-    diagram_id: str,
-    request: Request,
-    user_id: Optional[str] = Query(None, description="ID del usuario cuyo historial privado se solicita"),
+    diagram_id: int,
     limit: int = Query(30, ge=1, le=100),
+    current_user: User = Depends(require_authenticated_user),
+    db: Session = Depends(get_db),
     service: AIAgentService = Depends(get_ai_service),
 ) -> List[Dict[str, Any]]:
-    """Carga el historial del chat privado del usuario para este diagrama específico."""
-    resolved_user_id = extract_user_id_from_request(request, user_id)
-    return await service.get_user_private_history(diagram_id=diagram_id, user_id=resolved_user_id, limit=limit)
+    """Historial del chat privado del usuario autenticado (nunca el de otro usuario)."""
+    require_ai_access(db, diagram_id, current_user, READ_ROLES)
+    return await service.get_user_private_history(
+        diagram_id=str(diagram_id), user_id=str(current_user.id), limit=limit
+    )
 
 
 @router.delete("/history/{diagram_id}")
 async def clear_private_history(
-    diagram_id: str,
-    request: Request,
-    user_id: Optional[str] = Query(None, description="ID del usuario cuyo historial se borrará"),
+    diagram_id: int,
+    current_user: User = Depends(require_authenticated_user),
+    db: Session = Depends(get_db),
     service: AIAgentService = Depends(get_ai_service),
 ) -> Dict[str, Any]:
-    """Limpia el historial privado de un usuario para el diagrama."""
-    resolved_user_id = extract_user_id_from_request(request, user_id)
-    return await service.clear_user_private_history(diagram_id=diagram_id, user_id=resolved_user_id)
+    """Borra el historial privado del usuario autenticado en este diagrama."""
+    require_ai_access(db, diagram_id, current_user, READ_ROLES)
+    return await service.clear_user_private_history(
+        diagram_id=str(diagram_id), user_id=str(current_user.id)
+    )
 
 
 @router.get("/shared-memory/{diagram_id}")
 async def get_shared_memory(
-    diagram_id: str,
+    diagram_id: int,
+    current_user: User = Depends(require_authenticated_user),
+    db: Session = Depends(get_db),
     service: AIAgentService = Depends(get_ai_service),
 ) -> Dict[str, Any]:
-    """Devuelve las decisiones arquitectónicas compartidas de todo el equipo en este diagrama."""
-    return await service.get_shared_memory(diagram_id=diagram_id)
+    """Decisiones arquitectónicas compartidas del equipo (cualquier miembro del diagrama)."""
+    require_ai_access(db, diagram_id, current_user, READ_ROLES)
+    return await service.get_shared_memory(diagram_id=str(diagram_id))
 
 
 @router.get("/audit-feed/{diagram_id}")
 async def get_audit_feed(
-    diagram_id: str,
+    diagram_id: int,
     limit: int = Query(30, ge=1, le=100),
+    current_user: User = Depends(require_authenticated_user),
+    db: Session = Depends(get_db),
     service: AIAgentService = Depends(get_ai_service),
 ) -> List[Dict[str, Any]]:
-    """Devuelve el muro cronológico de actividad (audit log) visible por todo el equipo y app móvil."""
-    return await service.get_audit_feed(diagram_id=diagram_id, limit=limit)
+    """Muro cronológico de actividad visible por los miembros del diagrama."""
+    require_ai_access(db, diagram_id, current_user, READ_ROLES)
+    return await service.get_audit_feed(diagram_id=str(diagram_id), limit=limit)
 
 
 @router.post("/audit-feed/{diagram_id}")
 async def create_audit_log_event(
-    diagram_id: str,
+    diagram_id: int,
     event: AuditEventCreate,
+    current_user: User = Depends(require_authenticated_user),
+    db: Session = Depends(get_db),
     service: AIAgentService = Depends(get_ai_service),
 ) -> Dict[str, Any]:
-    """Registra un evento manual en la bitácora de auditoría del lienzo."""
+    """Registra un evento en la bitácora. El autor es siempre el usuario autenticado."""
+    require_ai_access(db, diagram_id, current_user, WRITE_ROLES)
     return await service.log_manual_audit_event(
-        diagram_id=diagram_id,
-        actor=event.actor,
+        diagram_id=str(diagram_id),
+        actor=display_name(current_user),
         action_summary=event.action_summary,
     )

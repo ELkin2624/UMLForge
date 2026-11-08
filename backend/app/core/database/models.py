@@ -1,6 +1,6 @@
 import datetime
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, UniqueConstraint, Index, JSON
+from sqlalchemy import false, Column, Integer, String, Boolean, DateTime, ForeignKey, UniqueConstraint, Index, JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -40,6 +40,7 @@ class User(Base):
     refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
     diagram_permissions = relationship("DiagramPermission", back_populates="user", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="recipient", cascade="all, delete-orphan")
+    device_tokens = relationship("DeviceToken", back_populates="user", cascade="all, delete-orphan")
     sent_invitations = relationship("DiagramInvitation", foreign_keys="DiagramInvitation.inviter_user_id", back_populates="inviter", cascade="all, delete-orphan")
     received_invitations = relationship("DiagramInvitation", foreign_keys="DiagramInvitation.invitee_user_id", back_populates="invitee", cascade="all, delete-orphan")
 
@@ -63,6 +64,8 @@ class Diagram(Base):
     name = Column(String, nullable=False)
     # El contenido del diagrama y su historial viven en MongoDB (diagram_store).
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    # El propietario decide si el agente de IA participa como un colaborador más.
+    agent_enabled = Column(Boolean, nullable=False, default=False, server_default=false())
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
@@ -146,3 +149,17 @@ class Notification(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     recipient = relationship("User", back_populates="notifications")
+
+
+class DeviceToken(Base):
+    """Token de notificaciones push (Expo) de un dispositivo. Un token pertenece a un solo usuario."""
+    __tablename__ = "device_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    token = Column(String, nullable=False, unique=True)
+    platform = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+    user = relationship("User", back_populates="device_tokens")

@@ -1,19 +1,40 @@
 import json
 import logging
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
+import httpx
 from google import genai
 from google.genai import types
-from ..schemas import AgentStructuredOutput, CanvasPatchOperation
+
+from ..schemas import (
+    PAYLOAD_CONTRACT,
+    AgentResult,
+    AgentStructuredOutput,
+    CanvasPatchOperation,
+)
 
 logger = logging.getLogger(__name__)
 
 
 class LLMClient:
-    def __init__(self, api_key: str):
+    def __init__(
+        self,
+        api_key: str,
+        provider: str = "gemini",
+        ollama_base_url: str = "http://127.0.0.1:11434",
+        ollama_model: str = "qwen3.5:4b",
+        ollama_timeout_seconds: float = 180.0,
+        ollama_api_token: str = "",
+    ):
         self.api_key = api_key or ""
+        self.provider = provider
         self.model_name = "gemini-2.5-flash"
         self.fallback_models = ["gemini-2.0-flash", "gemini-1.5-flash"]
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
+        self.ollama_base_url = ollama_base_url.rstrip("/")
+        self.ollama_model = ollama_model
+        self.ollama_timeout_seconds = ollama_timeout_seconds
+        self.ollama_api_token = ollama_api_token
 
     async def invoke_architect_agent(
         self,
@@ -24,16 +45,19 @@ class LLMClient:
         recent_audit_logs: List[Dict[str, Any]],
         canvas_snapshot: Dict[str, Any],
         image_base64: Optional[str] = None,
-    ) -> AgentStructuredOutput:
-        """Invoca a Gemini con el rol de Arquitecto Omnisciente y salida fuertemente estructurada."""
-        if not self.client or not self.api_key:
+        diagram_context: str = "",
+    ) -> AgentResult:
+        """Invoca el proveedor configurado con salida fuertemente estructurada."""
+        if self.provider == "gemini" and (not self.client or not self.api_key):
             logger.info("Sin GEMINI_API_KEY configurada. Generando respuesta contextual simulada.")
-            return self._simulate_architect_response(
-                user_name=user_name,
-                user_prompt=user_prompt,
-                shared_decisions=shared_decisions,
-                canvas_snapshot=canvas_snapshot,
-                image_base64=image_base64,
+            return self._as_simulated(
+                self._simulate_architect_response(
+                    user_name=user_name,
+                    user_prompt=user_prompt,
+                    shared_decisions=shared_decisions,
+                    canvas_snapshot=canvas_snapshot,
+                    image_base64=image_base64,
+                )
             )
 
         system_instruction = f"""
@@ -46,13 +70,21 @@ MEMORIA COMPARTIDA DEL EQUIPO (Decisiones arquitectónicas tomadas por los miemb
 ACTIVIDAD RECIENTE EN EL LIENZO (Historial de cambios):
 {json.dumps(recent_audit_logs, default=str, ensure_ascii=False)}
 
-ESTADO ACTUAL DEL DIAGRAMA UML (Snapshot del lienzo):
-{json.dumps(canvas_snapshot, ensure_ascii=False)}
+ESTADO ACTUAL DEL DIAGRAMA UML (resumen; las clases se identifican por NOMBRE):
+{diagram_context or json.dumps(canvas_snapshot, ensure_ascii=False)}
 
 Actualmente estás conversando en privado con: {user_name}.
 - Si el usuario te envía una imagen (ej: boceto hecho a mano, foto de pizarra o diagrama capturado), analízala cuidadosamente, extrae las entidades, atributos, tipos y relaciones observadas y genera los 'canvas_patches' correspondientes.
 - Si {user_name} te pide diseñar, crear o refactorizar clases o relaciones, genera las operaciones en 'canvas_patches' y registra una breve justificación en 'shared_decision_note' para que cuando otro compañero te consulte, puedas explicar exactamente qué diseñó {user_name} y por qué.
+- Una orden explícita de crear, agregar, modificar o eliminar usa execution_mode DIRECT. Una pregunta de opinión, propuesta o pedido ambiguo usa SUGGESTION y no afirma haber aplicado cambios.
+- Si pide un sistema o base de datos de forma amplia, interpreta el dominio y propone un modelo UML útil con clases, atributos tipados y relaciones razonables; explica brevemente tus supuestos. Si falta información indispensable, pregunta.
+- COBERTURA OBLIGATORIA: convierte CADA elemento solicitado en una operación. Una petición con varias clases exige un ADD_CLASS por clase; los atributos pedidos deben ir en el payload de su clase; cada relación pedida exige su propio ADD_RELATION. No resumas varias entidades en una sola clase ni describas en 'reply_to_user' algo que no esté también en 'canvas_patches'.
+- Antes de responder, revisa que todos los nombres, atributos y relaciones explícitos del pedido estén cubiertos por los parches. Si falta información indispensable, pregunta en 'reply_to_user' y no inventes requisitos no solicitados.
 - Si {user_name} te pregunta sobre por qué existe una clase, interfaz o relación en el lienzo, consulta la MEMORIA COMPARTIDA y la ACTIVIDAD RECIENTE para explicarle quién la solicitó y la justificación arquitectónica.
+- Si el resumen incluye una SELECCIÓN DEL USUARIO, interpreta "esto", "esta tabla" o "la clase seleccionada" como esos elementos.
+- Si el resumen indica que parte del diagrama se omitió por tamaño, dilo y no inventes lo que no ves.
+- Operaciones disponibles en 'canvas_patches' y su 'payload': {PAYLOAD_CONTRACT}
+- Usa UPDATE_CLASS (no DELETE_CLASS + ADD_CLASS) para renombrar o cambiar atributos de una clase existente.
 - Sé claro, técnico, conciso y profesional.
 """
 
@@ -64,6 +96,16 @@ Actualmente estás conversando en privado con: {user_name}.
             contents.append(f"{role}: {content}")
         contents.append(f"USER ({user_name}): {user_prompt}")
         prompt_text = "\n".join(contents)
+
+        if self.provider == "ollama":
+            return await self._invoke_ollama(
+                system_instruction,
+                prompt_text,
+                user_name=user_name,
+                user_prompt=user_prompt,
+                shared_decisions=shared_decisions,
+                canvas_snapshot=canvas_snapshot,
+            )
 
         gemini_contents: List[Any] = []
         if image_base64:
@@ -98,20 +140,109 @@ Actualmente estás conversando en privado con: {user_name}.
                     ),
                 )
                 if response and response.text:
-                    return AgentStructuredOutput.model_validate_json(response.text)
+                    parsed = AgentStructuredOutput.model_validate_json(response.text)
+                    return AgentResult(**parsed.model_dump(), simulated=False)
             except Exception as e:
                 logger.warning(f"Error llamando a Gemini con modelo {model}: {e}")
                 last_error = e
 
         logger.error(f"Fallo en llamada a Gemini con todos los modelos: {last_error}")
         # En caso de fallo de red o cuota en Gemini, fallback inteligente
-        return self._simulate_architect_response(
-            user_name=user_name,
-            user_prompt=user_prompt,
-            shared_decisions=shared_decisions,
-            canvas_snapshot=canvas_snapshot,
-            image_base64=image_base64,
+        return self._as_simulated(
+            self._simulate_architect_response(
+                user_name=user_name,
+                user_prompt=user_prompt,
+                shared_decisions=shared_decisions,
+                canvas_snapshot=canvas_snapshot,
+                image_base64=image_base64,
+            )
         )
+
+    async def _invoke_ollama(
+        self,
+        system_instruction: str,
+        prompt_text: str,
+        *,
+        user_name: str,
+        user_prompt: str,
+        shared_decisions: List[Dict[str, Any]],
+        canvas_snapshot: Dict[str, Any],
+    ) -> AgentResult:
+        """Usa la API local de Ollama y valida estrictamente su JSON de salida."""
+        try:
+            parsed = await self._ollama_structured_response(system_instruction, prompt_text)
+            if self._needs_attribute_repair(parsed, user_prompt):
+                logger.warning(
+                    "Ollama propuso clases sin atributos pese a que el usuario los solicitó; reintentando"
+                )
+                repair_prompt = (
+                    f"{prompt_text}\n\nCORRECCIÓN OBLIGATORIA: tu salida anterior creó una o más "
+                    "clases sin atributos. Devuelve de nuevo el JSON completo. Cada ADD_CLASS debe "
+                    "incluir payload.attributes con todos los atributos pedidos. No dejes payload vacío."
+                )
+                parsed = await self._ollama_structured_response(system_instruction, repair_prompt)
+            if self._needs_attribute_repair(parsed, user_prompt):
+                parsed.reply_to_user += " No pude completar los atributos solicitados; revisa la propuesta antes de aplicarla."
+                parsed.execution_mode = "SUGGESTION"
+            return AgentResult(**parsed.model_dump(), simulated=False)
+        except Exception as exc:
+            logger.error("Error llamando a Ollama local (%s): %s", self.ollama_base_url, exc)
+            return self._as_simulated(
+                self._simulate_architect_response(
+                    user_name=user_name,
+                    user_prompt=user_prompt,
+                    shared_decisions=shared_decisions,
+                    canvas_snapshot=canvas_snapshot,
+                )
+            )
+
+    async def _ollama_structured_response(
+        self, system_instruction: str, prompt_text: str
+    ) -> AgentStructuredOutput:
+        """Ejecuta una consulta local y convierte su JSON al contrato del agente."""
+        payload = {
+            "model": self.ollama_model,
+            "messages": [
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": prompt_text},
+            ],
+            "format": AgentStructuredOutput.model_json_schema(),
+            "stream": False,
+            # Qwen3 activa razonamiento por defecto: en CPU puede tardar minutos
+            # y producir texto extra que invalida el contrato JSON.
+            "think": False,
+            "options": {"temperature": 0.2, "num_predict": 700},
+        }
+        headers = (
+            {"Authorization": f"Bearer {self.ollama_api_token}"}
+            if self.ollama_api_token
+            else None
+        )
+        async with httpx.AsyncClient(timeout=self.ollama_timeout_seconds) as client:
+            response = await client.post(
+                f"{self.ollama_base_url}/api/chat", json=payload, headers=headers
+            )
+            response.raise_for_status()
+        content = response.json().get("message", {}).get("content")
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError("Ollama no devolvió contenido de chat")
+        return AgentStructuredOutput.model_validate_json(content)
+
+    @staticmethod
+    def _needs_attribute_repair(output: AgentStructuredOutput, user_prompt: str) -> bool:
+        """Evita aceptar cajas vacías cuando el pedido sí incluía atributos."""
+        asks_for_attributes = any(
+            word in user_prompt.lower() for word in ("atributo", "propiedad", "campo")
+        )
+        return asks_for_attributes and any(
+            patch.op == "ADD_CLASS" and not patch.payload.get("attributes")
+            for patch in output.canvas_patches
+        )
+
+    @staticmethod
+    def _as_simulated(output: AgentStructuredOutput) -> AgentResult:
+        """El respaldo local nunca se hace pasar por una respuesta real del modelo."""
+        return AgentResult(**output.model_dump(), simulated=True)
 
     def _simulate_architect_response(
         self,

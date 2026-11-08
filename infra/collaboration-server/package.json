@@ -4,7 +4,8 @@
   "private": true,
   "description": "Servidor WebSocket Yjs para colaboración en tiempo real de UMLForge.",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18"

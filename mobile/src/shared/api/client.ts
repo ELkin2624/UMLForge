@@ -29,19 +29,21 @@ export function isTokenExpired(token: string, now: number = Date.now()): boolean
 
 let refreshPromise: Promise<string | null> | null = null;
 
-/** Renueva el token de acceso con la cookie HttpOnly de refresh. Una sola petición a la vez. */
+/** Renueva el token con el refresh guardado cifrado en el dispositivo. */
 export function refreshToken(): Promise<string | null> {
   if (refreshPromise) return refreshPromise;
   refreshPromise = (async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      const savedRefreshToken = useAuthStore.getState().refreshToken;
+      if (!savedRefreshToken) return null;
+      const res = await fetch(`${API_BASE_URL}/auth/mobile/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        body: JSON.stringify({ refresh_token: savedRefreshToken }),
       });
       if (res.ok) {
         const data = await res.json();
-        useAuthStore.getState().setAuth(data.access_token, data.user);
+        useAuthStore.getState().setAuth(data.access_token, data.user, data.refresh_token);
         return data.access_token as string;
       }
       if (res.status === 401 || res.status === 403) useAuthStore.getState().clearAuth();
@@ -79,7 +81,7 @@ async function readError(response: Response): Promise<string> {
 
 export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   let token = useAuthStore.getState().token;
-  const isAuthEndpoint = path.startsWith('/auth/login') || path.startsWith('/auth/register');
+  const isAuthEndpoint = path.startsWith('/auth/');
 
   if (!isAuthEndpoint && token && isTokenExpired(token)) {
     const fresh = await refreshToken();

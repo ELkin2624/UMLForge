@@ -160,7 +160,7 @@ export class CollaborationManager {
       this._provider,
       identity,
       (peers: PeerInfo[], localClientId: number) => {
-        this._updateStore({ peers, peersCount: peers.length, localClientId });
+        this._updateStore({ peers, peersCount: peers.filter((p) => !p.isAgent).length, localClientId });
       }
     );
 

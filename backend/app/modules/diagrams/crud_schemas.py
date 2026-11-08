@@ -30,6 +30,8 @@ class DiagramResponse(BaseModel):
 class DiagramDetailResponse(DiagramResponse):
     data: dict[str, Any]
     version: int = 0
+    # True si el agente de IA participa en la sala de este diagrama.
+    agent_enabled: bool = False
     # True si el guardado creó una versión nueva (False si no hubo diferencias).
     version_created: bool | None = None
 

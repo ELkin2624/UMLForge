@@ -22,7 +22,7 @@ export default function LoginScreen() {
     setError(null);
     try {
       const res = await login(identifier.trim(), password);
-      setAuth(res.access_token, res.user);
+      setAuth(res.access_token, res.user, res.refresh_token);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo iniciar sesión');
     } finally {

@@ -1,14 +1,16 @@
 import { request } from '@/shared/api/client';
+import { useAuthStore } from '@/features/auth/store';
 
 import type { User } from './store';
 
 interface TokenResponse {
   access_token: string;
+  refresh_token: string;
   user: User | null;
 }
 
 export function login(identifier: string, password: string) {
-  return request<TokenResponse>('/auth/login', {
+  return request<TokenResponse>('/auth/mobile/login', {
     method: 'POST',
     body: JSON.stringify({ identifier, password }),
   });
@@ -28,8 +30,13 @@ export function fetchMe() {
 }
 
 export async function logout(): Promise<void> {
+  const refreshToken = useAuthStore.getState().refreshToken;
+  if (!refreshToken) return;
   try {
-    await request('/auth/logout', { method: 'POST' });
+    await request('/auth/mobile/logout', {
+      method: 'POST',
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
   } catch {
     // Cerrar sesión local aunque el servidor no responda.
   }

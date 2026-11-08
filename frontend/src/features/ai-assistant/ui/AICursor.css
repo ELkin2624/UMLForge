@@ -1,0 +1,24 @@
+.ai-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 51;
+  pointer-events: none;
+  color: #7c3aed;
+  transition: transform 0.6s ease;
+}
+
+.ai-cursor span {
+  display: block;
+  padding: 2px 6px;
+  background: #7c3aed;
+  color: white;
+  border: var(--border-ink-thin);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-cursor { transition: none; }
+}

@@ -3,27 +3,26 @@ import { CollaborateResponse, AuditLogEntry, ChatMessage } from '../types';
 
 export async function collaborateWithAI(params: {
   diagramId: string;
-  userId: string;
-  userName: string;
   prompt: string;
   imageBase64?: string;
   currentCanvasSnapshot: Record<string, any>;
+  /** Ids de los elementos seleccionados en el lienzo. */
+  selection?: string[];
 }): Promise<CollaborateResponse> {
   return request<CollaborateResponse>('/ai/collaborate', {
     method: 'POST',
     body: JSON.stringify({
-      diagram_id: params.diagramId,
-      user_id: params.userId,
-      user_name: params.userName,
+      diagram_id: Number(params.diagramId),
       prompt: params.prompt,
       image_base64: params.imageBase64,
       current_canvas_snapshot: params.currentCanvasSnapshot,
+      selection: params.selection ?? [],
     }),
   });
 }
 
-export async function fetchPrivateHistory(diagramId: string, userId: string): Promise<ChatMessage[]> {
-  const url = `/ai/history/${encodeURIComponent(diagramId)}?user_id=${encodeURIComponent(userId)}`;
+export async function fetchPrivateHistory(diagramId: string): Promise<ChatMessage[]> {
+  const url = `/ai/history/${encodeURIComponent(diagramId)}`;
   const rawList = await request<any[]>(url);
   return rawList.map((item, index) => ({
     id: item.id || `msg-${index}-${Date.now()}`,
@@ -34,8 +33,8 @@ export async function fetchPrivateHistory(diagramId: string, userId: string): Pr
   }));
 }
 
-export async function clearPrivateHistory(diagramId: string, userId: string): Promise<void> {
-  await request(`/ai/history/${encodeURIComponent(diagramId)}?user_id=${encodeURIComponent(userId)}`, {
+export async function clearPrivateHistory(diagramId: string): Promise<void> {
+  await request(`/ai/history/${encodeURIComponent(diagramId)}`, {
     method: 'DELETE',
   });
 }
@@ -44,11 +43,11 @@ export async function fetchAuditFeed(diagramId: string): Promise<AuditLogEntry[]
   return request<AuditLogEntry[]>(`/ai/audit-feed/${encodeURIComponent(diagramId)}`);
 }
 
-export async function logAuditEvent(diagramId: string, actor: string, actionSummary: string): Promise<void> {
+/** El autor lo fija el backend a partir del token. */
+export async function logAuditEvent(diagramId: string, actionSummary: string): Promise<void> {
   await request(`/ai/audit-feed/${encodeURIComponent(diagramId)}`, {
     method: 'POST',
     body: JSON.stringify({
-      actor,
       action_summary: actionSummary,
     }),
   });

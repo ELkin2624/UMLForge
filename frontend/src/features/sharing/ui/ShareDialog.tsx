@@ -14,6 +14,7 @@ import {
   Settings,
   Lock,
   Globe,
+  Bot,
   Link2,
   Check,
   Clock,
@@ -27,6 +28,7 @@ import { useAuthStore } from '../../auth/store';
 import { canManageAccess } from '../model/capabilities';
 import { buildJoinUrl } from '../model/invite-utils';
 import { useShareLink } from '../model/use-share-link';
+import { useAgentPresence } from '../../collaboration/model/use-agent-presence';
 import { request } from '../../../api/client';
 import type { Role } from '../model/types';
 
@@ -83,6 +85,8 @@ export function ShareDialog() {
   const canManage = canManageAccess(localRole);
   const shareLink = useShareLink(diagramId, isDialogOpen, canManage);
   const generalAccess = shareLink.link.enabled ? 'ANYONE_WITH_LINK' : 'RESTRICTED';
+  // Asistente de IA como participante de la sala (solo el propietario lo activa)
+  const agentPresence = useAgentPresence(diagramId, isDialogOpen, canManage);
 
   // Cargar lista real de colaboradores
   const fetchCollaborators = useCallback(async () => {
@@ -565,6 +569,39 @@ export function ShareDialog() {
               )}
             </div>
           </div>
+
+          {/* Sección: Asistente de IA */}
+          {canManage && (
+            <div>
+              <h3 className="gdocs-section-title">Asistente de IA</h3>
+              <div className="gdocs-general-box">
+                <div className="gdocs-general-left">
+                  <div className="gdocs-general-icon-wrap">
+                    <Bot size={18} />
+                  </div>
+                  <div className="gdocs-general-info">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={agentPresence.enabled}
+                        disabled={agentPresence.loading}
+                        onChange={(e) => void agentPresence.update(e.target.checked)}
+                        aria-label="Mostrar al asistente de IA en la sala"
+                      />{' '}
+                      Presente en la sala como un colaborador más
+                    </label>
+                    <span className="gdocs-general-desc">
+                      Todos los conectados lo ven en la lista de participantes. Nunca modifica el
+                      diagrama sin que una persona apruebe sus propuestas.
+                    </span>
+                    {agentPresence.error && (
+                      <span className="gdocs-general-desc" role="alert">{agentPresence.error}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Pie del Diálogo (Footer) */}

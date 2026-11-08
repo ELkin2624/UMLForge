@@ -7,7 +7,14 @@ from app.core.dependencies import get_diagram_repo
 from app.core.errors import APIError
 from app.modules.diagram_store import DiagramRepository
 from app.core.security import decode_token
-from app.modules.auth.schemas import UserCreate, UserLogin, UserResponse, Token
+from app.modules.auth.schemas import (
+    MobileRefreshRequest,
+    MobileToken,
+    Token,
+    UserCreate,
+    UserLogin,
+    UserResponse,
+)
 from app.modules.auth.service import register_user, authenticate_user, create_session_for_user, rotate_refresh_token, revoke_token
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
@@ -42,6 +49,20 @@ def login(login_data: UserLogin, response: Response, db: Session = Depends(get_d
     
     return Token(access_token=access_token, user=UserResponse.model_validate(user))
 
+
+@router.post("/mobile/login", response_model=MobileToken)
+def mobile_login(login_data: UserLogin, db: Session = Depends(get_db)):
+    """Inicia una sesión nativa persistente sin depender de cookies web."""
+    user = authenticate_user(db, login_data)
+    if not user:
+        raise APIError(status_code=401, message="Credenciales incorrectas.")
+    access_token, refresh_token = create_session_for_user(db, user)
+    return MobileToken(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=UserResponse.model_validate(user),
+    )
+
 @router.post("/refresh", response_model=Token)
 def refresh(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
     if not refresh_token:
@@ -57,6 +78,20 @@ def refresh(response: Response, refresh_token: str | None = Cookie(None), db: Se
     return Token(access_token=access_token, user=UserResponse.model_validate(user) if user else None)
 
 
+@router.post("/mobile/refresh", response_model=MobileToken)
+def mobile_refresh(body: MobileRefreshRequest, db: Session = Depends(get_db)):
+    """Rota el refresh token conservado de forma cifrada por la app móvil."""
+    payload = decode_token(body.refresh_token)
+    user_id = int(payload.get("sub"))
+    access_token, refresh_token = rotate_refresh_token(db, body.refresh_token, user_id)
+    user = db.get(User, user_id)
+    return MobileToken(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=UserResponse.model_validate(user) if user else None,
+    )
+
+
 @router.post("/logout")
 def logout(response: Response, refresh_token: str | None = Cookie(None), db: Session = Depends(get_db)):
     if refresh_token:
@@ -68,6 +103,18 @@ def logout(response: Response, refresh_token: str | None = Cookie(None), db: Ses
             pass # Si el token es inválido, igual borramos la cookie
             
     response.delete_cookie("refresh_token", path="/")
+    return {"message": "Sesión cerrada correctamente."}
+
+
+@router.post("/mobile/logout")
+def mobile_logout(body: MobileRefreshRequest, db: Session = Depends(get_db)):
+    """Revoca la sesión nativa actual antes de borrar SecureStore."""
+    try:
+        payload = decode_token(body.refresh_token)
+        revoke_token(db, body.refresh_token, int(payload.get("sub")))
+    except Exception:
+        # El cliente igualmente debe poder borrar su sesión local.
+        pass
     return {"message": "Sesión cerrada correctamente."}
 
 @router.get("/me", response_model=UserResponse)

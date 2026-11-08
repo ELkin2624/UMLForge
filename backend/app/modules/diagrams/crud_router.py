@@ -48,6 +48,7 @@ def _detail(
         updated_at=diagram.updated_at,
         data=data or {},
         version=version,
+        agent_enabled=bool(diagram.agent_enabled),
         my_role=role or "READER",
         version_created=version_created,
     )

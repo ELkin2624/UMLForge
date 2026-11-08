@@ -1,0 +1,70 @@
+# Servidor de IA local (Ollama) para el agente de UMLForge.
+#
+# Pensado para una máquina dedicada (p. ej. Debian con 16 GB y solo CPU), pero funciona en
+# cualquier equipo con Docker. Se levanta con:
+#
+#   cp .env.example .env      # opcional: solo si quieres cambiar el modelo o el puerto
+#   docker compose up -d
+#
+# La primera vez descarga el modelo (varios GB): `docker compose logs -f ollama-pull`.
+# Más detalle en README.md.
+
+services:
+  ollama:
+    image: ollama/ollama:${OLLAMA_VERSION:-latest}
+    container_name: umlforge_ollama
+    restart: unless-stopped
+    ports:
+      # Por defecto SOLO local. Ollama no tiene autenticación: para usarlo desde otro equipo
+      # pon aquí la IP de Tailscale/VPN de esta máquina (no 0.0.0.0 si hay red no confiable).
+      - "${OLLAMA_BIND:-127.0.0.1}:${OLLAMA_PORT:-11434}:11434"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      # Contexto acotado: el valor por defecto de algunos modelos es enorme y agota la RAM.
+      OLLAMA_CONTEXT_LENGTH: ${OLLAMA_CONTEXT_LENGTH:-8192}
+      # Un solo modelo cargado y una petición a la vez: lo razonable con 16 GB y sin GPU.
+      OLLAMA_MAX_LOADED_MODELS: 1
+      OLLAMA_NUM_PARALLEL: 1
+      # Mantiene el modelo en memoria entre consultas (la carga en frío tarda).
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-30m}
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    # Para una GPU NVIDIA (requiere nvidia-container-toolkit), descomenta:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  # Tarea de un solo uso: descarga los modelos pedidos cuando el servidor está listo y termina.
+  # Si el modelo ya está descargado, no vuelve a bajarlo.
+  ollama-pull:
+    image: ollama/ollama:${OLLAMA_VERSION:-latest}
+    container_name: umlforge_ollama_pull
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      PULL_MODELS: ${OLLAMA_MODEL:-qwen3.5:4b}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        for model in $${PULL_MODELS}; do
+          echo "Descargando $${model}..."
+          ollama pull "$${model}" || exit 1
+        done
+        echo "Modelos listos:"
+        ollama list
+
+volumes:
+  ollama_data:

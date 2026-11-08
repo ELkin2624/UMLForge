@@ -40,7 +40,7 @@ export default function RegisterScreen() {
         display_name: displayName.trim() || undefined,
       });
       const res = await login(username.trim(), password);
-      setAuth(res.access_token, res.user);
+      setAuth(res.access_token, res.user, res.refresh_token);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo crear la cuenta');
     } finally {

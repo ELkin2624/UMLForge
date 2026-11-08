@@ -97,7 +97,7 @@ export function setupAwareness(
 function buildPeerList(awareness: Awareness): PeerInfo[] {
   const peers: PeerInfo[] = [];
   awareness.getStates().forEach((state: any, clientId: number) => {
-    const user = state?.user as { name?: string; color?: string } | undefined;
+    const user = state?.user as { name?: string; color?: string; isAgent?: boolean } | undefined;
     const cursor = state?.cursor as { x: number; y: number } | undefined;
     const selectedNode = state?.selectedNode as string | undefined;
     const editingNode = state?.editingNode as string | undefined;
@@ -106,6 +106,7 @@ function buildPeerList(awareness: Awareness): PeerInfo[] {
       clientId,
       name: user?.name ?? `Usuario-${clientId}`,
       color: user?.color ?? '#888888',
+      isAgent: user?.isAgent === true,
       cursor,
       selectedNode,
       editingNode,

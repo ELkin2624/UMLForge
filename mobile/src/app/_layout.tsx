@@ -1,4 +1,5 @@
-import { Stack } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -6,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/store';
+import { registerForPush } from '@/features/notifications/push';
 import { colors } from '@/shared/theme/tokens';
 
 SplashScreen.preventAutoHideAsync();
@@ -22,6 +24,22 @@ export default function RootLayout() {
   useEffect(() => {
     if (hydrated) void SplashScreen.hideAsync();
   }, [hydrated]);
+
+  const router = useRouter();
+
+  // Registra el dispositivo para push cada vez que hay sesión.
+  useEffect(() => {
+    if (signedIn) void registerForPush();
+  }, [signedIn]);
+
+  // Al tocar un aviso, abre la pestaña de notificaciones.
+  useEffect(() => {
+    if (!signedIn) return;
+    const sub = Notifications.addNotificationResponseReceivedListener(() => {
+      router.push('/notifications');
+    });
+    return () => sub.remove();
+  }, [signedIn, router]);
 
   if (!hydrated) return null;
 
