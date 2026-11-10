@@ -10,7 +10,7 @@ import { AgentPreview, CommandConflictBanner } from '../../../features/ai-assist
 export const ApollonEditor: React.FC = () => {
   const {
     editorRef,
-    localRole,
+    editorKey,
     canEditDiagram,
     initialModel,
     handleMouseMove,
@@ -29,7 +29,7 @@ export const ApollonEditor: React.FC = () => {
       <CommandConflictBanner />
       <SelectionOverlay editorRef={editorRef} />
       <Apollon
-        key={`ClassDiagram-${localRole}`}
+        key={editorKey}
         style={{ width: '100%', height: '100%' }}
         readonly={!canEditDiagram}
         defaultModel={initialModel}

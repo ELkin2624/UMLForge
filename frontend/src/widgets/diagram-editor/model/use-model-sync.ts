@@ -97,23 +97,22 @@ export function useModelSync({
           lastAppliedModelJsonRef.current = currentModelJson;
 
           applyingExternalModelRef.current = true;
-          const freshVisualState = getVisualState();
-          if (freshVisualState && !isNewModelInstance) {
-            lastVisualStateRef.current = {
-              ...lastVisualStateRef.current,
-              ...freshVisualState,
-            };
-          } else if (isNewModelInstance) {
-            lastVisualStateRef.current = {};
-          }
+          const freshVisualState = getVisualState() ?? {};
+          // Otro diagrama: se descartan las posiciones del anterior, pero se usan las que
+          // ya se conocen de este. Solo se reacomoda todo si no hay ninguna guardada.
+          lastVisualStateRef.current = isNewModelInstance
+            ? { ...freshVisualState }
+            : { ...lastVisualStateRef.current, ...freshVisualState };
+          const relayout =
+            isNewModelInstance && Object.keys(lastVisualStateRef.current).length === 0;
 
           try {
             applyCanonicalModelToApollon(
               editor,
               newModel,
               diagramType,
-              isNewModelInstance ? undefined : lastVisualStateRef.current,
-              isNewModelInstance
+              lastVisualStateRef.current,
+              relayout
             );
           } catch (e) {
             console.error('[ApollonEditor] Error applying remote model to Apollon:', e);

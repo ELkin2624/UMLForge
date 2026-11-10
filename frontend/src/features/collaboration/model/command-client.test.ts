@@ -5,7 +5,10 @@ import { useShareStore } from "../../sharing/model/share-store";
 import {
   hydrateRoom,
   enqueueModel,
+  enqueuePosition,
   flushRoom,
+  knownLayout,
+  onRoomLayout,
   receiveRoom,
   useCommandConflict,
 } from "./command-client";
@@ -60,6 +63,48 @@ describe("Confirmación de comandos humanos", () => {
         .mocked(request)
         .mock.calls.filter(([path]) => path.endsWith("/commands")),
     ).toHaveLength(1);
+  });
+  it("un rechazo de solo posiciones no bloquea el editor y adopta la posición del servidor", async () => {
+    hydrateRoom(room, { data: model("Antes"), layout: {}, revision: 1 });
+    vi.mocked(request).mockImplementation(async (path) => {
+      if (path.includes("/commands")) throw new Error("La posición cambió.");
+      return { data: model("Antes"), layout: { a: { x: 450, y: 365 } }, version: 2 };
+    });
+    enqueuePosition(room, "a", { x: 780, y: 60 });
+    await flushRoom(room);
+    expect(useCommandConflict.getState().message).toBeFalsy();
+  });
+  it("al confirmarse un paso intermedio no devuelve atrás una posición aún en cola", () => {
+    hydrateRoom(room, { data: model("Antes"), layout: { a: { x: 0, y: 0 } }, revision: 1 });
+    const seen: Array<{ x: number; y: number } | undefined> = [];
+    const off = onRoomLayout((r, layout) => { if (r === room) seen.push(layout.a); });
+    enqueuePosition(room, "a", { x: 300, y: 0 });
+    receiveRoom(room, { data: model("Antes"), layout: { a: { x: 100, y: 0 } }, revision: 2 });
+    off();
+    expect(seen.at(-1)).toEqual({ x: 300, y: 0 });
+  });
+  it("conoce las posiciones recibidas al abrir el diagrama y las que están en cola", () => {
+    hydrateRoom(room, { data: model("Antes"), layout: { a: { x: 10, y: 20, width: 300 } }, revision: 1 });
+    expect(knownLayout(room)).toEqual({ a: { x: 10, y: 20, width: 300 } });
+    enqueuePosition(room, "a", { x: 90, y: 20, width: 300 });
+    expect(knownLayout(room).a).toEqual({ x: 90, y: 20, width: 300 });
+  });
+  it("una clase nueva se envía con su posición en el mismo lote", async () => {
+    const empty: UMLModel = { ...model("x"), classes: [] };
+    hydrateRoom(room, { data: empty, layout: {}, revision: 1 });
+    const sent: Array<{ commands: Array<{ type: string }> }> = [];
+    vi.mocked(request).mockImplementation(async (_path, options) => {
+      const payload = JSON.parse(String(options?.body));
+      sent.push(payload);
+      const result = applyRoomBatch(empty, {}, payload.commands);
+      if (!result.ok) throw new Error("Inválido");
+      return { data: result.model, layout: result.layout, revision: 2 };
+    });
+    enqueuePosition(room, "a", { x: 400, y: 300 });
+    enqueueModel(room, empty, model("Nueva"));
+    await flushRoom(room);
+    expect(sent).toHaveLength(1);
+    expect(sent[0].commands.map((c) => c.type)).toEqual(["replaceElement", "moveClass"]);
   });
   it("descarta publicaciones de revisiones anteriores", () => {
     hydrateRoom(room, { data: model("Nuevo"), layout: {}, revision: 5 });

@@ -115,7 +115,7 @@ except ImportError:
 
 def parse_with_gemini(prompt: str) -> List[Any]:
     model = genai.GenerativeModel(
-        model_name="gemini-3.6-flash", 
+        model_name=settings.GEMINI_MODEL,
         generation_config={"response_mime_type": "application/json"}
     )
     response = model.generate_content(prompt)

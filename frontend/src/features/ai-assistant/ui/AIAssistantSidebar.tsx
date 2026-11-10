@@ -123,7 +123,7 @@ export const AIAssistantSidebar = () => {
         <button onClick={() => void agent.checkProvider()}>Verificar</button>
       </p>
       <p>
-        Actúa cuando se lo pides. El propietario lo activa desde Colaboración.
+        Actúa cuando se lo pides. El propietario puede desactivarlo en Compartir.
       </p>
       <nav aria-label="Secciones del agente">
         {(["chat", "tasks", "audit"] as const).map((value) => (

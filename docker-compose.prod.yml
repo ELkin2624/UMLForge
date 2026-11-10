@@ -31,6 +31,7 @@ services:
       COLLAB_SERVICE_TOKEN: ${COLLAB_SERVICE_TOKEN}
       AI_PROVIDER: ${AI_PROVIDER:-gemini}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.5-flash}
       CORS_ORIGINS: '["http://${PUBLIC_HOST}"]'
 
   yjs:

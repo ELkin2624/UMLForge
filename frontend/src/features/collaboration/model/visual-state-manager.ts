@@ -1,7 +1,11 @@
 import { UMLModel } from '@tumaet/apollon';
 
-type Position = { x: number; y: number };
+/** Posición y, si el usuario redimensionó el elemento, su tamaño. */
+export type Position = { x: number; y: number; width?: number; height?: number };
 type VisualState = Record<string, Position>;
+
+const isSize = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0;
 
 /**
  * Fusiona un modelo base con un estado visual remoto.
@@ -21,6 +25,11 @@ export function applyVisualStateToModel(
       return {
         ...node,
         position: { x: pos.x, y: pos.y },
+        ...(isSize(pos.width) ? { width: pos.width } : {}),
+        ...(isSize(pos.height) ? { height: pos.height } : {}),
+        ...(isSize(pos.width) && isSize(pos.height)
+          ? { measured: { width: pos.width, height: pos.height } }
+          : {}),
       };
     }
     return node;
@@ -38,10 +47,10 @@ export function extractVisualStateFromModel(model: UMLModel): VisualState {
 
   for (const node of model.nodes) {
     if (node.position) {
-      visualState[node.id] = {
-        x: node.position.x,
-        y: node.position.y,
-      };
+      const entry: Position = { x: node.position.x, y: node.position.y };
+      if (isSize(node.width)) entry.width = Math.round(node.width);
+      if (isSize(node.height)) entry.height = Math.round(node.height);
+      visualState[node.id] = entry;
     }
   }
   return visualState;
@@ -60,7 +69,13 @@ export function getVisualStateDelta(
       const oldPos = oldState[elementId];
       const newPos = newState[elementId];
       
-      if (!oldPos || oldPos.x !== newPos.x || oldPos.y !== newPos.y) {
+      if (
+        !oldPos ||
+        oldPos.x !== newPos.x ||
+        oldPos.y !== newPos.y ||
+        oldPos.width !== newPos.width ||
+        oldPos.height !== newPos.height
+      ) {
         delta[elementId] = newPos;
       }
     }
