@@ -245,16 +245,14 @@ function App() {
             }
           }
 
-          // Solo conectar WebSocket si el usuario estaba activamente en una sesión colaborativa
-          const isCollabActive = sessionStorage.getItem('umlforge-collab-active') === 'true';
-          if (isCollabActive) {
-            if (isOwner) {
-              startSession(roomStr);
-            } else {
-              joinSession(roomStr, role);
-            }
-            connect(roomStr);
+          // Conectar siempre a la sala: sin ella el editor queda en solo lectura y las
+          // ediciones no se guardan (se envían como comandos a través de la sala).
+          if (isOwner) {
+            startSession(roomStr);
+          } else {
+            joinSession(roomStr, role);
           }
+          connect(roomStr);
         } else {
           // Si el usuario no tiene ningún diagrama, inicializar uno en PostgreSQL
           const newDiag = await request<any>('/diagrams', {
