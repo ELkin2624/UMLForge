@@ -6,6 +6,7 @@ import {
   AlertCircle,
   X,
   Loader,
+  Bot,
 } from 'lucide-react';
 import { useCollaboration } from '../model/use-collaboration';
 import { usePresence } from '../model/use-presence';
@@ -154,7 +155,7 @@ export function CollaborationPanel() {
                     style={{ backgroundColor: peer.color }}
                     title={peer.name}
                   >
-                    {peer.name.charAt(0).toUpperCase()}
+                    {peer.isAgent ? <Bot size={14} aria-label="Agente de IA" /> : peer.name.charAt(0).toUpperCase()}
                   </div>
                 ))}
               </div>

@@ -1,8 +1,11 @@
-from contextlib import asynccontextmanager
+import logging
+from contextlib import asynccontextmanager, suppress
+import asyncio
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pymongo.errors import PyMongoError
 
 from app.core.config import settings
 from app.core.database.models import Base
@@ -16,11 +19,17 @@ from app.modules.xmi.router import router as xmi_router
 from app.modules.auth.router import router as auth_router
 from app.modules.auth.users_router import router as users_router
 from app.modules.diagrams.crud_router import router as diagram_crud_router
+from app.modules.diagrams.versions_router import router as diagram_versions_router
+from app.modules.data_design.router import router as data_design_router
 from app.modules.sharing.router import router as sharing_router
 from app.modules.sharing.invitations_router import router as invitations_router
+from app.modules.sharing.share_link_router import router as share_link_router
 from app.modules.notifications.router import router as notifications_router
 from app.modules.voice.router import router as voice_router
 from app.modules.ai_agent.router import router as ai_agent_router
+from app.modules.ai_agent.presence_router import router as agent_presence_router
+from app.modules.collaboration.router import router as command_router
+from app.modules.ai_agent.runs_router import router as runs_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -30,7 +39,22 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         import logging
         logging.getLogger("uvicorn").error(f"Error inicializando tablas en PostgreSQL: {e}")
-    yield
+    worker = None
+    if settings.AGENT_WORKER_ENABLED and settings.COLLAB_SERVICE_TOKEN:
+        from app.modules.ai_agent.router import get_nosql_repo
+        from app.modules.ai_agent.runs_repository import RunRepository
+        from app.modules.ai_agent.runtime import AgentRuntime
+        from app.core.dependencies import get_diagram_repo
+        memory = get_nosql_repo()
+        runtime = AgentRuntime(RunRepository(memory.db), get_diagram_repo(), memory)
+        worker = asyncio.create_task(runtime.loop())
+    try:
+        yield
+    finally:
+        if worker:
+            worker.cancel()
+            with suppress(asyncio.CancelledError):
+                await worker
 
 app = FastAPI(
     title="Herramienta CASE API",
@@ -53,8 +77,11 @@ app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(diagram_crud_router)
+app.include_router(diagram_versions_router)
+app.include_router(data_design_router)
 app.include_router(sharing_router)
 app.include_router(invitations_router)
+app.include_router(share_link_router)
 app.include_router(notifications_router)
 app.include_router(diagrams_router)
 app.include_router(deployment_router)
@@ -62,9 +89,25 @@ app.include_router(e2e_router)
 app.include_router(xmi_router)
 app.include_router(voice_router)
 app.include_router(ai_agent_router)
+app.include_router(agent_presence_router)
+app.include_router(command_router)
+app.include_router(runs_router)
 
 
 # Exception Handlers
+@app.exception_handler(PyMongoError)
+async def mongo_error_handler(request: Request, exc: PyMongoError) -> JSONResponse:
+    logging.getLogger("uvicorn").error(f"MongoDB no disponible: {exc}")
+    return JSONResponse(
+        status_code=503,
+        content={
+            "code": "STORE_UNAVAILABLE",
+            "message": "El almacén de diagramas (MongoDB) no está disponible.",
+            "details": None,
+        },
+    )
+
+
 @app.exception_handler(ComponentDiagramUnsupportedError)
 async def component_unsupported_handler(
     request: Request, exc: ComponentDiagramUnsupportedError

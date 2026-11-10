@@ -32,6 +32,13 @@ export interface ICollaborationProvider {
    */
   onStatus(callback: (status: { status: 'connected' | 'disconnected' }) => void): () => void;
 
+  /**
+   * Registra un callback invocado cada vez que se cierra el WebSocket, con el código de cierre.
+   * 4001 = sesión inválida o vencida (reintentable); 4003 = sin permiso sobre el diagrama.
+   * Retorna una función para cancelar el listener.
+   */
+  onClose(callback: (info: { code: number; reason: string }) => void): () => void;
+
   /** Acceso al Y.Doc gestionado por este proveedor. */
   readonly doc: Y.Doc;
 }

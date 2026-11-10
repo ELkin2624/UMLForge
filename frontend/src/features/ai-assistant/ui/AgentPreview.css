@@ -1,0 +1,61 @@
+.agent-preview-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 52;
+  pointer-events: none;
+  overflow: hidden;
+}
+.agent-preview {
+  position: absolute;
+  box-sizing: border-box;
+  border: 3px dashed var(--shape-yellow);
+  outline: 1px solid var(--ink-black);
+  background: transparent;
+}
+.agent-preview span {
+  display: inline-block;
+  background: var(--shape-yellow);
+  color: var(--ink-black);
+  border: var(--border-ink-thin);
+  padding: 3px 6px;
+  font-weight: 700;
+}
+.agent-preview--remove {
+  border-color: var(--shape-peach);
+}
+.agent-preview--remove span {
+  background: var(--shape-peach);
+}
+.command-conflict {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 80;
+  max-width: min(400px, 80vw);
+  max-height: 50vh;
+  overflow: auto;
+  background: var(--bg-card);
+  color: var(--ink-black);
+  border: var(--border-ink);
+  box-shadow: var(--shadow-hard);
+  padding: 12px;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+.command-conflict button {
+  min-height: 44px;
+  background: var(--btn-peach);
+  color: var(--ink-black);
+  border: var(--border-ink-thin);
+  border-radius: 8px;
+}
+.agent-presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card);
+  color: var(--ink-black);
+  border: var(--border-ink-thin);
+  border-radius: 8px;
+  padding: 6px;
+}

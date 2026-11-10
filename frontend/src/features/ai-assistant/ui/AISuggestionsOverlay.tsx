@@ -4,15 +4,18 @@ import { useAIAssistantStore } from '../model/ai-store';
 import { useAuthStore } from '../../auth/store';
 import { useShareStore } from '../../sharing/model/share-store';
 import { getSharedCollaborationManager } from '../../collaboration';
+import { PatchPreview } from './PatchPreview';
 
 export const AISuggestionsOverlay: React.FC = () => {
   const suggestions = useAIAssistantStore((s) => s.suggestions);
   const approvePatch = useAIAssistantStore((s) => s.approvePatch);
   const rejectPatch = useAIAssistantStore((s) => s.rejectPatch);
+  const reproposePatch = useAIAssistantStore((s) => s.reproposePatch);
 
   const roomId = useShareStore((s) => s.roomId) || 'default-room';
   const currentUser = useAuthStore((s) => s.user);
   const userName = currentUser?.display_name || currentUser?.username || 'Usuario';
+  const userId = currentUser?.id ? String(currentUser.id) : 'guest_user';
 
   const patchList = Object.values(suggestions);
 
@@ -117,6 +120,7 @@ export const AISuggestionsOverlay: React.FC = () => {
             <p style={{ margin: 0, fontSize: '11.5px', color: '#475569', lineHeight: '1.4' }}>
               {patch.reason}
             </p>
+            <PatchPreview patch={patch} />
 
             <div
               style={{
@@ -143,6 +147,7 @@ export const AISuggestionsOverlay: React.FC = () => {
                     })
                   }
                   title="Aprobar cambio en el lienzo"
+                  disabled={patch.status === 'stale'}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -160,6 +165,27 @@ export const AISuggestionsOverlay: React.FC = () => {
                 >
                   <Check size={12} /> Aprobar
                 </button>
+                {patch.status === 'stale' && (
+                  <button
+                    onClick={() =>
+                      reproposePatch({ diagramId: roomId, patchId: patch.patch_id, userId, userName, ydoc })
+                    }
+                    title="Pedir al agente que la proponga de nuevo sobre el estado actual"
+                    style={{
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      border: '1.5px solid #1a1a1a',
+                      backgroundColor: 'var(--btn-peach, #f7c58c)',
+                      color: '#1a1a1a',
+                      fontSize: '11px',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      boxShadow: '1.5px 1.5px 0 #1a1a1a',
+                    }}
+                  >
+                    Re-proponer
+                  </button>
+                )}
                 <button
                   onClick={() =>
                     rejectPatch({

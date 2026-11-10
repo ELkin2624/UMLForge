@@ -26,6 +26,11 @@ export class YWebSocketProvider implements ICollaborationProvider {
   }
 
   connect(): void {
+    // El token de acceso dura poco (15 min) y y-websocket reutiliza `params` en cada
+    // reintento: antes de reconectar se actualiza con el token vigente del store.
+    this._provider.on('connection-close', () => {
+      this._provider.params.token = useAuthStore.getState().token || '';
+    });
     this._provider.connect();
   }
 
@@ -63,6 +68,14 @@ export class YWebSocketProvider implements ICollaborationProvider {
     };
     this._provider.on('status', handler);
     return () => this._provider.off('status', handler);
+  }
+
+  onClose(callback: (info: { code: number; reason: string }) => void): () => void {
+    const handler = (event: CloseEvent | null) => {
+      callback({ code: event?.code ?? 0, reason: event?.reason ?? '' });
+    };
+    this._provider.on('connection-close', handler);
+    return () => this._provider.off('connection-close', handler);
   }
 
   get doc(): Y.Doc {

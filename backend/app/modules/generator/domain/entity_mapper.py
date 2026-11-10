@@ -1,6 +1,7 @@
 from app.core.canonical_model.model import UMLModel
 
 from .entity_info import EntityInfo
+from .exceptions import GenerationError
 from .field_info import FieldInfo
 from .relationship_mapper import RelationshipMapper
 from .type_mapper import TypeMapper
@@ -40,6 +41,10 @@ class EntityMapper:
                             rel, is_source=True, target_class_name=target_cls.name
                         )
                         relations.append(rel_info)
+                        if str(rel.source) == str(rel.target):
+                            relations.append(RelationshipMapper.map_relationship(
+                                rel, is_source=False, target_class_name=target_cls.name
+                            ))
                 elif str(rel.target) == str(uml_class.id):
                     source_cls = class_by_id.get(str(rel.source))
                     if source_cls:
@@ -74,6 +79,11 @@ class EntityMapper:
                 )
 
                 if attr.is_primary_key or attr.name.lower() == "id":
+                    if id_field:
+                        raise GenerationError(
+                            f"La clase {uml_class.name} tiene varias claves primarias; "
+                            "las claves compuestas de entidad no están soportadas."
+                        )
                     if not id_field:
                         field_info.is_primary_key = True
                         if attr.name.lower() == "id":
@@ -113,6 +123,19 @@ class EntityMapper:
                 parent_class=parent_class,
             )
             entities.append(entity_info)
+
+        # En JOINED todas las subclases comparten la clave de la raíz.
+        entity_by_name = {e.class_name: e for e in entities}
+        for entity in entities:
+            root = entity
+            visited = set()
+            while root.parent_class and root.parent_class in entity_by_name:
+                if root.class_name in visited:
+                    raise GenerationError("Ciclo de herencia no soportado.")
+                visited.add(root.class_name)
+                root = entity_by_name[root.parent_class]
+            if entity.parent_class:
+                entity.id_field = root.id_field.model_copy(deep=True)
 
         # Segunda pasada general para setear has_children y resolver target_id_type
         entity_by_name = {e.class_name: e for e in entities}

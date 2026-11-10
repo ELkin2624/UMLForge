@@ -3,6 +3,9 @@ import {
   Menu,
   X,
   Save,
+  History,
+  FolderOpen,
+  Database,
   FileUp,
   FileDown,
   Download,
@@ -50,8 +53,12 @@ interface MobileDrawerProps {
   isBusy: boolean;
   hasModel: boolean;
   onSave: () => void;
+  onDiagrams: () => void;
+  onHistory: () => void;
+  onDataDesign: () => void;
   onImportXMI: () => void;
   onExportXMI: () => void;
+  onGenerateSql: () => void;
   onGenerate: (isLocal: boolean) => void;
   onValidate: () => void;
   onE2E: () => void;
@@ -66,8 +73,12 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   isBusy,
   hasModel,
   onSave,
+  onDiagrams,
+  onHistory,
+  onDataDesign,
   onImportXMI,
   onExportXMI,
+  onGenerateSql,
   onGenerate,
   onValidate,
   onE2E,
@@ -247,6 +258,18 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
               </div>
               <div className="mobile-drawer-items">
                 <button
+                  onClick={() => handleAction(onDiagrams)}
+                  className="mobile-drawer-btn"
+                >
+                  <div className="drawer-btn-icon badge-sky">
+                    <FolderOpen size={16} color="#1a1a1a" />
+                  </div>
+                  <div className="drawer-btn-content">
+                    <span className="drawer-btn-label">Mis proyectos</span>
+                  </div>
+                </button>
+
+                <button
                   onClick={() => handleAction(onSave)}
                   disabled={!hasModel || isBusy}
                   className="mobile-drawer-btn"
@@ -258,6 +281,31 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                     <span className="drawer-btn-label">Guardar Modelo</span>
                   </div>
                   <span className="drawer-btn-chip">Ctrl+S</span>
+                </button>
+
+                <button
+                  onClick={() => handleAction(onHistory)}
+                  className="mobile-drawer-btn"
+                >
+                  <div className="drawer-btn-icon badge-lilac">
+                    <History size={16} color="#1a1a1a" />
+                  </div>
+                  <div className="drawer-btn-content">
+                    <span className="drawer-btn-label">Historial de versiones</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleAction(onDataDesign)}
+                  disabled={!hasModel}
+                  className="mobile-drawer-btn"
+                >
+                  <div className="drawer-btn-icon badge-peach">
+                    <Database size={16} color="#1a1a1a" />
+                  </div>
+                  <div className="drawer-btn-content">
+                    <span className="drawer-btn-label">Diseño de datos</span>
+                  </div>
                 </button>
 
                 <button
@@ -298,6 +346,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 <span>Generación de Código</span>
               </div>
               <div className="mobile-drawer-items">
+                <button onClick={() => handleAction(onGenerateSql)} disabled={!hasModel || isBusy} className="mobile-drawer-btn">
+                  <Database size={16} /><span>Generar SQL PostgreSQL</span>
+                </button>
+
                 <button
                   onClick={() => handleAction(() => onGenerate(false))}
                   disabled={!hasModel || isBusy}

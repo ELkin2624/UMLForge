@@ -2,8 +2,8 @@
  * Tipos de colaboración para la Fase 11 de UMLForge.
  *
  * NOTA: El modelo canónico se almacena como un único JSON string en Y.Map.
- * No hay granularidad CRDT por campo/atributo: el último en escribir gana
- * a nivel de documento completo. Esta limitación es intencionada en esta fase.
+ * En salas numéricas solo el servidor publica ese snapshot tras confirmar
+ * comandos con precondiciones. Yjs distribuye estado y presencia; no arbitra escrituras.
  */
 
 /**
@@ -35,6 +35,9 @@ export interface PeerInfo {
   clientId: number;
   name: string;
   color: string;
+  /** true si es el agente de IA (no una persona). */
+  isAgent?: boolean;
+  agent?: {status:string; run_id?:string; targetId?:string};
   cursor?: { x: number; y: number };
   selectedNode?: string;
   editingNode?: string;

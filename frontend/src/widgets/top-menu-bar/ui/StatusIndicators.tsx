@@ -4,6 +4,7 @@ import { ShareButton } from '../../../features/sharing/ui/ShareButton';
 import { UserMenu } from '../../../features/auth/ui/UserMenu';
 import { NotificationsMenu } from '../../../features/auth/ui/NotificationsMenu';
 import { AIPresenceIndicator } from '../../../features/ai-assistant';
+import { SaveStatus } from '../../../features/versioning';
 import { GenState } from '../model/types';
 
 interface StatusIndicatorsProps {
@@ -44,6 +45,9 @@ export const StatusIndicators: React.FC<StatusIndicatorsProps> = ({
           <span className="status-pill-text">Procesando...</span>
         </div>
       )}
+
+      {/* Estado del autoguardado */}
+      <SaveStatus />
 
       {/* Badge Modo Lector */}
       {localRole === 'READER' && (

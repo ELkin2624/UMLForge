@@ -2,6 +2,9 @@ import React from 'react';
 import {
   ChevronDown,
   Save,
+  History,
+  FolderOpen,
+  Database,
   FileUp,
   FileDown,
   Download,
@@ -18,8 +21,12 @@ interface DesktopNavProps {
   isBusy: boolean;
   hasModel: boolean;
   onSave: () => void;
+  onDiagrams: () => void;
+  onHistory: () => void;
+  onDataDesign: () => void;
   onImportXMI: () => void;
   onExportXMI: () => void;
+  onGenerateSql: () => void;
   onGenerate: (isLocal: boolean) => void;
   onValidate: () => void;
   onE2E: () => void;
@@ -32,8 +39,12 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
   isBusy,
   hasModel,
   onSave,
+  onDiagrams,
+  onHistory,
+  onDataDesign,
   onImportXMI,
   onExportXMI,
+  onGenerateSql,
   onGenerate,
   onValidate,
   onE2E,
@@ -57,6 +68,21 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
             <div className="top-dropdown-header">Gestión de Diagrama</div>
 
             <button
+              onClick={onDiagrams}
+              className="top-dropdown-item"
+            >
+              <div className="top-dropdown-item-left">
+                <div className="dropdown-icon-badge badge-sky">
+                  <FolderOpen size={14} color="#1a1a1a" />
+                </div>
+                <div className="dropdown-text-stack">
+                  <span className="dropdown-item-title">Mis proyectos</span>
+                  <span className="dropdown-item-desc">Volver a tus diagramas, versiones y enlaces</span>
+                </div>
+              </div>
+            </button>
+
+            <button
               onClick={onSave}
               disabled={!hasModel || isBusy}
               className="top-dropdown-item"
@@ -67,10 +93,25 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
                 </div>
                 <div className="dropdown-text-stack">
                   <span className="dropdown-item-title">Guardar Modelo</span>
-                  <span className="dropdown-item-desc">Persistir cambios en PostgreSQL</span>
+                  <span className="dropdown-item-desc">Guardado automático en MongoDB</span>
                 </div>
               </div>
               <span className="top-dropdown-shortcut">Ctrl+S</span>
+            </button>
+
+            <button
+              onClick={onHistory}
+              className="top-dropdown-item"
+            >
+              <div className="top-dropdown-item-left">
+                <div className="dropdown-icon-badge badge-lilac">
+                  <History size={14} color="#1a1a1a" />
+                </div>
+                <div className="dropdown-text-stack">
+                  <span className="dropdown-item-title">Historial de versiones</span>
+                  <span className="dropdown-item-desc">Ver quién cambió qué y restaurar</span>
+                </div>
+              </div>
             </button>
 
             <button
@@ -107,6 +148,10 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
 
             <div className="top-dropdown-divider" />
             <div className="top-dropdown-header">Generación de Código</div>
+
+            <button onClick={onGenerateSql} disabled={!hasModel || isBusy} className="top-dropdown-item">
+              <Database size={16} /><span>Generar SQL PostgreSQL</span>
+            </button>
 
             <button
               onClick={() => onGenerate(false)}
@@ -158,6 +203,22 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
         {activeMenu === 'validate' && (
           <div className="top-menu-dropdown">
             <div className="top-dropdown-header">Calidad &amp; Arquitectura</div>
+
+            <button
+              onClick={onDataDesign}
+              disabled={!hasModel}
+              className="top-dropdown-item"
+            >
+              <div className="top-dropdown-item-left">
+                <div className="dropdown-icon-badge badge-peach">
+                  <Database size={14} color="#1a1a1a" />
+                </div>
+                <div className="dropdown-text-stack">
+                  <span className="dropdown-item-title">Diseño de datos</span>
+                  <span className="dropdown-item-desc">Modelo lógico, normalización y diagrama BD</span>
+                </div>
+              </div>
+            </button>
 
             <button
               onClick={onValidate}

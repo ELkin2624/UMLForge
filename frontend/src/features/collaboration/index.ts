@@ -37,3 +37,5 @@ export type {
   LocalIdentity,
   CollaborationUiState,
 } from './model/types';
+
+export { useCommandConflict } from './model/command-client';

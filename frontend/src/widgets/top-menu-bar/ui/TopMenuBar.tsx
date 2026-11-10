@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { SqlGenerationDialog } from '../../../features/sql-generation';
+import type { UMLModel } from '../../../types/canonical-model';
 import { Brand } from './Brand';
 import { DesktopNav } from './DesktopNav';
 import { MobileToggle, MobileDrawer } from './MobileDrawer';
@@ -6,6 +8,9 @@ import { StatusIndicators } from './StatusIndicators';
 import { useTopMenuState } from '../model/use-top-menu-state';
 import { useTopMenuActions } from '../model/use-top-menu-actions';
 import { TopMenuBarProps } from '../model/types';
+import { useVersioningStore } from '../../../features/versioning';
+import { useDashboardStore } from '../../../features/projects-dashboard';
+import { useDataDesignStore } from '../../../features/data-design';
 import './TopMenuBar.css';
 
 export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
@@ -23,7 +28,24 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
     onBeforeAction: closeMenu,
   });
 
+  const [sqlModel, setSqlModel] = useState<UMLModel | null>(null);
+  const openSql = () => {
+    closeMenu();
+    setSqlModel(actions.model);
+  };
   const hasModel = Boolean(actions.model);
+  const openDataDesign = () => {
+    closeMenu();
+    void useDataDesignStore.getState().openDialog();
+  };
+  const openDiagrams = () => {
+    closeMenu();
+    useDashboardStore.getState().showDashboard();
+  };
+  const openHistory = () => {
+    closeMenu();
+    useVersioningStore.getState().openHistory();
+  };
 
   return (
     <header className="top-menu-bar">
@@ -44,8 +66,12 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
           isBusy={actions.isBusy}
           hasModel={hasModel}
           onSave={actions.handleSave}
+          onDiagrams={openDiagrams}
+          onHistory={openHistory}
+          onDataDesign={openDataDesign}
           onImportXMI={actions.handleImportXMIClick}
           onExportXMI={actions.handleExportXMI}
+          onGenerateSql={openSql}
           onGenerate={actions.handleGenerate}
           onValidate={actions.handleValidate}
           onE2E={actions.handleE2E}
@@ -67,13 +93,18 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
         isBusy={actions.isBusy}
         hasModel={hasModel}
         onSave={actions.handleSave}
+        onDiagrams={openDiagrams}
+        onHistory={openHistory}
+        onDataDesign={openDataDesign}
         onImportXMI={actions.handleImportXMIClick}
         onExportXMI={actions.handleExportXMI}
+        onGenerateSql={openSql}
         onGenerate={actions.handleGenerate}
         onValidate={actions.handleValidate}
         onE2E={actions.handleE2E}
         onDeploy={actions.handleDeploy}
       />
+      {sqlModel && <SqlGenerationDialog model={sqlModel} onClose={() => setSqlModel(null)} />}
     </header>
   );
 };

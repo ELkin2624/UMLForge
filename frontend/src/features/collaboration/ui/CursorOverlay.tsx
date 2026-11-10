@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import React from 'react';
 import { usePresence } from '../model/use-presence';
 import { MousePointer2 } from 'lucide-react';
@@ -9,6 +10,13 @@ interface CursorOverlayProps {
 
 export function CursorOverlay({ editorRef }: CursorOverlayProps) {
   const { peers, localClientId } = usePresence();
+  const [, tick] = useState(0);
+  const hasCursors = peers.some(p => p.cursor);
+  useEffect(() => {
+    if (!hasCursors) return;
+    const timer = window.setInterval(() => tick(value => value + 1), 80);
+    return () => window.clearInterval(timer);
+  }, [hasCursors]);
 
   // Filtrar peers remotos que tengan coordenadas de cursor
   const remotePeers = peers.filter((p) => p.cursor && p.clientId !== localClientId);

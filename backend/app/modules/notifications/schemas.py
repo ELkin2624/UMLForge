@@ -15,3 +15,11 @@ class NotificationResponse(BaseModel):
 
 class UnreadCountResponse(BaseModel):
     count: int
+
+
+class RegisterDeviceRequest(BaseModel):
+    token: str
+    platform: str | None = None
+
+class UnregisterDeviceRequest(BaseModel):
+    token: str

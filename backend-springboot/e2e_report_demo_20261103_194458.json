@@ -1,0 +1,67 @@
+{
+  "success": false,
+  "project_name": "demo",
+  "total_duration_ms": 8702,
+  "stages": [
+    {
+      "name": "validation",
+      "status": "success",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "generation",
+      "status": "success",
+      "duration_ms": 235,
+      "error": null,
+      "logs": "Generados 24 archivos."
+    },
+    {
+      "name": "extraction",
+      "status": "success",
+      "duration_ms": 6,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "postgres",
+      "status": "success",
+      "duration_ms": 7640,
+      "error": null,
+      "logs": ""
+    },
+    {
+      "name": "maven",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "spring",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "health",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    },
+    {
+      "name": "newman",
+      "status": "skipped",
+      "duration_ms": 0,
+      "error": null,
+      "logs": null
+    }
+  ],
+  "test_summary": null,
+  "zip_path": null,
+  "report_path": "e2e_report_demo_20261103_194458.json",
+  "error": "[Errno 2] No such file or directory: 'mvn'"
+}

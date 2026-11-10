@@ -14,6 +14,7 @@ import {
   Settings,
   Lock,
   Globe,
+  Bot,
   Link2,
   Check,
   Clock,
@@ -25,9 +26,11 @@ import { useCollaboration } from '../../../hooks/use-collaboration';
 import { useModelStore } from '../../../store/model-store';
 import { useAuthStore } from '../../auth/store';
 import { canManageAccess } from '../model/capabilities';
-import { buildInviteUrl } from '../model/invite-utils';
+import { buildJoinUrl } from '../model/invite-utils';
+import { useShareLink } from '../model/use-share-link';
+import { useAgentPresence } from '../../collaboration/model/use-agent-presence';
 import { request } from '../../../api/client';
-import type { Role, GeneralAccessType } from '../model/types';
+import type { Role } from '../model/types';
 
 interface UserSearchResult {
   id: number;
@@ -50,13 +53,7 @@ export function ShareDialog() {
     isDialogOpen,
     closeShareDialog,
     localRole,
-    generalAccess,
-    generalAccessRole,
     roomId,
-    inviteToken,
-    generateToken,
-    setGeneralAccess,
-    setGeneralAccessRole,
     startSession,
   } = useShareStore();
 
@@ -83,6 +80,13 @@ export function ShareDialog() {
 
   // ID del diagrama activo. Siempre corresponde al ID numérico del diagrama en PostgreSQL.
   const diagramId = roomId || (typeof window !== 'undefined' ? sessionStorage.getItem('umlforge-active-diagram') : null);
+
+  // Enlace de acceso general (respaldado por el backend; solo el propietario lo gestiona)
+  const canManage = canManageAccess(localRole);
+  const shareLink = useShareLink(diagramId, isDialogOpen, canManage);
+  const generalAccess = shareLink.link.enabled ? 'ANYONE_WITH_LINK' : 'RESTRICTED';
+  // Asistente de IA como participante de la sala (solo el propietario lo activa)
+  const agentPresence = useAgentPresence(diagramId, isDialogOpen, canManage);
 
   // Cargar lista real de colaboradores
   const fetchCollaborators = useCallback(async () => {
@@ -113,12 +117,8 @@ export function ShareDialog() {
         startSession(diagramId);
       }
       connect(diagramId);
-
-      if (!inviteToken) {
-        generateToken(generalAccessRole);
-      }
     }
-  }, [isDialogOpen, diagramId, roomId, inviteToken, startSession, connect, generateToken, generalAccessRole]);
+  }, [isDialogOpen, diagramId, roomId, startSession, connect]);
 
   // Debounce 300ms para búsqueda de usuarios
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -243,19 +243,25 @@ export function ShareDialog() {
   }, [ownerName]);
 
   const documentName = model?.name || 'Parcial1-SW1';
-  const canManage = canManageAccess(localRole);
 
-  // URL de invitación
-  const effectiveRole = generalAccess === 'ANYONE_WITH_LINK' ? generalAccessRole : undefined;
-  const inviteUrl = useMemo(() => {
-    if (!roomId) return '';
-    const tokenStr = inviteToken ? inviteToken.token : 'default';
-    return buildInviteUrl(roomId, tokenStr, effectiveRole);
-  }, [roomId, inviteToken, effectiveRole]);
+  // URL del enlace: solo existe si el propietario lo activó (el token viene del backend)
+  const linkToken = shareLink.link.token;
+  const inviteUrl = useMemo(
+    () => (shareLink.link.enabled && linkToken ? buildJoinUrl(linkToken) : ''),
+    [shareLink.link.enabled, linkToken]
+  );
 
   // Manejador para copiar enlace
   const handleCopyLink = useCallback(async () => {
-    if (!inviteUrl) return;
+    if (!inviteUrl) {
+      setFeedback({
+        type: 'error',
+        message: canManage
+          ? 'Activa "Cualquier persona con el enlace" para poder compartirlo, o invita a un usuario por nombre.'
+          : 'Solo el propietario puede compartir el enlace.',
+      });
+      return;
+    }
     try {
       await navigator.clipboard.writeText(inviteUrl);
     } catch {
@@ -268,7 +274,7 @@ export function ShareDialog() {
     }
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2500);
-  }, [inviteUrl]);
+  }, [inviteUrl, canManage]);
 
   // Cerrar con Escape
   useEffect(() => {
@@ -515,7 +521,10 @@ export function ShareDialog() {
                   <select
                     className="gdocs-general-select"
                     value={generalAccess}
-                    onChange={(e) => setGeneralAccess(e.target.value as GeneralAccessType)}
+                    disabled={!canManage || shareLink.loading}
+                    onChange={(e) =>
+                      void shareLink.update(e.target.value === 'ANYONE_WITH_LINK', shareLink.link.role)
+                    }
                     aria-label="Acceso general"
                   >
                     <option value="RESTRICTED">Restringido</option>
@@ -525,9 +534,23 @@ export function ShareDialog() {
                   </select>
                   <span className="gdocs-general-desc">
                     {generalAccess === 'RESTRICTED'
-                      ? 'Solo los usuarios con acceso o invitación aceptada pueden abrir el enlace'
-                      : 'Cualquier persona que tenga este enlace puede acceder'}
+                      ? 'Solo los usuarios con acceso o invitación aceptada pueden abrir el diagrama'
+                      : 'Cualquier usuario con sesión que abra el enlace obtiene acceso con este rol'}
                   </span>
+                  {shareLink.error && (
+                    <span className="gdocs-general-desc" role="alert">{shareLink.error}</span>
+                  )}
+                  {canManage && shareLink.link.enabled && (
+                    <button
+                      type="button"
+                      className="gdocs-copy-link-btn"
+                      onClick={() => void shareLink.regenerate()}
+                      disabled={shareLink.loading}
+                      title="Genera un enlace nuevo y deja de funcionar el anterior"
+                    >
+                      Regenerar enlace
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -535,10 +558,9 @@ export function ShareDialog() {
               {generalAccess === 'ANYONE_WITH_LINK' && (
                 <select
                   className="gdocs-general-role-select"
-                  value={generalAccessRole}
-                  onChange={(e) =>
-                    setGeneralAccessRole(e.target.value as Exclude<Role, 'OWNER'>)
-                  }
+                  value={shareLink.link.role}
+                  disabled={!canManage || shareLink.loading}
+                  onChange={(e) => void shareLink.update(true, e.target.value as Exclude<Role, 'OWNER'>)}
                   aria-label="Rol para cualquier persona con el enlace"
                 >
                   <option value="READER">Lector</option>
@@ -547,6 +569,39 @@ export function ShareDialog() {
               )}
             </div>
           </div>
+
+          {/* Sección: Asistente de IA */}
+          {canManage && (
+            <div>
+              <h3 className="gdocs-section-title">Asistente de IA</h3>
+              <div className="gdocs-general-box">
+                <div className="gdocs-general-left">
+                  <div className="gdocs-general-icon-wrap">
+                    <Bot size={18} />
+                  </div>
+                  <div className="gdocs-general-info">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={agentPresence.enabled}
+                        disabled={agentPresence.loading}
+                        onChange={(e) => void agentPresence.update(e.target.checked)}
+                        aria-label="Mostrar al asistente de IA en la sala"
+                      />{' '}
+                      Presente en la sala como un colaborador más
+                    </label>
+                    <span className="gdocs-general-desc">
+                      Todos los conectados lo ven en la lista de participantes. Nunca modifica el
+                      diagrama sin que una persona apruebe sus propuestas.
+                    </span>
+                    {agentPresence.error && (
+                      <span className="gdocs-general-desc" role="alert">{agentPresence.error}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Pie del Diálogo (Footer) */}

@@ -101,7 +101,6 @@ def auth_headers(test_users):
 def test_diagram(db_session, test_users):
     diagram = Diagram(
         name="Proyecto Ecommerce UML",
-        data={"classes": [{"id": "c1", "name": "Producto", "attributes": [], "methods": []}]},
         owner_id=test_users["owner"].id
     )
     db_session.add(diagram)
@@ -137,6 +136,11 @@ def test_search_users_privacy_and_filter(client, test_users, auth_headers):
     assert data[0]["username"] == "collab_user"
     assert data[0]["display_name"] == "Collaborator User"
     assert "email" not in data[0]
+
+    # La presentación usa @usuario; la búsqueda debe aceptar esa forma.
+    res_with_at = client.get("/api/v1/users/search?q=%40collab", headers=auth_headers["owner"])
+    assert res_with_at.status_code == 200
+    assert res_with_at.json()[0]["username"] == "collab_user"
 
 # ==================== PRUEBA 2: CREAR INVITACIÓN Y DUPLICADOS ====================
 def test_create_invitation_flow_and_conflict(client, test_diagram, test_users, auth_headers, db_session):

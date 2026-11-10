@@ -72,6 +72,21 @@ def test_register_and_login_flow(client: TestClient):
     assert login_data["user"]["display_name"] == "Auth Tester"
     assert "refresh_token" in login_res.cookies
 
+    # La app nativa persiste el refresh en SecureStore, no en cookies del navegador.
+    mobile_login = client.post(
+        "/api/v1/auth/mobile/login",
+        json={"identifier": "auth_tester", "password": "Password123!"},
+    )
+    assert mobile_login.status_code == 200, mobile_login.text
+    mobile_data = mobile_login.json()
+    assert mobile_data["refresh_token"]
+    mobile_refresh = client.post(
+        "/api/v1/auth/mobile/refresh",
+        json={"refresh_token": mobile_data["refresh_token"]},
+    )
+    assert mobile_refresh.status_code == 200, mobile_refresh.text
+    assert mobile_refresh.json()["refresh_token"] != mobile_data["refresh_token"]
+
     access_token = login_data["access_token"]
 
     # 3. Access /auth/me with Bearer token

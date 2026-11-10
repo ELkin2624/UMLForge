@@ -14,7 +14,10 @@ def search_users(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    query_str = q.strip()
+    # La interfaz muestra los usuarios como @nombre, pero el identificador se
+    # almacena sin arroba. Aceptamos ambas formas para no convertir el símbolo
+    # visual en parte del criterio de búsqueda.
+    query_str = q.strip().removeprefix("@").strip()
     if len(query_str) < 2:
         return []
     

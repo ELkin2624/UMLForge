@@ -111,9 +111,17 @@ export function parseInviteFromUrl(): {
   token: string;
   role?: Exclude<Role, 'OWNER'>;
   invitationId?: number;
+  /** Token del enlace de acceso general (?join=<token>). */
+  joinToken?: string;
 } | null {
   try {
     const params = new URLSearchParams(window.location.search);
+
+    // Formato 3: enlace de acceso general ?join=<token> (validado por el backend)
+    const joinToken = params.get('join');
+    if (joinToken) {
+      return { roomId: '', token: '', joinToken };
+    }
 
     // Formato 2: deep-link ?invite=<invitationId>
     const inviteIdStr = params.get('invite');
@@ -138,6 +146,21 @@ export function parseInviteFromUrl(): {
     // silent fail
   }
   return null;
+}
+
+/**
+ * Construye el enlace de acceso general: <origin>/?join=<token>.
+ * El token lo genera y valida el backend; quien lo abre (con sesión) obtiene acceso.
+ */
+export function buildJoinUrl(token: string, baseUrl?: string): string {
+  const base =
+    baseUrl ??
+    (typeof window !== 'undefined' && window.location
+      ? window.location.origin + window.location.pathname
+      : 'http://localhost:5173/');
+  const url = new URL(base);
+  url.searchParams.set('join', token);
+  return url.toString();
 }
 
 /**
@@ -166,6 +189,7 @@ export function clearInviteParamsFromUrl(): void {
     url.searchParams.delete('token');
     url.searchParams.delete('role');
     url.searchParams.delete('invite');
+    url.searchParams.delete('join');
     window.history.replaceState({}, '', url.toString());
   } catch {
     // silent fail

@@ -1,2 +1,2 @@
 allowBuilds:
-  leveldown: set this to true or false
+  leveldown: true

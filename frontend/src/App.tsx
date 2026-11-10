@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ApollonEditor } from './components/ApollonEditor';
 import { TopMenuBar } from './components/TopMenuBar';
 import { ValidationPanel, E2EResultPanel, LoadingOverlay } from './features/model-validation';
@@ -6,7 +6,7 @@ import { DeploymentResultPanel } from './features/project-deployment';
 import { Notification } from './shared/ui';
 import { CollaborationPanel } from './components/CollaborationPanel';
 import { PresenceToasts } from './components/presence/PresenceToasts';
-import { AIAssistantSidebar, AISuggestionsOverlay } from './features/ai-assistant';
+import { AIAssistantSidebar } from './features/ai-assistant';
 import { ShareDialog } from './features/sharing/ui/ShareDialog';
 import { ValidationResult, DeploymentResult } from './types/api-responses';
 import { useModelStore } from './store/model-store';
@@ -15,6 +15,10 @@ import { useShareStore } from './features/sharing/model/share-store';
 import { useCollaboration } from './hooks/use-collaboration';
 import { useAuthStore } from './features/auth/store';
 import { AuthPage } from './features/auth/ui/AuthPage';
+import { useAutosave, HistoryDialog } from './features/versioning';
+import { DiagramManagerDialog } from './features/diagram-manager';
+import { DataDesignDialog } from './features/data-design';
+import { ProjectsDashboard, useDashboardStore } from './features/projects-dashboard';
 import './style.css';
 
 function App() {
@@ -28,10 +32,22 @@ function App() {
   const setE2EError = useModelStore(s => s.setE2EError);
 
   const { connect } = useCollaboration();
+  useAutosave();
   const { startSession, joinSession } = useShareStore();
 
   const token = useAuthStore(s => s.token);
   const [authChecked, setAuthChecked] = useState(false);
+
+  const screen = useDashboardStore(s => s.screen);
+  const showEditor = useDashboardStore(s => s.showEditor);
+  const showDashboard = useDashboardStore(s => s.showDashboard);
+
+  // Al cerrar sesión, el próximo inicio de sesión vuelve a la pantalla de proyectos.
+  const hadToken = useRef(Boolean(token));
+  useEffect(() => {
+    if (hadToken.current && !token) showDashboard();
+    hadToken.current = Boolean(token);
+  }, [token, showDashboard]);
 
   // Inicialización de sesión: verificar cookies activas o hidratar perfil si token existe
   useEffect(() => {
@@ -91,6 +107,48 @@ function App() {
         localStorage.removeItem('umlforge-pending-invite');
       } catch {}
 
+      // Enlace de acceso general: ?join=<token> → el backend valida el token y concede el rol
+      if (activeInvite.joinToken) {
+        const joinByLink = async () => {
+          let joined = false;
+          try {
+            const { joinByShareLink } = await import('./features/sharing/api/share-link-api');
+            const { request } = await import('./api/client');
+            const res = await joinByShareLink(activeInvite!.joinToken as string);
+            const roomStr = res.diagram_id.toString();
+            try {
+              sessionStorage.setItem('umlforge-active-diagram', roomStr);
+              sessionStorage.setItem('umlforge-collab-active', 'true');
+              const url = new URL(window.location.href);
+              url.searchParams.set('diagram', roomStr);
+              window.history.replaceState({}, '', url.toString());
+            } catch {}
+
+            showEditor();
+            useShareStore.getState().setRoomId(roomStr);
+            joinSession(roomStr, res.role as any);
+            connect(roomStr);
+            joined = true;
+            try {
+              const diagramData = await request<any>(`/diagrams/${res.diagram_id}`);
+              if (diagramData?.data && (diagramData.data.classes?.length || diagramData.data.components?.length)) {
+                useModelStore.getState().setModel(diagramData.data);
+              }
+            } catch (e) {
+              console.warn('Acceso concedido pero no se pudo cargar el diagrama:', e);
+            }
+          } catch (e: any) {
+            setErrorMsg(e?.message || 'No se pudo usar el enlace de acceso.');
+          } finally {
+            clearInviteParamsFromUrl();
+          }
+          // Si el enlace no sirvió, seguir con el diagrama propio del usuario.
+          if (!joined) loadDiagrams();
+        };
+        joinByLink();
+        return;
+      }
+
       // Formato deep-link: ?invite=<invitationId> → llamar API y unirse
       if (activeInvite.invitationId) {
         const acceptAndJoin = async () => {
@@ -110,6 +168,7 @@ function App() {
                 window.history.replaceState({}, '', url.toString());
               } catch {}
 
+              showEditor();
               joinSession(roomStr, res.role as any);
               connect(roomStr);
               // Cargar datos del diagrama
@@ -132,17 +191,14 @@ function App() {
         return;
       }
 
-      // Formato legacy: ?room=...&token=...
+      // Formato antiguo: ?room=...&token=... — el token se generaba en el navegador y el
+      // backend nunca lo validó, así que no concede acceso. Se avisa en lugar de fingir que entró.
       if (activeInvite.roomId) {
-        const assignedRole = activeInvite.role || 'EDITOR';
-        try {
-          sessionStorage.setItem('umlforge-active-diagram', activeInvite.roomId);
-          sessionStorage.setItem('umlforge-collab-active', 'true');
-        } catch {}
-        joinSession(activeInvite.roomId, assignedRole);
-        connect(activeInvite.roomId);
         clearInviteParamsFromUrl();
-        return;
+        setErrorMsg(
+          'Este enlace es de una versión anterior y ya no concede acceso. ' +
+          'Pídele al dueño que active "Cualquier persona con el enlace" en Compartir y te envíe el enlace nuevo.'
+        );
       }
     }
 
@@ -236,8 +292,14 @@ function App() {
     return <AuthPage />;
   }
 
+  const inEditor = screen === 'editor';
+
   return (
     <div className="case-app">
+
+      {!inEditor && <ProjectsDashboard />}
+
+      {inEditor && (<>
 
       {/* ── Barra de Menús Superior (Estilo IDE / StarUML) ── */}
       <TopMenuBar
@@ -262,9 +324,30 @@ function App() {
       {/* LoadingOverlay */}
       <LoadingOverlay />
 
+      {/* Panel E2E — position:fixed bottom, clase case-result-panel */}
+      {/* No toca el layout del editor Apollon en absoluto */}
+      <E2EResultPanel result={e2eResult} onClose={() => setE2EResult(null)} />
+
+      {/* ── Colaboración — position:fixed inferior-izquierda ── */}
+      {/* No modifica el layout del lienzo. No provoca resize/reflow del editor. */}
+      <CollaborationPanel />
+
+      {/* ── Modo Sugerencias IA (Google Docs style) ── */}
+
+      {/* ── Arquitecto IA Omnisciente (Chat Privado + Muro de Auditoría + Sugerencias) ── */}
+      <AIAssistantSidebar />
+
+      {/* ── Administrador de diagramas (listar, abrir, crear, renombrar, eliminar) ── */}
+      <DiagramManagerDialog />
+
+      {/* ── Diseño de datos (modelo lógico, normalización, diagrama BD) ── */}
+      <DataDesignDialog />
+
+      </>)}
+
       {/* Notificaciones flotantes top-right */}
       <div className="case-notifications">
-        <PresenceToasts />
+        {inEditor && <PresenceToasts />}
         {errorMsg && (
           <Notification
             type="error"
@@ -281,22 +364,9 @@ function App() {
         )}
       </div>
 
-      {/* Panel E2E — position:fixed bottom, clase case-result-panel */}
-      {/* No toca el layout del editor Apollon en absoluto */}
-      <E2EResultPanel result={e2eResult} onClose={() => setE2EResult(null)} />
-
-      {/* ── Colaboración — position:fixed inferior-izquierda ── */}
-      {/* No modifica el layout del lienzo. No provoca resize/reflow del editor. */}
-      <CollaborationPanel />
-
-      {/* ── Modo Sugerencias IA (Google Docs style) ── */}
-      <AISuggestionsOverlay />
-
-      {/* ── Arquitecto IA Omnisciente (Chat Privado + Muro de Auditoría + Sugerencias) ── */}
-      <AIAssistantSidebar />
-
-      {/* ── Diálogo de Compartir (Google Docs style) — portal modal ── */}
+      {/* ── Compartir e Historial: disponibles también desde la pantalla de proyectos ── */}
       <ShareDialog />
+      <HistoryDialog />
 
     </div>
   );
