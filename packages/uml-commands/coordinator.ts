@@ -4,14 +4,24 @@ import { patchToCommands } from "./patch-to-commands.ts";
 import type { AIPatch } from "./patch-types.ts";
 import type { UMLCommand } from "./types.ts";
 
-export type Positions = Record<string, { x: number; y: number }>;
+/** Posición de un elemento en el lienzo y, si el usuario lo redimensionó, su tamaño. */
+export interface Placement {
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+}
+export type Positions = Record<string, Placement>;
 export interface MoveCommand {
   type: "moveClass";
   commandId: string;
   id: string;
-  before: { x: number; y: number } | null;
-  after: { x: number; y: number } | null;
+  before: Placement | null;
+  after: Placement | null;
 }
+const validSize = (value: unknown): boolean =>
+  value === undefined ||
+  (typeof value === "number" && Number.isFinite(value) && value > 0 && value <= 1e4);
 export interface MetadataCommand {
   type: "replaceMetadata";
   commandId: string;
@@ -161,7 +171,9 @@ export function applyRoomBatch(
         (!Number.isFinite(cmd.after.x) ||
           !Number.isFinite(cmd.after.y) ||
           Math.abs(cmd.after.x) > 1e6 ||
-          Math.abs(cmd.after.y) > 1e6)
+          Math.abs(cmd.after.y) > 1e6 ||
+          !validSize(cmd.after.width) ||
+          !validSize(cmd.after.height))
       )
         return { ok: false, code: "INVALID", message: "Posición inválida." };
       if (

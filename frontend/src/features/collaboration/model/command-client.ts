@@ -9,8 +9,10 @@ import {
   equal,
   type RoomCommand,
   type Positions,
+  type Placement,
 } from "../../../../../packages/uml-commands/coordinator.ts";
 import type { UMLModel } from "../../../types/canonical-model";
+import { prepareOutgoingModel } from "./outgoing-model";
 
 export interface RoomState {
   data: UMLModel;
@@ -72,7 +74,36 @@ function render(room: string): void {
       state = { ...state, data: result.model, layout: result.layout };
   }
   useModelStore.getState().setModelFromRemote(state.data);
-  listeners.forEach((listener) => listener(room, state.layout));
+  listeners.forEach((listener) => listener(room, withQueuedPositions(room, state.layout)));
+}
+/**
+ * Superpone las posiciones locales que aún no se enviaron (se agrupan 50 ms). Sin esto,
+ * al confirmarse un paso intermedio de un arrastre la clase volvía atrás y luego saltaba.
+ */
+function withQueuedPositions(room: string, layout: Positions): Positions {
+  const queued = visualQueue.get(room);
+  if (!queued?.size) return layout;
+  const merged = { ...layout };
+  queued.forEach((position, id) => {
+    if (position) merged[id] = position;
+    else delete merged[id];
+  });
+  return merged;
+}
+/**
+ * Posiciones que ya conoce este navegador para la sala: las confirmadas (incluidas las
+ * recibidas por HTTP al abrir el diagrama), los lotes pendientes y lo que aún está en cola.
+ * Sirve para dibujar el diagrama en su sitio desde el primer momento.
+ */
+export function knownLayout(room: string): Positions {
+  const session = sessions.get(room);
+  if (!session) return withQueuedPositions(room, {});
+  let layout = session.state.layout;
+  for (const batch of session.pending) {
+    const result = applyRoomBatch(session.state.data, layout, structuredClone(batch.commands));
+    if (result.ok === true && result.layout) layout = result.layout;
+  }
+  return withQueuedPositions(room, layout);
 }
 export function receiveRoom(room: string, state: RoomState): void {
   hydrateRoom(room, state);
@@ -144,7 +175,9 @@ export async function flushRoom(room: string): Promise<void> {
         session.state = receipt;
         useVersioningStore.getState().markSaved(true);
       } else {
-        conflict(room, batch, error);
+        // Un lote que solo mueve posiciones no bloquea el editor: gana la posición ya
+        // confirmada (p. ej. otra persona colocó antes la clase que acaba de crear).
+        if (!isPositionOnly(batch)) conflict(room, batch, error);
         const latest = await request<{
           data: UMLModel;
           layout?: Positions;
@@ -188,17 +221,29 @@ export function enqueueModel(
   after: UMLModel,
 ): void {
   const id = crypto.randomUUID();
-  enqueueCommands(room, diffModels(before, after, id));
+  const commands: RoomCommand[] = diffModels(before, prepareOutgoingModel(before, after), id);
+  // Una clase nueva viaja con su posición en el mismo lote: si no, los demás la veían
+  // aparecer en un sitio por defecto y luego saltar a donde se soltó.
+  const queued = visualQueue.get(room);
+  for (const cmd of [...commands]) {
+    if (cmd.type !== "replaceElement" || cmd.before !== null) continue;
+    const position = queued?.get(cmd.id);
+    if (!position) continue;
+    queued!.delete(cmd.id);
+    commands.push({ type: "moveClass", commandId: `${id}:pos:${cmd.id}`, id: cmd.id, before: null, after: position });
+  }
+  enqueueCommands(room, commands);
 }
+
 const visualQueue = new Map<
   string,
-  Map<string, { x: number; y: number } | null>
+  Map<string, Placement | null>
 >();
 const visualTimers = new Map<string, ReturnType<typeof setTimeout>>();
 export function enqueuePosition(
   room: string,
   id: string,
-  after: { x: number; y: number } | null,
+  after: Placement | null,
 ): void {
   let pending = visualQueue.get(room);
   if (!pending) {
@@ -219,10 +264,13 @@ export function enqueuePosition(
     }, 50),
   );
 }
+function isPositionOnly(batch: Pending): boolean {
+  return batch.commands.every((cmd) => cmd.type === "moveClass");
+}
 function commitPosition(
   room: string,
   id: string,
-  after: { x: number; y: number } | null,
+  after: Placement | null,
 ): void {
   const session = sessions.get(room);
   if (!session) return;

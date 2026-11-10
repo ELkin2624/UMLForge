@@ -19,6 +19,8 @@ import { useAutosave, HistoryDialog } from './features/versioning';
 import { DiagramManagerDialog } from './features/diagram-manager';
 import { DataDesignDialog } from './features/data-design';
 import { ProjectsDashboard, useDashboardStore } from './features/projects-dashboard';
+// getDiagram también guarda las posiciones del servidor: el lienzo se dibuja en su sitio.
+import { getDiagram } from './api/diagrams-api';
 import './style.css';
 
 function App() {
@@ -113,7 +115,6 @@ function App() {
           let joined = false;
           try {
             const { joinByShareLink } = await import('./features/sharing/api/share-link-api');
-            const { request } = await import('./api/client');
             const res = await joinByShareLink(activeInvite!.joinToken as string);
             const roomStr = res.diagram_id.toString();
             try {
@@ -130,7 +131,7 @@ function App() {
             connect(roomStr);
             joined = true;
             try {
-              const diagramData = await request<any>(`/diagrams/${res.diagram_id}`);
+              const diagramData = await getDiagram(res.diagram_id);
               if (diagramData?.data && (diagramData.data.classes?.length || diagramData.data.components?.length)) {
                 useModelStore.getState().setModel(diagramData.data);
               }
@@ -173,7 +174,7 @@ function App() {
               connect(roomStr);
               // Cargar datos del diagrama
               try {
-                const diagramData = await request<any>(`/diagrams/${res.diagram_id}`);
+                const diagramData = await getDiagram(res.diagram_id);
                 if (diagramData?.data && (diagramData.data.classes?.length || diagramData.data.components?.length)) {
                   useModelStore.getState().setModel(diagramData.data);
                 }
@@ -235,7 +236,7 @@ function App() {
 
           // Cargar datos completos del diagrama en Zustand
           try {
-            const fullDiagram = await request<any>(`/diagrams/${target.id}`);
+            const fullDiagram = await getDiagram(target.id);
             if (fullDiagram?.data && (fullDiagram.data.classes?.length || fullDiagram.data.components?.length)) {
               useModelStore.getState().setModel(fullDiagram.data as any);
             }

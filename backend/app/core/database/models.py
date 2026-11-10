@@ -1,6 +1,6 @@
 import datetime
 from enum import Enum
-from sqlalchemy import false, Column, Integer, String, Boolean, DateTime, ForeignKey, UniqueConstraint, Index, JSON
+from sqlalchemy import true, Column, Integer, String, Boolean, DateTime, ForeignKey, UniqueConstraint, Index, JSON
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -64,8 +64,8 @@ class Diagram(Base):
     name = Column(String, nullable=False)
     # El contenido del diagrama y su historial viven en MongoDB (diagram_store).
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    # El propietario decide si el agente de IA participa como un colaborador más.
-    agent_enabled = Column(Boolean, nullable=False, default=False, server_default=false())
+    # Agente de IA activo por defecto; el propietario puede apagarlo en Compartir.
+    agent_enabled = Column(Boolean, nullable=False, default=True, server_default=true())
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 

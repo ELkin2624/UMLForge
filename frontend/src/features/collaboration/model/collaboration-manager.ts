@@ -1,11 +1,17 @@
 import * as Y from "yjs";
 import { YWebSocketProvider } from "../api/websocket-provider";
-import { enqueuePosition, onRoomLayout, receiveRoom } from "./command-client";
+import {
+  enqueuePosition,
+  knownLayout,
+  onRoomLayout,
+  receiveRoom,
+} from "./command-client";
 import { createYjsDocument, getModelJson, setModelJson } from "./yjs-document";
 import { setupAwareness, getOrCreateLocalIdentity } from "./awareness";
 import { bindYjsToStore } from "./yjs-bindings";
 import { useModelStore } from "../../../store/model-store";
 import type { CollaborationStatus, PeerInfo } from "./types";
+import type { Position } from './visual-state-manager';
 
 /**
  * CollaborationManager — orquesta Y.Doc, WebsocketProvider, Awareness y Bindings.
@@ -48,7 +54,7 @@ export class CollaborationManager {
   private _offStatus: (() => void) | null = null;
   private _syncHandled = false;
   private _visualSubscribers = new Set<
-    (visualState: Record<string, { x: number; y: number }>) => void
+    (visualState: Record<string, Position>) => void
   >();
   private _unbindVisualState: (() => void) | null = null;
 
@@ -310,7 +316,7 @@ export class CollaborationManager {
       if (remoteJson)
         receiveRoom(this._roomName, {
           data: JSON.parse(remoteJson),
-          layout: doc.getMap<{ x: number; y: number }>("visual-state").toJSON(),
+          layout: doc.getMap<Position>("visual-state").toJSON(),
           revision: doc.getMap<number>("room").get("revision") ?? 1,
         });
       return;
@@ -377,14 +383,21 @@ export class CollaborationManager {
       this._unbindVisualState = null;
     }
 
-    const map = doc.getMap<{ x: number; y: number }>("visual-state");
+    const map = doc.getMap<Position>("visual-state");
 
     const observer = (
-      _event: Y.YMapEvent<{ x: number; y: number }>,
+      _event: Y.YMapEvent<Position>,
       transaction: Y.Transaction,
     ) => {
       if (transaction.origin === "umlforge-local") return;
-      const state = map.toJSON();
+      const room = this._roomName;
+      // Salas nuevas: las publicaciones pueden llegar desordenadas (una calculada antes de
+      // confirmarse tu último movimiento devolvía la clase a su sitio anterior un instante).
+      // knownLayout descarta revisiones viejas e incluye lo tuyo aún sin confirmar.
+      const state =
+        room && /^\d+$/.test(room)
+          ? { ...map.toJSON(), ...knownLayout(room) }
+          : map.toJSON();
       this._visualSubscribers.forEach((cb) => {
         try {
           cb(state);
@@ -415,9 +428,9 @@ export class CollaborationManager {
   /**
    * Obtiene el estado visual actual (nodeId -> {x, y})
    */
-  getVisualState(): Record<string, { x: number; y: number }> | null {
+  getVisualState(): Record<string, Position> | null {
     if (!this._doc) return null;
-    const map = this._doc.getMap<{ x: number; y: number }>("visual-state");
+    const map = this._doc.getMap<Position>("visual-state");
     return map.toJSON();
   }
 
@@ -426,14 +439,14 @@ export class CollaborationManager {
    */
   updateVisualStateNode(
     nodeId: string,
-    position: { x: number; y: number },
+    position: Position,
   ): void {
     if (!this._doc) return;
     if (this._roomName && /^\d+$/.test(this._roomName)) {
       enqueuePosition(this._roomName, nodeId, position);
       return;
     }
-    const map = this._doc.getMap<{ x: number; y: number }>("visual-state");
+    const map = this._doc.getMap<Position>("visual-state");
     this._doc.transact(() => {
       map.set(nodeId, position);
     }, "umlforge-local");
@@ -448,7 +461,7 @@ export class CollaborationManager {
       enqueuePosition(this._roomName, nodeId, null);
       return;
     }
-    const map = this._doc.getMap<{ x: number; y: number }>("visual-state");
+    const map = this._doc.getMap<Position>("visual-state");
     this._doc.transact(() => {
       map.delete(nodeId);
     }, "umlforge-local");
@@ -458,7 +471,7 @@ export class CollaborationManager {
    * Suscribe a los cambios del estado visual provenientes de la red.
    */
   subscribeToVisualState(
-    callback: (visualState: Record<string, { x: number; y: number }>) => void,
+    callback: (visualState: Record<string, Position>) => void,
   ): () => void {
     this._visualSubscribers.add(callback);
 

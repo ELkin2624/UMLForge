@@ -7,30 +7,31 @@ def url(world):
     return f"/api/v1/diagrams/{world['id']}/agent"
 
 
-def test_por_defecto_esta_desactivado(client, world):
-    assert client.get(url(world), headers=world["owner"]).json() == {"enabled": False}
+def test_por_defecto_esta_activado(client, world):
+    # La IA funciona desde el inicio, sin que el propietario tenga que activarla.
+    assert client.get(url(world), headers=world["owner"]).json() == {"enabled": True}
     detail = client.get(f"/api/v1/diagrams/{world['id']}", headers=world["owner"])
-    assert detail.json()["agent_enabled"] is False
+    assert detail.json()["agent_enabled"] is True
 
 
 def test_solo_el_propietario_puede_ver_o_cambiar_el_estado(client, world):
     for who in ("editor", "reader"):
         assert client.get(url(world), headers=world[who]).status_code == 403
-        res = client.put(url(world), json={"enabled": True}, headers=world[who])
+        res = client.put(url(world), json={"enabled": False}, headers=world[who])
         assert res.status_code == 403
-    assert client.put(url(world), json={"enabled": True}).status_code == 401
+    assert client.put(url(world), json={"enabled": False}).status_code == 401
     # nada cambió
-    assert client.get(url(world), headers=world["owner"]).json()["enabled"] is False
+    assert client.get(url(world), headers=world["owner"]).json()["enabled"] is True
 
 
-def test_activar_y_desactivar_se_refleja_para_todos_los_miembros(client, world):
-    res = client.put(url(world), json={"enabled": True}, headers=world["owner"])
-    assert res.status_code == 200 and res.json() == {"enabled": True}
+def test_desactivar_y_reactivar_se_refleja_para_todos_los_miembros(client, world):
+    res = client.put(url(world), json={"enabled": False}, headers=world["owner"])
+    assert res.status_code == 200 and res.json() == {"enabled": False}
     detail_url = f"/api/v1/diagrams/{world['id']}"
     for who in ("owner", "editor", "reader"):
-        assert client.get(detail_url, headers=world[who]).json()["agent_enabled"] is True
-    client.put(url(world), json={"enabled": False}, headers=world["owner"])
-    assert client.get(detail_url, headers=world["reader"]).json()["agent_enabled"] is False
+        assert client.get(detail_url, headers=world[who]).json()["agent_enabled"] is False
+    client.put(url(world), json={"enabled": True}, headers=world["owner"])
+    assert client.get(detail_url, headers=world["reader"]).json()["agent_enabled"] is True
 
 
 def test_diagrama_inexistente_da_404(client, world):

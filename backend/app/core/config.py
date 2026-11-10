@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     AGENT_RUN_TIMEOUT_SECONDS: float = 600.0
     AI_PROVIDER: Literal["gemini", "ollama"] = "gemini"
     GEMINI_API_KEY: str = ""
+    # Google retira modelos a menudo: se configuran por entorno, con respaldo en orden.
+    GEMINI_MODEL: str = "gemini-3.5-flash"
+    GEMINI_FALLBACK_MODELS: list[str] = ["gemini-3.1-flash-lite", "gemini-flash-latest"]
     COHERE_API_KEY: str = ""
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
     OLLAMA_MODEL: str = "qwen3.5:4b"

@@ -6,6 +6,8 @@ import httpx
 from google import genai
 from google.genai import types
 
+from .tool_provider import gemini_models
+
 from ..schemas import (
     PAYLOAD_CONTRACT,
     AgentResult,
@@ -28,8 +30,9 @@ class LLMClient:
     ):
         self.api_key = api_key or ""
         self.provider = provider
-        self.model_name = "gemini-2.5-flash"
-        self.fallback_models = ["gemini-2.0-flash", "gemini-1.5-flash"]
+        models = gemini_models()
+        self.model_name = models[0]
+        self.fallback_models = models[1:]
         self.client = genai.Client(api_key=self.api_key) if self.api_key else None
         self.ollama_base_url = ollama_base_url.rstrip("/")
         self.ollama_model = ollama_model

@@ -26,6 +26,11 @@ from .tools import TOOLS, definitions
 
 logger = logging.getLogger(__name__)
 
+# Origen de las clases que coloca el agente: a la derecha de la paleta de Apollon
+# (unos 170 px a la izquierda del lienzo) para que no queden tapadas.
+CANVAS_LEFT = 220
+CANVAS_TOP = 60
+
 
 def check_actor(diagram_id: int, user_id: int) -> None:
     with SessionLocal() as db:
@@ -238,8 +243,8 @@ class AgentRuntime:
                             "id": cls["id"],
                             "before": None,
                             "after": {
-                                "x": 40 + (index % 3) * 420,
-                                "y": 40 + (index // 3) * 500,
+                                "x": CANVAS_LEFT + (index % 3) * 420,
+                                "y": CANVAS_TOP + (index // 3) * 500,
                             },
                         }
                     )
@@ -261,12 +266,17 @@ class AgentRuntime:
                     "commandId": f"{run['_id']}:{staged['counter']}",
                     "id": target["id"],
                     "before": state["layout"].get(target["id"]),
-                    "after": {"x": args["x"], "y": args["y"]},
+                    # Conserva el tamaño que el usuario dio a la clase.
+                    "after": {
+                        **(state["layout"].get(target["id"]) or {}),
+                        "x": args["x"],
+                        "y": args["y"],
+                    },
                 }
             ]
             await self.point(run, target["id"])
         elif name == "arrange_classes":
-            x, y, row_height = 40, 40, 0
+            x, y, row_height = CANVAS_LEFT, CANVAS_TOP, 0
             for i, cls in enumerate(model.get("classes", [])):
                 width = max(
                     240,
@@ -284,14 +294,18 @@ class AgentRuntime:
                     len(cls.get("attributes", [])) + len(cls.get("operations", []))
                 )
                 if i and i % 3 == 0:
-                    x, y, row_height = 40, y + row_height + 100, 0
+                    x, y, row_height = CANVAS_LEFT, y + row_height + 100, 0
                 commands.append(
                     {
                         "type": "moveClass",
                         "commandId": f"{run['_id']}:{staged['counter']}:{i}",
                         "id": cls["id"],
                         "before": state["layout"].get(cls["id"]),
-                        "after": {"x": x, "y": y},
+                        "after": {
+                            **(state["layout"].get(cls["id"]) or {}),
+                            "x": x,
+                            "y": y,
+                        },
                     }
                 )
                 x += width + 100

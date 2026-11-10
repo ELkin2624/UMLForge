@@ -1,4 +1,4 @@
-import { useRef, useMemo, useCallback } from 'react';
+import { useRef, useMemo, useCallback, useState, useEffect } from 'react';
 import { type ApollonEditor as NativeApollonEditor } from '@tumaet/apollon';
 import { useModelStore } from '../../../store/model-store';
 import { useCollaboration, applyVisualStateToModel, useCommandConflict } from '../../../features/collaboration';
@@ -132,10 +132,22 @@ export function useApollonEditor() {
     ]
   );
 
+  const canEditDiagram =
+    canEdit(localRole) && status === 'synced' && !(conflict.room === roomId && conflict.message);
+
+  // Apollon mide la paleta una sola vez al montar y no la dibuja en solo lectura. Como el
+  // editor se monta en solo lectura mientras conecta la sala, se remonta (una sola vez)
+  // al volverse editable para que la paleta tome su tamaño real y no el mínimo.
+  const [becameEditable, setBecameEditable] = useState(canEditDiagram);
+  useEffect(() => {
+    if (canEditDiagram) setBecameEditable(true);
+  }, [canEditDiagram]);
+
   return {
     editorRef,
     localRole,
-    canEditDiagram: canEdit(localRole) && status === 'synced' && !(conflict.room===roomId && conflict.message),
+    editorKey: `ClassDiagram-${localRole}-${becameEditable ? 'edit' : 'view'}`,
+    canEditDiagram,
     initialModel,
     handleMouseMove,
     handleMouseLeave,

@@ -67,7 +67,7 @@ def require_enabled(db: Session, diagram_id: int) -> None:
     diagram = db.get(Diagram, diagram_id)
     if not diagram or not diagram.agent_enabled:
         raise HTTPException(
-            409, "El propietario debe activar el agente en Colaboración."
+            409, "El propietario desactivó el agente (se reactiva en Compartir)."
         )
 
 
@@ -123,7 +123,7 @@ async def provider_status(
             }
     return {
         "provider": "gemini",
-        "model": "gemini-2.5-flash",
+        "model": settings.GEMINI_MODEL,
         "available": bool(settings.GEMINI_API_KEY),
         "detail": "Configurado; la disponibilidad se verifica al consultar.",
     }

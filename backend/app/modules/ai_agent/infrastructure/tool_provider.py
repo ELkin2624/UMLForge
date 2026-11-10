@@ -11,6 +11,12 @@ from google.genai import types
 from app.core.config import settings
 
 
+def gemini_models() -> list[str]:
+    """Modelo configurado seguido de los de respaldo, sin repetir."""
+    models = [settings.GEMINI_MODEL, *settings.GEMINI_FALLBACK_MODELS]
+    return list(dict.fromkeys(models))
+
+
 class ToolProvider:
     async def chat(
         self, messages: list[dict[str, Any]], tools: list[dict[str, Any]]
@@ -90,15 +96,24 @@ class ToolProvider:
             for tool in tools
         ]
         try:
-            response = await client.aio.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    system_instruction=messages[0]["content"],
-                    tools=[types.Tool(function_declarations=declarations)],
-                    temperature=0.2,
-                ),
-            )
+            response = None
+            last_error: Exception | None = None
+            for model in gemini_models():
+                try:
+                    response = await client.aio.models.generate_content(
+                        model=model,
+                        contents=contents,
+                        config=types.GenerateContentConfig(
+                            system_instruction=messages[0]["content"],
+                            tools=[types.Tool(function_declarations=declarations)],
+                            temperature=0.2,
+                        ),
+                    )
+                    break
+                except Exception as error:  # modelo retirado (404) o saturado (503)
+                    last_error = error
+            if response is None:
+                raise RuntimeError("No se pudo consultar Gemini.") from last_error
             parts = response.candidates[0].content.parts if response.candidates else []
             return {
                 "role": "assistant",
