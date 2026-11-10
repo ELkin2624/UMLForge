@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 import datetime
 
@@ -8,6 +8,7 @@ from app.core.database.models import (
     InvitationStatus
 )
 from app.core.auth_deps import require_authenticated_user
+from app.modules.notifications.service import add_notification, queue_push
 from app.modules.sharing.schemas import AcceptInvitationResponse
 
 router = APIRouter(prefix="/api/v1/invitations", tags=["invitations"])
@@ -15,6 +16,7 @@ router = APIRouter(prefix="/api/v1/invitations", tags=["invitations"])
 @router.post("/{invitation_id}/accept", response_model=AcceptInvitationResponse)
 def accept_invitation(
     invitation_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(require_authenticated_user),
     db: Session = Depends(get_db)
 ):
@@ -76,7 +78,18 @@ def accept_invitation(
             if n.data and n.data.get("invitation_id") == invitation_id:
                 n.read = True
 
+        invitee_name = current_user.display_name or current_user.username
+        notification = add_notification(
+            db,
+            invitation.inviter_user_id,
+            "INVITATION_ACCEPTED",
+            "Invitación aceptada",
+            f"{invitee_name} aceptó tu invitación al diagrama '{diagram.name}'.",
+            {"diagram_id": diagram.id, "diagram_name": diagram.name,
+             "invitee_id": current_user.id, "invitee_name": invitee_name},
+        )
         db.commit()
+        queue_push(db, background_tasks, notification)
 
         return AcceptInvitationResponse(
             success=True,
@@ -91,6 +104,7 @@ def accept_invitation(
 @router.post("/{invitation_id}/reject", status_code=status.HTTP_200_OK)
 def reject_invitation(
     invitation_id: int,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(require_authenticated_user),
     db: Session = Depends(get_db)
 ):
@@ -121,7 +135,20 @@ def reject_invitation(
             if n.data and n.data.get("invitation_id") == invitation_id:
                 n.read = True
 
+        invitee_name = current_user.display_name or current_user.username
+        diagram = db.query(Diagram).filter(Diagram.id == invitation.diagram_id).first()
+        diagram_name = diagram.name if diagram else ""
+        notification = add_notification(
+            db,
+            invitation.inviter_user_id,
+            "INVITATION_REJECTED",
+            "Invitación rechazada",
+            f"{invitee_name} rechazó tu invitación al diagrama '{diagram_name}'.",
+            {"diagram_id": invitation.diagram_id, "diagram_name": diagram_name,
+             "invitee_id": current_user.id, "invitee_name": invitee_name},
+        )
         db.commit()
+        queue_push(db, background_tasks, notification)
 
         return {"success": True, "message": "Invitación rechazada exitosamente"}
     except Exception as e:

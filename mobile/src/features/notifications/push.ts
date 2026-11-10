@@ -2,6 +2,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
+import { create } from 'zustand';
 
 import { request } from '@/shared/api/client';
 
@@ -15,11 +16,20 @@ Notifications.setNotificationHandler({
   }),
 });
 
+/** Resultado del último intento de registro, para avisar al usuario si algo falla. */
+export type PushStatus = 'idle' | 'ok' | 'denied' | 'unsupported' | 'error';
+
+export const usePushStatus = create<{ status: PushStatus }>(() => ({ status: 'idle' }));
+
+const setStatus = (status: PushStatus) => usePushStatus.setState({ status });
+
 let registeredToken: string | null = null;
 
-async function obtainExpoToken(): Promise<string | null> {
+type TokenResult = { token: string } | { failure: Exclude<PushStatus, 'idle' | 'ok'> };
+
+async function obtainExpoToken(): Promise<TokenResult> {
   // Las push remotas solo funcionan en dispositivo físico.
-  if (!Device.isDevice) return null;
+  if (!Device.isDevice) return { failure: 'unsupported' };
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
@@ -33,25 +43,31 @@ async function obtainExpoToken(): Promise<string | null> {
   if (status !== 'granted') {
     ({ status } = await Notifications.requestPermissionsAsync());
   }
-  if (status !== 'granted') return null;
+  if (status !== 'granted') return { failure: 'denied' };
 
   const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
-  if (!projectId) return null;
-  return (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+  if (!projectId) return { failure: 'error' };
+  return { token: (await Notifications.getExpoPushTokenAsync({ projectId })).data };
 }
 
 /** Pide permiso, obtiene el token de Expo y lo registra en el backend. No lanza: el push es opcional. */
 export async function registerForPush(): Promise<void> {
   try {
-    const token = await obtainExpoToken();
-    if (!token) return;
+    const result = await obtainExpoToken();
+    if ('failure' in result) {
+      setStatus(result.failure);
+      return;
+    }
+    const { token } = result;
     await request('/notifications/devices', {
       method: 'POST',
       body: JSON.stringify({ token, platform: Platform.OS }),
     });
     registeredToken = token;
+    setStatus('ok');
   } catch (err) {
     console.warn('No se pudo registrar el push', err);
+    setStatus('error');
   }
 }
 
@@ -59,6 +75,7 @@ export async function registerForPush(): Promise<void> {
 export async function unregisterPush(): Promise<void> {
   const token = registeredToken;
   registeredToken = null;
+  setStatus('idle');
   if (!token) return;
   try {
     await request('/notifications/devices/unregister', {
