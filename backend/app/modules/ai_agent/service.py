@@ -17,7 +17,11 @@ class AIAgentService:
         self.contexts = contexts
 
     async def process_private_interaction(
-        self, req: CollaborateRequest, user_id: str, user_name: str
+        self,
+        req: CollaborateRequest,
+        user_id: str,
+        user_name: str,
+        permission: str = "ask",
     ) -> Dict[str, Any]:
         """Coordina la consulta privada del usuario manteniendo el cerebro omnisciente compartido.
 
@@ -26,6 +30,7 @@ class AIAgentService:
         diagram_id = str(req.diagram_id)
         # 1. Obtener contexto privado del usuario + contexto compartido del equipo + bitácora de auditoría
         private_history = await self.repo.get_private_history(diagram_id, user_id)
+        team_history = await self.repo.get_team_history(diagram_id, user_id)
         shared_context = await self.repo.get_shared_context(diagram_id)
         audit_logs = await self.repo.get_recent_audit_logs(diagram_id)
 
@@ -49,6 +54,7 @@ class AIAgentService:
             user_name=user_name,
             user_prompt=req.prompt,
             private_history=private_history,
+            team_history=team_history,
             shared_decisions=shared_context.get("architectural_decisions", []),
             recent_audit_logs=audit_logs,
             canvas_snapshot=diagram_data,
@@ -89,13 +95,20 @@ class AIAgentService:
                 action_summary=ai_output.shared_decision_note,
             )
 
+        execution_mode = (
+            "SUGGESTION"
+            if permission == "ask"
+            else ai_output.execution_mode
+        )
         return {
             "reply": ai_output.reply_to_user,
             "patches": ready_patches,
-            "execution_mode": ai_output.execution_mode,
+            "execution_mode": execution_mode,
             "shared_decision_note": ai_output.shared_decision_note,
             "simulated": simulated,
             "context": context.info(),
+            "permission": permission,
+            "allow_delete": permission == "full",
         }
 
     async def get_user_private_history(self, diagram_id: str, user_id: str, limit: int = 30) -> List[Dict[str, Any]]:

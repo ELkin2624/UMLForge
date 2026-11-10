@@ -30,4 +30,7 @@ services:
 
 volumes:
   postgres_data:
+    external: true
+    name: parcial-sw1-of_postgres_data
   mongo_data:
+    name: 2do-parcial-sw1_mongo_data

@@ -8,8 +8,8 @@ export const AIPresenceIndicator: React.FC = () => {
 
   return (
     <div
+      className="ai-presence-indicator"
       style={{
-        display: 'inline-flex',
         alignItems: 'center',
         gap: '6px',
         padding: '5px 12px',

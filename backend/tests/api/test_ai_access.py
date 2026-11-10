@@ -26,6 +26,16 @@ class FakeRepo:
         ]
         return rows[-limit:]
 
+    async def get_team_history(self, diagram_id, user_id, limit=20):
+        rows = [
+            c for c in self.chats
+            if c["diagram_id"] == str(diagram_id) and c["user_id"] != str(user_id)
+        ]
+        return [
+            {"user_id": c["user_id"], "role": c["role"], "content": c["content"][:500]}
+            for c in rows[-limit:]
+        ]
+
     async def append_private_message(
         self, diagram_id, user_id, role, content, patches=None, image_base64=None
     ):
@@ -65,20 +75,23 @@ class FakeRepo:
 
 class FakeLLM:
     async def invoke_architect_agent(self, user_name, **kwargs):
+        self.last_kwargs = kwargs
         return AgentStructuredOutput(
             reply_to_user=f"Hola {user_name}",
             shared_decision_note=f"{user_name} pidió MetodoPago",
             canvas_patches=[
                 CanvasPatchOperation(op="ADD_CLASS", target_name="MetodoPago", reason="Strategy")
             ],
+            execution_mode="DIRECT",
         )
 
 
 @pytest.fixture(autouse=True)
 def ai_fakes():
     repo = FakeRepo()
+    repo.llm = FakeLLM()
     app.dependency_overrides[ai_router.get_nosql_repo] = lambda: repo
-    app.dependency_overrides[ai_router.get_llm_client] = lambda: FakeLLM()
+    app.dependency_overrides[ai_router.get_llm_client] = lambda: repo.llm
     collaborate_limiter._hits.clear()
     yield repo
     app.dependency_overrides.pop(ai_router.get_nosql_repo, None)
@@ -127,8 +140,13 @@ def test_diagrama_inexistente_da_404(client, world):
     assert res.status_code == 404
 
 
-def test_reader_no_puede_pedir_parches_ni_escribir_auditoria(client, world):
-    assert ask(client, world, "reader").status_code == 403
+def test_reader_puede_conversar_pero_no_aplicar_parches_ni_escribir_auditoria(client, world):
+    settings_url = f"/api/v1/diagrams/{world['id']}/agent"
+    client.put(settings_url, json={"permission": "full"}, headers=world["reader"])
+    response = ask(client, world, "reader")
+    assert response.status_code == 200
+    assert response.json()["execution_mode"] == "SUGGESTION"
+    assert response.json()["allow_delete"] is False
     res = client.post(
         f"/api/v1/ai/audit-feed/{world['id']}",
         json={"action_summary": "x"},
@@ -152,6 +170,36 @@ def test_editor_obtiene_parches_y_el_historial_es_privado(client, world):
     mine = history(client, world, "editor").json()
     assert len(mine) == 2 and mine[0]["role"] == "user"
     assert history(client, world, "owner").json() == []
+
+
+def test_la_ia_recibe_contexto_del_equipo_sin_exponer_chats_ajenos(client, world, ai_fakes):
+    ask(client, world, "owner", prompt="Usaremos pagos con tarjeta")
+    res = ask(client, world, "editor", prompt="Añade facturas")
+    assert res.status_code == 200
+    team = ai_fakes.llm.last_kwargs["team_history"]
+    assert any(row["content"] == "Usaremos pagos con tarjeta" for row in team)
+    assert not any(row["content"] == "Añade facturas" for row in team)
+    assert history(client, world, "editor").json()[0]["content"] == "Añade facturas"
+    assert history(client, world, "owner").json()[0]["content"] == "Usaremos pagos con tarjeta"
+    assert "Usaremos pagos con tarjeta" not in res.text
+
+
+def test_permiso_personal_controla_el_modo_de_ejecucion(client, world):
+    res = ask(client, world, "editor")
+    assert res.status_code == 200
+    assert res.json()["execution_mode"] == "SUGGESTION"
+    assert res.json()["allow_delete"] is False
+
+    settings_url = f"/api/v1/diagrams/{world['id']}/agent"
+    client.put(settings_url, json={"permission": "full"}, headers=world["editor"])
+    res = ask(client, world, "editor")
+    assert res.status_code == 200
+    assert res.json()["execution_mode"] == "DIRECT"
+    assert res.json()["allow_delete"] is True
+
+    owner_res = ask(client, world, "owner")
+    assert owner_res.json()["execution_mode"] == "SUGGESTION"
+    assert owner_res.json()["allow_delete"] is False
 
 
 def test_user_id_en_query_o_cuerpo_se_ignora(client, world, db_session):

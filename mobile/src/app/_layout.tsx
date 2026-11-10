@@ -48,10 +48,11 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.cream } }}>
-          <Stack.Protected guard={!signedIn}>
+          <Stack.Screen name="index" />
+          <Stack.Protected guard={!signedIn} redirectTo="/(tabs)">
             <Stack.Screen name="(auth)" />
           </Stack.Protected>
-          <Stack.Protected guard={signedIn}>
+          <Stack.Protected guard={signedIn} redirectTo="/login">
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="project/[id]" />
           </Stack.Protected>

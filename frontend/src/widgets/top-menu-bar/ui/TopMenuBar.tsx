@@ -1,4 +1,5 @@
 import React from 'react';
+import { FolderOpen } from 'lucide-react';
 import { Brand } from './Brand';
 import { DesktopNav } from './DesktopNav';
 import { MobileToggle, MobileDrawer } from './MobileDrawer';
@@ -53,6 +54,16 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
       <div className="top-menu-left">
         <MobileToggle isOpen={mobileMenuOpen} onToggle={toggleMobileMenu} />
         <Brand />
+        <button
+          className="top-menu-back"
+          type="button"
+          onClick={openDiagrams}
+          aria-label="Salir del editor y volver a Mis proyectos"
+          title="Volver a Mis proyectos"
+        >
+          <FolderOpen size={16} />
+          <span>Mis proyectos</span>
+        </button>
         <DesktopNav
           activeMenu={activeMenu}
           toggleMenu={toggleMenu}

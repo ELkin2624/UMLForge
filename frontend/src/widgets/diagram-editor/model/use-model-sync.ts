@@ -3,6 +3,7 @@ import { type ApollonEditor as NativeApollonEditor } from '@tumaet/apollon';
 import { useModelStore } from '../../../store/model-store';
 import { useShareStore } from '../../../features/sharing/model/share-store';
 import { canEdit } from '../../../features/sharing/model/capabilities';
+import { extractVisualStateFromModel } from '../../../features/collaboration';
 import {
   apollonToCanonical,
   applyCanonicalModelToApollon,
@@ -71,6 +72,8 @@ export function useModelSync({
           diagramType,
           lastVisualStateRef.current
         );
+        // Las posiciones cargadas son el punto de partida, no un arrastre nuevo.
+        lastVisualStateRef.current = extractVisualStateFromModel(editor.model);
         setTimeout(() => {
           applyingExternalModelRef.current = false;
         }, 200);
@@ -113,7 +116,7 @@ export function useModelSync({
               newModel,
               diagramType,
               isNewModelInstance ? undefined : lastVisualStateRef.current,
-              isNewModelInstance
+              isNewModelInstance && !Object.keys(newModel.visual_state || {}).length
             );
           } catch (e) {
             console.error('[ApollonEditor] Error applying remote model to Apollon:', e);

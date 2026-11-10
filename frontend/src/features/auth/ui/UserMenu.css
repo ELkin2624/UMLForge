@@ -2,16 +2,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-case, #1e293b);
+  background: var(--bg-card);
+  border: var(--border-ink-thin);
   padding: 3px 8px 3px 4px;
   border-radius: 9999px;
   transition: all 0.15s ease;
 }
 
 .user-menu-container:hover {
-  background: var(--bg-case-card, #192338);
-  border-color: var(--border-gold, rgba(232, 184, 74, 0.35));
+  background: var(--bg-cream);
 }
 
 .user-info {
@@ -19,7 +18,7 @@
   align-items: center;
   gap: 7px;
   font-size: 12.5px;
-  color: #e2e8f0;
+  color: var(--ink-black);
   font-weight: 600;
 }
 
@@ -50,7 +49,7 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
+  color: var(--ink-black);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,34 +1,40 @@
 """Activación del agente de IA como participante de la sala colaborativa."""
 
-from fastapi import APIRouter, Depends
+from typing import Literal
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.core.auth_deps import require_authenticated_user
-from app.core.database.models import User
+from app.core.auth_deps import require_authenticated_user, require_diagram_access
+from app.core.database.models import Diagram, DiagramPermission, User
 from app.core.database.session import get_db
-from app.modules.sharing.router import require_owner
 
 router = APIRouter(prefix="/api/v1/diagrams/{diagram_id}/agent", tags=["ai_agent"])
 
 
 class AgentPresenceUpdate(BaseModel):
-    enabled: bool
+    enabled: bool | None = None
+    permission: Literal["ask", "safe", "full"] | None = None
 
 
 class AgentPresenceResponse(BaseModel):
     enabled: bool
+    permission: Literal["ask", "safe", "full"] = "ask"
 
 
 @router.get("", response_model=AgentPresenceResponse)
 def get_agent_presence(
-    diagram_id: int,
+    diagram: Diagram = Depends(require_diagram_access),
     current_user: User = Depends(require_authenticated_user),
     db: Session = Depends(get_db),
 ) -> AgentPresenceResponse:
-    """Estado de la presencia del agente (solo propietario)."""
-    diagram = require_owner(diagram_id, db, current_user)
-    return AgentPresenceResponse(enabled=bool(diagram.agent_enabled))
+    """Cada miembro consulta su preferencia y la presencia común del agente."""
+    membership = _membership(db, diagram.id, current_user.id)
+    return AgentPresenceResponse(
+        enabled=bool(diagram.agent_enabled),
+        permission=membership.agent_permission,
+    )
 
 
 @router.put("", response_model=AgentPresenceResponse)
@@ -37,9 +43,22 @@ def set_agent_presence(
     payload: AgentPresenceUpdate,
     current_user: User = Depends(require_authenticated_user),
     db: Session = Depends(get_db),
+    diagram: Diagram = Depends(require_diagram_access),
 ) -> AgentPresenceResponse:
-    """Activa o desactiva el agente en el diagrama (solo propietario)."""
-    diagram = require_owner(diagram_id, db, current_user)
-    diagram.agent_enabled = payload.enabled
-    db.commit()
-    return AgentPresenceResponse(enabled=payload.enabled)
+    """La preferencia es personal; solo OWNER controla la presencia común."""
+    membership = _membership(db, diagram_id, current_user.id)
+    if payload.enabled is not None:
+        if membership.role != "OWNER":
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "Solo el propietario puede activar la IA")
+        diagram.agent_enabled = payload.enabled
+    if payload.permission is not None:
+        membership.agent_permission = payload.permission
+    if payload.enabled is not None or payload.permission is not None:
+        db.commit()
+    return AgentPresenceResponse(
+        enabled=bool(diagram.agent_enabled), permission=membership.agent_permission
+    )
+
+
+def _membership(db: Session, diagram_id: int, user_id: int) -> DiagramPermission:
+    return db.query(DiagramPermission).filter_by(diagram_id=diagram_id, user_id=user_id).one()

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" xmi:id="EAPK_DEP00001_0001_4000_8000_000000000001" name="3.4.2 Diagrama de Despliegue" visibility="public">
+			<packagedElement xmi:type="uml:Device" xmi:id="EAID_DEV_CLIENT" name="Dispositivo Cliente - PC o Laptop" visibility="public"/>
+			<packagedElement xmi:type="uml:ExecutionEnvironment" xmi:id="EAID_ENV_BROWSER" name="Navegador Web (Chrome / Firefox / Edge)" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_REACT" name="App Web UMLForge - React 18 - Vite" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_APOLLON" name="Lienzo UML - Apollon Editor" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_YJS_CLIENT" name="Cliente Colaborativo - Yjs WebSockets" visibility="public"/>
+			<packagedElement xmi:type="uml:Node" xmi:id="EAID_NODE_ROUTER_LOCAL" name="Router Local - Gateway Cliente" visibility="public"/>
+			<packagedElement xmi:type="uml:Device" xmi:id="EAID_DEV_FIREWALL" name="Router Perimetral &amp; Firewall (AWS Internet Gateway / Application Load Balancer &amp; WAF)" visibility="public"/>
+			<packagedElement xmi:type="uml:ExecutionEnvironment" xmi:id="EAID_ENV_S3" name="Servidor Web Estatico (AWS S3 / CloudFront CDN)" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_SPA_BUNDLE" name="Bundle SPA Compilado (HTML5, JS, CSS)" visibility="public"/>
+			<packagedElement xmi:type="uml:Device" xmi:id="EAID_DEV_APP_SERVER" name="Servidor de Aplicaciones (AWS EC2 / Linux Host)" visibility="public"/>
+			<packagedElement xmi:type="uml:ExecutionEnvironment" xmi:id="EAID_ENV_DOCKER" name="Motor Docker Engine" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_BACKEND_CORE" name="Contenedor Backend Core &amp; IA - FastAPI (Python 3.11 / Uvicorn :8000) - Motor MDD (Jinja2 / Spring Boot) - Motor Transcripcion (Faster-Whisper int8)" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_WS_CONTAINER" name="Contenedor Sincronizacion WebSockets - Node.js Server (y-websocket / ws :1234)" visibility="public"/>
+			<packagedElement xmi:type="uml:Node" xmi:id="EAID_DEV_DB_SERVER" name="Servidor de Base de Datos (AWS RDS - Subred Privada)" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_PG_ENGINE" name="Motor Relacional PostgreSQL 15" visibility="public"/>
+			<packagedElement xmi:type="uml:Artifact" xmi:id="EAID_ART_DB_TABLES" name="Base de Datos - umlforge_db (Tablas: users, diagrams, permissions)" visibility="public"/>
+			<packagedElement xmi:type="uml:CommunicationPath" xmi:id="EAID_CP_CLIENT_ROUTER" name="Conexion LAN (Ethernet / Wi-Fi)">
+				<memberEnd xmi:idref="EAID_DEV_CLIENT"/>
+				<memberEnd xmi:idref="EAID_NODE_ROUTER_LOCAL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:CommunicationPath" xmi:id="EAID_CP_WAN_INTERNET" name="Protocolos Publicos (HTTPS :443 / WSS :1234) RED WAN / INTERNET Trafico Cifrado TLS / SSL">
+				<memberEnd xmi:idref="EAID_NODE_ROUTER_LOCAL"/>
+				<memberEnd xmi:idref="EAID_DEV_FIREWALL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:CommunicationPath" xmi:id="EAID_CP_FIREWALL_S3" name="HTTPS (:443) Descarga Estaticos">
+				<memberEnd xmi:idref="EAID_DEV_FIREWALL"/>
+				<memberEnd xmi:idref="EAID_ENV_S3"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:CommunicationPath" xmi:id="EAID_CP_FIREWALL_APP" name="WSS / HTTPS (:8000 / :1234) Reenvio a Subred Privada (VPC)">
+				<memberEnd xmi:idref="EAID_DEV_FIREWALL"/>
+				<memberEnd xmi:idref="EAID_DEV_APP_SERVER"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:CommunicationPath" xmi:id="EAID_CP_APP_DB" name="Red Interna / Protocolo TCP/IP Puerto Seguro (:5432)">
+				<memberEnd xmi:idref="EAID_DEV_APP_SERVER"/>
+				<memberEnd xmi:idref="EAID_DEV_DB_SERVER"/>
+			</packagedElement>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_DEP00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.4.2 Diagrama de Despliegue" scope="public">
+				<model package2="EAPK_DEP00001_0001_4000_8000_000000000001" package="EAPK_DEP00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_DEV_CLIENT" xmi:type="uml:Device" name="Dispositivo Cliente - PC o Laptop" scope="public">
+				<model package="EAPK_DEP00001_0001_4000_8000_000000000001" tpos="0" ea_localid="11" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Device" stereotype="device" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ENV_BROWSER" xmi:type="uml:ExecutionEnvironment" name="Navegador Web (Chrome / Firefox / Edge)" scope="public">
+				<model package="EAID_DEV_CLIENT" tpos="0" ea_localid="12" ea_eleType="element"/>
+				<properties isSpecification="false" sType="ExecutionEnvironment" stereotype="execution environment" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_REACT" xmi:type="uml:Artifact" name="App Web UMLForge - React 18 - Vite" scope="public">
+				<model package="EAID_ENV_BROWSER" tpos="0" ea_localid="13" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_APOLLON" xmi:type="uml:Artifact" name="Lienzo UML - Apollon Editor" scope="public">
+				<model package="EAID_ENV_BROWSER" tpos="0" ea_localid="14" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_YJS_CLIENT" xmi:type="uml:Artifact" name="Cliente Colaborativo - Yjs WebSockets" scope="public">
+				<model package="EAID_ENV_BROWSER" tpos="0" ea_localid="15" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_NODE_ROUTER_LOCAL" xmi:type="uml:Node" name="Router Local - Gateway Cliente" scope="public">
+				<model package="EAPK_DEP00001_0001_4000_8000_000000000001" tpos="0" ea_localid="16" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Node" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_DEV_FIREWALL" xmi:type="uml:Device" name="Router Perimetral &amp; Firewall (AWS Internet Gateway / Application Load Balancer &amp; WAF)" scope="public">
+				<model package="EAPK_DEP00001_0001_4000_8000_000000000001" tpos="0" ea_localid="17" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Device" stereotype="device" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ENV_S3" xmi:type="uml:ExecutionEnvironment" name="Servidor Web Estatico (AWS S3 / CloudFront CDN)" scope="public">
+				<model package="EAPK_DEP00001_0001_4000_8000_000000000001" tpos="0" ea_localid="18" ea_eleType="element"/>
+				<properties isSpecification="false" sType="ExecutionEnvironment" stereotype="execution environment" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_SPA_BUNDLE" xmi:type="uml:Artifact" name="Bundle SPA Compilado (HTML5, JS, CSS)" scope="public">
+				<model package="EAID_ENV_S3" tpos="0" ea_localid="19" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_DEV_APP_SERVER" xmi:type="uml:Device" name="Servidor de Aplicaciones (AWS EC2 / Linux Host)" scope="public">
+				<model package="EAPK_DEP00001_0001_4000_8000_000000000001" tpos="0" ea_localid="20" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Device" stereotype="device" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ENV_DOCKER" xmi:type="uml:ExecutionEnvironment" name="Motor Docker Engine" scope="public">
+				<model package="EAID_DEV_APP_SERVER" tpos="0" ea_localid="21" ea_eleType="element"/>
+				<properties isSpecification="false" sType="ExecutionEnvironment" stereotype="execution environment" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_BACKEND_CORE" xmi:type="uml:Artifact" name="Contenedor Backend Core &amp; IA - FastAPI (Python 3.11 / Uvicorn :8000) - Motor MDD (Jinja2 / Spring Boot) - Motor Transcripcion (Faster-Whisper int8)" scope="public">
+				<model package="EAID_ENV_DOCKER" tpos="0" ea_localid="22" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_WS_CONTAINER" xmi:type="uml:Artifact" name="Contenedor Sincronizacion WebSockets - Node.js Server (y-websocket / ws :1234)" scope="public">
+				<model package="EAID_ENV_DOCKER" tpos="0" ea_localid="23" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_DEV_DB_SERVER" xmi:type="uml:Node" name="Servidor de Base de Datos (AWS RDS - Subred Privada)" scope="public">
+				<model package="EAPK_DEP00001_0001_4000_8000_000000000001" tpos="0" ea_localid="24" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Node" stereotype="database server" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_PG_ENGINE" xmi:type="uml:Artifact" name="Motor Relacional PostgreSQL 15" scope="public">
+				<model package="EAID_DEV_DB_SERVER" tpos="0" ea_localid="25" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ART_DB_TABLES" xmi:type="uml:Artifact" name="Base de Datos - umlforge_db (Tablas: users, diagrams, permissions)" scope="public">
+				<model package="EAID_DEV_DB_SERVER" tpos="0" ea_localid="26" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Artifact" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_CP_CLIENT_ROUTER">
+				<source xmi:idref="EAID_DEV_CLIENT"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_NODE_ROUTER_LOCAL"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="201"/>
+				<properties name="Conexion LAN (Ethernet / Wi-Fi)" ea_type="CommunicationPath" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="Conexion LAN (Ethernet / Wi-Fi)"/>
+			</connector>
+			<connector xmi:idref="EAID_CP_WAN_INTERNET">
+				<source xmi:idref="EAID_NODE_ROUTER_LOCAL"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_DEV_FIREWALL"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="202"/>
+				<properties name="Protocolos Publicos (HTTPS :443 / WSS :1234) RED WAN / INTERNET Trafico Cifrado TLS / SSL" ea_type="CommunicationPath" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="Protocolos Publicos (HTTPS :443 / WSS :1234) RED WAN / INTERNET Trafico Cifrado TLS / SSL"/>
+			</connector>
+			<connector xmi:idref="EAID_CP_FIREWALL_S3">
+				<source xmi:idref="EAID_DEV_FIREWALL"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_ENV_S3"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="203"/>
+				<properties name="HTTPS (:443) Descarga Estaticos" ea_type="CommunicationPath" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="HTTPS (:443) Descarga Estaticos"/>
+			</connector>
+			<connector xmi:idref="EAID_CP_FIREWALL_APP">
+				<source xmi:idref="EAID_DEV_FIREWALL"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_DEV_APP_SERVER"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="204"/>
+				<properties name="WSS / HTTPS (:8000 / :1234) Reenvio a Subred Privada (VPC)" ea_type="CommunicationPath" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="WSS / HTTPS (:8000 / :1234) Reenvio a Subred Privada (VPC)"/>
+			</connector>
+			<connector xmi:idref="EAID_CP_APP_DB">
+				<source xmi:idref="EAID_DEV_APP_SERVER"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_DEV_DB_SERVER"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="205"/>
+				<properties name="Red Interna / Protocolo TCP/IP Puerto Seguro (:5432)" ea_type="CommunicationPath" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="Red Interna / Protocolo TCP/IP Puerto Seguro (:5432)"/>
+			</connector>
+		</connectors>
+		<diagrams>
+			<diagram xmi:id="EAID_DIAG_342_DEP">
+				<model package="EAPK_DEP00001_0001_4000_8000_000000000001" localID="60" owner="EAPK_DEP00001_0001_4000_8000_000000000001"/>
+				<properties name="3.4.2 Diagrama de Despliegue" type="Deployment"/>
+				<project author="UMLForge" version="1.0" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=0;SequenceNotes=0;ScalePrintImage=0;PPgs.cx=1;PPgs.cy=1;DocSize.cx=1200;DocSize.cy=1000;ShowDetails=0;Orientation=L;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=0;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=0;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=0;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=1;SuppressBrackets=0;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=PackageContents;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=70;Top=165;Right=350;Bottom=215;" subject="EAID_ART_REACT" seqno="1" style="DUID=D1;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=70;Top=230;Right=300;Bottom=280;" subject="EAID_ART_APOLLON" seqno="2" style="DUID=D2;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=70;Top=295;Right=350;Bottom=345;" subject="EAID_ART_YJS_CLIENT" seqno="3" style="DUID=D3;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=160;Top=540;Right=350;Bottom=600;" subject="EAID_ART_SPA_BUNDLE" seqno="4" style="DUID=D4;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=580;Top=715;Right=860;Bottom=805;" subject="EAID_ART_BACKEND_CORE" seqno="5" style="DUID=D5;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=580;Top=820;Right=860;Bottom=875;" subject="EAID_ART_WS_CONTAINER" seqno="6" style="DUID=D6;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=50;Top=740;Right=300;Bottom=790;" subject="EAID_ART_PG_ENGINE" seqno="7" style="DUID=D7;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=50;Top=810;Right=330;Bottom=870;" subject="EAID_ART_DB_TABLES" seqno="8" style="DUID=D8;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=620;Top=160;Right=840;Bottom=220;" subject="EAID_NODE_ROUTER_LOCAL" seqno="10" style="DUID=D10;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=580;Top=360;Right=870;Bottom=460;" subject="EAID_DEV_FIREWALL" seqno="11" style="DUID=D11;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=50;Top=90;Right=370;Bottom=370;" subject="EAID_ENV_BROWSER" seqno="51" style="DUID=D51;BCOL=16777215;BFIL=-1;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=130;Top=430;Right=380;Bottom=630;" subject="EAID_ENV_S3" seqno="52" style="DUID=D52;BCOL=16777215;BFIL=-1;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=560;Top=645;Right=880;Bottom=895;" subject="EAID_ENV_DOCKER" seqno="53" style="DUID=D53;BCOL=16777215;BFIL=-1;LCOL=0;LWTH=1;PackageContents=0;"/>
+					<element geometry="Left=30;Top=40;Right=390;Bottom=390;" subject="EAID_DEV_CLIENT" seqno="101" style="DUID=D101;BCOL=16777215;BFIL=-1;LCOL=0;LWTH=2;PackageContents=0;"/>
+					<element geometry="Left=540;Top=570;Right=900;Bottom=920;" subject="EAID_DEV_APP_SERVER" seqno="102" style="DUID=D102;BCOL=16777215;BFIL=-1;LCOL=0;LWTH=2;PackageContents=0;"/>
+					<element geometry="Left=30;Top=660;Right=390;Bottom=900;" subject="EAID_DEV_DB_SERVER" seqno="103" style="DUID=D103;BCOL=16777215;BFIL=-1;LCOL=0;LWTH=2;PackageContents=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_CP_CLIENT_ROUTER" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_CP_WAN_INTERNET" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_CP_FIREWALL_S3" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_CP_FIREWALL_APP" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_CP_APP_DB" style=";Hidden=0;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

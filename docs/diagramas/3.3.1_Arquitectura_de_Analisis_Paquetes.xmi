@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" name="3.3.1 Arquitectura de Analisis (Ciclo #2)" xmi:id="EAPK_ANL00001_0001_4000_8000_000000000001" visibility="public">
+
+			<!-- ==================================================================== -->
+			<!-- SUBPAQUETE 1: DESCRIPCIÓN DE PAQUETES (PAQUETES + NOTAS EXPLICATIVAS)  -->
+			<!-- ==================================================================== -->
+			<packagedElement xmi:type="uml:Package" name="1. Descripcion de Paquetes de Analisis" xmi:id="EAPK_ANL00002_0001_4000_8000_000000000001" visibility="public">
+				<!-- Paquetes de Analisis -->
+				<packagedElement xmi:type="uml:Package" name="Autenticacion y Accesos" xmi:id="EAID_P1_AUTH" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Gestion de Proyectos y Versiones (NoSQL)" xmi:id="EAID_P1_PROJ" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Modelado Visual y Colaborativo" xmi:id="EAID_P1_VISUAL" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Agente IA Co-Desarrollador" xmi:id="EAID_P1_AI" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Diseno y Normalizacion de Datos" xmi:id="EAID_P1_DATA" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Motor MDD - Generador" xmi:id="EAID_P1_MDD" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Supervision Movil" xmi:id="EAID_P1_MOBILE" visibility="public"/>
+
+				<!-- Notas Explicativas (ownedComment conforme a OMG UML 2.1 - longitud < 200 chars) -->
+				<ownedComment xmi:type="uml:Comment" xmi:id="EAID_NOTE_AUTH" name="Nota Autenticacion" body="Gestiona identificacion y control de acceso al sistema. Permite registrarse, autenticarse y mantener sesiones seguras mediante JWT con roles OWNER, EDITOR y READER.">
+					<annotatedElement xmi:idref="EAID_P1_AUTH"/>
+				</ownedComment>
+				<ownedComment xmi:type="uml:Comment" xmi:id="EAID_NOTE_PROJ" name="Nota Proyectos NoSQL" body="Administra repositorios de trabajo. Persiste proyectos en PostgreSQL y control documental en MongoDB: historial inmutable de versiones, auditoria y memoria de decisiones compartidas.">
+					<annotatedElement xmi:idref="EAID_P1_PROJ"/>
+				</ownedComment>
+				<ownedComment xmi:type="uml:Comment" xmi:id="EAID_NOTE_VISUAL" name="Nota Modelado Visual" body="Nucleo del lienzo UML (Apollon/React Flow). Gestiona colaboracion en tiempo real con WebSockets y Yjs, presencia visual de IA (cursor violeta) y aplicacion transaccional de parches.">
+					<annotatedElement xmi:idref="EAID_P1_VISUAL"/>
+				</ownedComment>
+				<ownedComment xmi:type="uml:Comment" xmi:id="EAID_NOTE_AI" name="Nota Agente IA" body="Integra el agente IA como copiloto. Razona sobre el modelo canonico, transcribe notas de voz con Whisper y soporta modo hibrido: Google AI Studio en la nube o LLM local con Ollama/Qwen.">
+					<annotatedElement xmi:idref="EAID_P1_AI"/>
+				</ownedComment>
+				<ownedComment xmi:type="uml:Comment" xmi:id="EAID_NOTE_DATA" name="Nota Diseno Datos" body="Diseno logico de base de datos. Transforma clases UML a tablas relacionales, deduce dependencias funcionales y certifica normalizacion demostrable (1FN a FNBC) con sintesis de Bernstein.">
+					<annotatedElement xmi:idref="EAID_P1_DATA"/>
+				</ownedComment>
+				<ownedComment xmi:type="uml:Comment" xmi:id="EAID_NOTE_MDD" name="Nota Motor MDD" body="Motor de transformacion MDD. Valida semantica UML 2.5 y genera codigo fuente empresarial Spring Boot 3 con JPA, esquema relacional PostgreSQL y suites de pruebas automatizadas en Postman.">
+					<annotatedElement xmi:idref="EAID_P1_MDD"/>
+				</ownedComment>
+				<ownedComment xmi:type="uml:Comment" xmi:id="EAID_NOTE_MOBILE" name="Nota Supervision Movil" body="App movil en Expo SDK 58 / React Native (solo lectura). Permite explorar proyectos, inspeccionar diagramas UML con gestos tactiles, auditar historial de versiones y consultar a la IA.">
+					<annotatedElement xmi:idref="EAID_P1_MOBILE"/>
+				</ownedComment>
+			</packagedElement>
+
+			<!-- ==================================================================== -->
+			<!-- SUBPAQUETE 2: MAPEO DE PAQUETES A CASOS DE USO                       -->
+			<!-- ==================================================================== -->
+			<packagedElement xmi:type="uml:Package" name="2. Mapeo de Paquetes a Casos de Uso" xmi:id="EAPK_ANL00003_0001_4000_8000_000000000001" visibility="public">
+				<!-- Paquetes -->
+				<packagedElement xmi:type="uml:Package" name="Autenticacion y Accesos" xmi:id="EAID_P2_AUTH" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Gestion de Proyectos y Versiones (NoSQL)" xmi:id="EAID_P2_PROJ" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Modelado Visual y Colaborativo" xmi:id="EAID_P2_VISUAL" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Agente IA Co-Desarrollador" xmi:id="EAID_P2_AI" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Diseno y Normalizacion de Datos" xmi:id="EAID_P2_DATA" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Motor MDD - Generador" xmi:id="EAID_P2_MDD" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Supervision Movil" xmi:id="EAID_P2_MOBILE" visibility="public"/>
+
+				<!-- Casos de Uso -->
+				<packagedElement xmi:type="uml:UseCase" name="CU01. REGISTRARSE E INICIAR SESION" xmi:id="EAID_U2_01" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU02. GESTIONAR PROYECTOS DE SOFTWARE" xmi:id="EAID_U2_02" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU15. GESTIONAR MEMORIA, AUDITORIA Y VERSIONES EN NOSQL" xmi:id="EAID_U2_15" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU05. DISENAR MEDIANTE ASISTENCIA INTELIGENTE" xmi:id="EAID_U2_05" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU13. COLABORAR CON AGENTE IA CO-DESARROLLADOR" xmi:id="EAID_U2_13" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU03. MODELAR DIAGRAMA DE CLASES" xmi:id="EAID_U2_03" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU04. SINCRONIZAR MODELADO COLABORATIVO" xmi:id="EAID_U2_04" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU07. IMPORTAR - EXPORTAR MODELO XMI" xmi:id="EAID_U2_07" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU12. CONSULTAR AGENTE DE ASISTENCIA" xmi:id="EAID_U2_12" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU14. REFLEJAR Y APLICAR SUGERENCIAS DE LA IA EN EL LIENZO" xmi:id="EAID_U2_14" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU16. DISENAR Y NORMALIZAR ESQUEMA DE DATOS" xmi:id="EAID_U2_16" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU06. VALIDAR INTEGRIDAD SEMANTICA" xmi:id="EAID_U2_06" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU08. GENERAR ARQUITECTURA BACKEND" xmi:id="EAID_U2_08" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU09. GENERAR PERSISTENCIA" xmi:id="EAID_U2_09" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU10. GENERAR AUTOMATIZACION DE PRUEBAS" xmi:id="EAID_U2_10" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU11. DESCARGAR PROYECTO EJECUTABLE" xmi:id="EAID_U2_11" visibility="public"/>
+				<packagedElement xmi:type="uml:UseCase" name="CU17. SUPERVISAR DIAGRAMAS EN DISPOSITIVO MOVIL" xmi:id="EAID_U2_17" visibility="public"/>
+
+				<!-- Trazabilidad Paquetes -> Casos de Uso -->
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_AUTH_01" client="EAID_P2_AUTH" supplier="EAID_U2_01"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_PROJ_02" client="EAID_P2_PROJ" supplier="EAID_U2_02"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_PROJ_15" client="EAID_P2_PROJ" supplier="EAID_U2_15"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_AI_05" client="EAID_P2_AI" supplier="EAID_U2_05"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_AI_13" client="EAID_P2_AI" supplier="EAID_U2_13"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_VIS_03" client="EAID_P2_VISUAL" supplier="EAID_U2_03"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_VIS_04" client="EAID_P2_VISUAL" supplier="EAID_U2_04"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_VIS_07" client="EAID_P2_VISUAL" supplier="EAID_U2_07"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_VIS_12" client="EAID_P2_VISUAL" supplier="EAID_U2_12"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_VIS_14" client="EAID_P2_VISUAL" supplier="EAID_U2_14"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_DATA_16" client="EAID_P2_DATA" supplier="EAID_U2_16"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_MDD_06" client="EAID_P2_MDD" supplier="EAID_U2_06"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_MDD_08" client="EAID_P2_MDD" supplier="EAID_U2_08"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_MDD_09" client="EAID_P2_MDD" supplier="EAID_U2_09"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_MDD_10" client="EAID_P2_MDD" supplier="EAID_U2_10"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_MDD_11" client="EAID_P2_MDD" supplier="EAID_U2_11"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_M2_MOB_17" client="EAID_P2_MOBILE" supplier="EAID_U2_17"/>
+			</packagedElement>
+
+			<!-- ==================================================================== -->
+			<!-- SUBPAQUETE 3: ANÁLISIS DE DEPENDENCIAS ENTRE PAQUETES                -->
+			<!-- ==================================================================== -->
+			<packagedElement xmi:type="uml:Package" name="3. Analisis de Dependencias Entre Paquetes" xmi:id="EAPK_ANL00004_0001_4000_8000_000000000001" visibility="public">
+				<!-- Paquetes -->
+				<packagedElement xmi:type="uml:Package" name="Autenticacion y Accesos" xmi:id="EAID_P3_AUTH" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Gestion de Proyectos y Versiones (NoSQL)" xmi:id="EAID_P3_PROJ" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Modelado Visual y Colaborativo" xmi:id="EAID_P3_VISUAL" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Agente IA Co-Desarrollador" xmi:id="EAID_P3_AI" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Diseno y Normalizacion de Datos" xmi:id="EAID_P3_DATA" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Motor MDD - Generador" xmi:id="EAID_P3_MDD" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" name="Supervision Movil" xmi:id="EAID_P3_MOBILE" visibility="public"/>
+
+				<!-- Dependencias entre Paquetes (UML 2.1 Dependency) -->
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_MDD_VIS" client="EAID_P3_MDD" supplier="EAID_P3_VISUAL"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_DATA_VIS" client="EAID_P3_DATA" supplier="EAID_P3_VISUAL"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_VIS_AI" client="EAID_P3_VISUAL" supplier="EAID_P3_AI"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_VIS_PROJ" client="EAID_P3_VISUAL" supplier="EAID_P3_PROJ"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_AI_PROJ" client="EAID_P3_AI" supplier="EAID_P3_PROJ"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_MOB_PROJ" client="EAID_P3_MOBILE" supplier="EAID_P3_PROJ"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_MOB_AUTH" client="EAID_P3_MOBILE" supplier="EAID_P3_AUTH"/>
+				<packagedElement xmi:type="uml:Dependency" name="" xmi:id="EAID_D3_PROJ_AUTH" client="EAID_P3_PROJ" supplier="EAID_P3_AUTH"/>
+			</packagedElement>
+
+		</packagedElement>
+	</uml:Model>
+
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<!-- Paquete Raiz -->
+			<element xmi:idref="EAPK_ANL00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.3.1 Arquitectura de Analisis (Ciclo #2)" scope="public">
+				<model package2="EAPK_ANL00001_0001_4000_8000_000000000001" package="EAPK_ANL00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+
+			<!-- Subpaquete 1 -->
+			<element xmi:idref="EAPK_ANL00002_0001_4000_8000_000000000001" xmi:type="uml:Package" name="1. Descripcion de Paquetes de Analisis" scope="public">
+				<model package2="EAPK_ANL00001_0001_4000_8000_000000000001" package="EAPK_ANL00001_0001_4000_8000_000000000001" tpos="0" ea_localid="10" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_P1_AUTH" xmi:type="uml:Package" name="Autenticacion y Accesos" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="11" ea_eleType="package"/><properties sType="Package"/>
+			</element>
+			<element xmi:idref="EAID_P1_PROJ" xmi:type="uml:Package" name="Gestion de Proyectos y Versiones (NoSQL)" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="12" ea_eleType="package"/><properties sType="Package"/>
+			</element>
+			<element xmi:idref="EAID_P1_VISUAL" xmi:type="uml:Package" name="Modelado Visual y Colaborativo" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="13" ea_eleType="package"/><properties sType="Package"/>
+			</element>
+			<element xmi:idref="EAID_P1_AI" xmi:type="uml:Package" name="Agente IA Co-Desarrollador" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="14" ea_eleType="package"/><properties sType="Package"/>
+			</element>
+			<element xmi:idref="EAID_P1_DATA" xmi:type="uml:Package" name="Diseno y Normalizacion de Datos" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="15" ea_eleType="package"/><properties sType="Package"/>
+			</element>
+			<element xmi:idref="EAID_P1_MDD" xmi:type="uml:Package" name="Motor MDD - Generador" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="16" ea_eleType="package"/><properties sType="Package"/>
+			</element>
+			<element xmi:idref="EAID_P1_MOBILE" xmi:type="uml:Package" name="Supervision Movil" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="17" ea_eleType="package"/><properties sType="Package"/>
+			</element>
+
+			<!-- Notas del Subpaquete 1 (con sType="Note", name explícito y documentación corta < 200 chars) -->
+			<element xmi:idref="EAID_NOTE_AUTH" xmi:type="uml:Comment" name="Nota Autenticacion" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="101" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Note" nType="0" scope="public"/>
+				<documentation value="Gestiona identificacion y control de acceso al sistema. Permite registrarse, autenticarse y mantener sesiones seguras mediante JWT con roles OWNER, EDITOR y READER."/>
+			</element>
+			<element xmi:idref="EAID_NOTE_PROJ" xmi:type="uml:Comment" name="Nota Proyectos NoSQL" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="102" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Note" nType="0" scope="public"/>
+				<documentation value="Administra repositorios de trabajo. Persiste proyectos en PostgreSQL y control documental en MongoDB: historial inmutable de versiones, auditoria y memoria de decisiones compartidas."/>
+			</element>
+			<element xmi:idref="EAID_NOTE_VISUAL" xmi:type="uml:Comment" name="Nota Modelado Visual" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="103" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Note" nType="0" scope="public"/>
+				<documentation value="Nucleo del lienzo UML (Apollon/React Flow). Gestiona colaboracion en tiempo real con WebSockets y Yjs, presencia visual de IA (cursor violeta) y aplicacion transaccional de parches."/>
+			</element>
+			<element xmi:idref="EAID_NOTE_AI" xmi:type="uml:Comment" name="Nota Agente IA" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="104" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Note" nType="0" scope="public"/>
+				<documentation value="Integra el agente IA como copiloto. Razona sobre el modelo canonico, transcribe notas de voz con Whisper y soporta modo hibrido: Google AI Studio en la nube o LLM local con Ollama/Qwen."/>
+			</element>
+			<element xmi:idref="EAID_NOTE_DATA" xmi:type="uml:Comment" name="Nota Diseno Datos" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="105" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Note" nType="0" scope="public"/>
+				<documentation value="Diseno logico de base de datos. Transforma clases UML a tablas relacionales, deduce dependencias funcionales y certifica normalizacion demostrable (1FN a FNBC) con sintesis de Bernstein."/>
+			</element>
+			<element xmi:idref="EAID_NOTE_MDD" xmi:type="uml:Comment" name="Nota Motor MDD" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="106" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Note" nType="0" scope="public"/>
+				<documentation value="Motor de transformacion MDD. Valida semantica UML 2.5 y genera codigo fuente empresarial Spring Boot 3 con JPA, esquema relacional PostgreSQL y suites de pruebas automatizadas en Postman."/>
+			</element>
+			<element xmi:idref="EAID_NOTE_MOBILE" xmi:type="uml:Comment" name="Nota Supervision Movil" scope="public">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" tpos="0" ea_localid="107" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Note" nType="0" scope="public"/>
+				<documentation value="App movil en Expo SDK 58 / React Native (solo lectura). Permite explorar proyectos, inspeccionar diagramas UML con gestos tactiles, auditar historial de versiones y consultar a la IA."/>
+			</element>
+
+			<!-- Subpaquete 2 -->
+			<element xmi:idref="EAPK_ANL00003_0001_4000_8000_000000000001" xmi:type="uml:Package" name="2. Mapeo de Paquetes a Casos de Uso" scope="public">
+				<model package2="EAPK_ANL00001_0001_4000_8000_000000000001" package="EAPK_ANL00001_0001_4000_8000_000000000001" tpos="0" ea_localid="20" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_P2_AUTH" xmi:type="uml:Package" name="Autenticacion y Accesos" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="21" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P2_PROJ" xmi:type="uml:Package" name="Gestion de Proyectos y Versiones (NoSQL)" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="22" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P2_VISUAL" xmi:type="uml:Package" name="Modelado Visual y Colaborativo" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="23" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P2_AI" xmi:type="uml:Package" name="Agente IA Co-Desarrollador" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="24" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P2_DATA" xmi:type="uml:Package" name="Diseno y Normalizacion de Datos" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="25" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P2_MDD" xmi:type="uml:Package" name="Motor MDD - Generador" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="26" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P2_MOBILE" xmi:type="uml:Package" name="Supervision Movil" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="27" ea_eleType="package"/><properties sType="Package"/></element>
+
+			<!-- Casos de Uso del Subpaquete 2 -->
+			<element xmi:idref="EAID_U2_01" xmi:type="uml:UseCase" name="CU01. REGISTRARSE E INICIAR SESION" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="201" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_02" xmi:type="uml:UseCase" name="CU02. GESTIONAR PROYECTOS DE SOFTWARE" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="202" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_15" xmi:type="uml:UseCase" name="CU15. GESTIONAR MEMORIA, AUDITORIA Y VERSIONES EN NOSQL" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="203" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_05" xmi:type="uml:UseCase" name="CU05. DISENAR MEDIANTE ASISTENCIA INTELIGENTE" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="204" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_13" xmi:type="uml:UseCase" name="CU13. COLABORAR CON AGENTE IA CO-DESARROLLADOR" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="205" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_03" xmi:type="uml:UseCase" name="CU03. MODELAR DIAGRAMA DE CLASES" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="206" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_04" xmi:type="uml:UseCase" name="CU04. SINCRONIZAR MODELADO COLABORATIVO" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="207" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_07" xmi:type="uml:UseCase" name="CU07. IMPORTAR - EXPORTAR MODELO XMI" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="208" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_12" xmi:type="uml:UseCase" name="CU12. CONSULTAR AGENTE DE ASISTENCIA" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="209" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_14" xmi:type="uml:UseCase" name="CU14. REFLEJAR Y APLICAR SUGERENCIAS DE LA IA EN EL LIENZO" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="210" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_16" xmi:type="uml:UseCase" name="CU16. DISENAR Y NORMALIZAR ESQUEMA DE DATOS" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="211" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_06" xmi:type="uml:UseCase" name="CU06. VALIDAR INTEGRIDAD SEMANTICA" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="212" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_08" xmi:type="uml:UseCase" name="CU08. GENERAR ARQUITECTURA BACKEND" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="213" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_09" xmi:type="uml:UseCase" name="CU09. GENERAR PERSISTENCIA" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="214" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_10" xmi:type="uml:UseCase" name="CU10. GENERAR AUTOMATIZACION DE PRUEBAS" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="215" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_11" xmi:type="uml:UseCase" name="CU11. DESCARGAR PROYECTO EJECUTABLE" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="216" ea_eleType="element"/><properties sType="UseCase"/></element>
+			<element xmi:idref="EAID_U2_17" xmi:type="uml:UseCase" name="CU17. SUPERVISAR DIAGRAMAS EN DISPOSITIVO MOVIL" scope="public"><model package="EAPK_ANL00003_0001_4000_8000_000000000001" ea_localid="217" ea_eleType="element"/><properties sType="UseCase"/></element>
+
+			<!-- Subpaquete 3 -->
+			<element xmi:idref="EAPK_ANL00004_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3. Analisis de Dependencias Entre Paquetes" scope="public">
+				<model package2="EAPK_ANL00001_0001_4000_8000_000000000001" package="EAPK_ANL00001_0001_4000_8000_000000000001" tpos="0" ea_localid="30" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_P3_AUTH" xmi:type="uml:Package" name="Autenticacion y Accesos" scope="public"><model package="EAPK_ANL00004_0001_4000_8000_000000000001" ea_localid="31" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P3_PROJ" xmi:type="uml:Package" name="Gestion de Proyectos y Versiones (NoSQL)" scope="public"><model package="EAPK_ANL00004_0001_4000_8000_000000000001" ea_localid="32" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P3_VISUAL" xmi:type="uml:Package" name="Modelado Visual y Colaborativo" scope="public"><model package="EAPK_ANL00004_0001_4000_8000_000000000001" ea_localid="33" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P3_AI" xmi:type="uml:Package" name="Agente IA Co-Desarrollador" scope="public"><model package="EAPK_ANL00004_0001_4000_8000_000000000001" ea_localid="34" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P3_DATA" xmi:type="uml:Package" name="Diseno y Normalizacion de Datos" scope="public"><model package="EAPK_ANL00004_0001_4000_8000_000000000001" ea_localid="35" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P3_MDD" xmi:type="uml:Package" name="Motor MDD - Generador" scope="public"><model package="EAPK_ANL00004_0001_4000_8000_000000000001" ea_localid="36" ea_eleType="package"/><properties sType="Package"/></element>
+			<element xmi:idref="EAID_P3_MOBILE" xmi:type="uml:Package" name="Supervision Movil" scope="public"><model package="EAPK_ANL00004_0001_4000_8000_000000000001" ea_localid="37" ea_eleType="package"/><properties sType="Package"/></element>
+		</elements>
+
+		<connectors>
+			<!-- Conectores NoteLink (Subpaquete 1: Paquetes y Notas) -->
+			<connector xmi:idref="EAID_NL_AUTH"><source xmi:idref="EAID_NOTE_AUTH"/><target xmi:idref="EAID_P1_AUTH"/><model ea_localid="401"/><properties ea_type="NoteLink" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_NL_PROJ"><source xmi:idref="EAID_NOTE_PROJ"/><target xmi:idref="EAID_P1_PROJ"/><model ea_localid="402"/><properties ea_type="NoteLink" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_NL_VIS"><source xmi:idref="EAID_NOTE_VISUAL"/><target xmi:idref="EAID_P1_VISUAL"/><model ea_localid="403"/><properties ea_type="NoteLink" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_NL_AI"><source xmi:idref="EAID_NOTE_AI"/><target xmi:idref="EAID_P1_AI"/><model ea_localid="404"/><properties ea_type="NoteLink" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_NL_DATA"><source xmi:idref="EAID_NOTE_DATA"/><target xmi:idref="EAID_P1_DATA"/><model ea_localid="405"/><properties ea_type="NoteLink" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_NL_MDD"><source xmi:idref="EAID_NOTE_MDD"/><target xmi:idref="EAID_P1_MDD"/><model ea_localid="406"/><properties ea_type="NoteLink" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_NL_MOB"><source xmi:idref="EAID_NOTE_MOBILE"/><target xmi:idref="EAID_P1_MOBILE"/><model ea_localid="407"/><properties ea_type="NoteLink" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+
+			<!-- Conectores Mapeo Paquetes -> Casos de Uso (Subpaquete 2) -->
+			<connector xmi:idref="EAID_M2_AUTH_01"><source xmi:idref="EAID_P2_AUTH"/><target xmi:idref="EAID_U2_01"/><model ea_localid="501"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_PROJ_02"><source xmi:idref="EAID_P2_PROJ"/><target xmi:idref="EAID_U2_02"/><model ea_localid="502"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_PROJ_15"><source xmi:idref="EAID_P2_PROJ"/><target xmi:idref="EAID_U2_15"/><model ea_localid="503"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_AI_05"><source xmi:idref="EAID_P2_AI"/><target xmi:idref="EAID_U2_05"/><model ea_localid="504"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_AI_13"><source xmi:idref="EAID_P2_AI"/><target xmi:idref="EAID_U2_13"/><model ea_localid="505"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_VIS_03"><source xmi:idref="EAID_P2_VISUAL"/><target xmi:idref="EAID_U2_03"/><model ea_localid="506"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_VIS_04"><source xmi:idref="EAID_P2_VISUAL"/><target xmi:idref="EAID_U2_04"/><model ea_localid="507"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_VIS_07"><source xmi:idref="EAID_P2_VISUAL"/><target xmi:idref="EAID_U2_07"/><model ea_localid="508"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_VIS_12"><source xmi:idref="EAID_P2_VISUAL"/><target xmi:idref="EAID_U2_12"/><model ea_localid="509"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_VIS_14"><source xmi:idref="EAID_P2_VISUAL"/><target xmi:idref="EAID_U2_14"/><model ea_localid="510"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_DATA_16"><source xmi:idref="EAID_P2_DATA"/><target xmi:idref="EAID_U2_16"/><model ea_localid="511"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_MDD_06"><source xmi:idref="EAID_P2_MDD"/><target xmi:idref="EAID_U2_06"/><model ea_localid="512"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_MDD_08"><source xmi:idref="EAID_P2_MDD"/><target xmi:idref="EAID_U2_08"/><model ea_localid="513"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_MDD_09"><source xmi:idref="EAID_P2_MDD"/><target xmi:idref="EAID_U2_09"/><model ea_localid="514"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_MDD_10"><source xmi:idref="EAID_P2_MDD"/><target xmi:idref="EAID_U2_10"/><model ea_localid="515"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_MDD_11"><source xmi:idref="EAID_P2_MDD"/><target xmi:idref="EAID_U2_11"/><model ea_localid="516"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_M2_MOB_17"><source xmi:idref="EAID_P2_MOBILE"/><target xmi:idref="EAID_U2_17"/><model ea_localid="517"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+
+			<!-- Conectores Dependencias entre Paquetes (Subpaquete 3) -->
+			<connector xmi:idref="EAID_D3_MDD_VIS"><source xmi:idref="EAID_P3_MDD"/><target xmi:idref="EAID_P3_VISUAL"/><model ea_localid="601"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_D3_DATA_VIS"><source xmi:idref="EAID_P3_DATA"/><target xmi:idref="EAID_P3_VISUAL"/><model ea_localid="602"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_D3_VIS_AI"><source xmi:idref="EAID_P3_VISUAL"/><target xmi:idref="EAID_P3_AI"/><model ea_localid="603"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_D3_VIS_PROJ"><source xmi:idref="EAID_P3_VISUAL"/><target xmi:idref="EAID_P3_PROJ"/><model ea_localid="604"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_D3_AI_PROJ"><source xmi:idref="EAID_P3_AI"/><target xmi:idref="EAID_P3_PROJ"/><model ea_localid="605"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_D3_MOB_PROJ"><source xmi:idref="EAID_P3_MOBILE"/><target xmi:idref="EAID_P3_PROJ"/><model ea_localid="606"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_D3_MOB_AUTH"><source xmi:idref="EAID_P3_MOBILE"/><target xmi:idref="EAID_P3_AUTH"/><model ea_localid="607"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_D3_PROJ_AUTH"><source xmi:idref="EAID_P3_PROJ"/><target xmi:idref="EAID_P3_AUTH"/><model ea_localid="608"/><properties ea_type="Dependency" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+		</connectors>
+
+		<diagrams>
+			<!-- ==================================================================== -->
+			<!-- DIAGRAMA 1: DESCRIPCIÓN DE PAQUETES (PAQUETES + NOTAS EXPLICATIVAS)   -->
+			<!-- ==================================================================== -->
+			<diagram xmi:id="EAID_DIAG_SUB1_DESC">
+				<model package="EAPK_ANL00002_0001_4000_8000_000000000001" localID="21" owner="EAPK_ANL00002_0001_4000_8000_000000000001"/>
+				<properties name="3.3.1 Descripcion de Paquetes de Analisis" type="Package"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1400;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<!-- Fila 1: Auth -->
+					<element geometry="Left=50;Top=30;Right=260;Bottom=110;" subject="EAID_P1_AUTH" seqno="1" style="DUID=D101;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=25;Right=820;Bottom=115;" subject="EAID_NOTE_AUTH" seqno="2" style="DUID=D102;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Fila 2: Proj -->
+					<element geometry="Left=50;Top=140;Right=260;Bottom=220;" subject="EAID_P1_PROJ" seqno="3" style="DUID=D103;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=135;Right=820;Bottom=225;" subject="EAID_NOTE_PROJ" seqno="4" style="DUID=D104;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Fila 3: Visual -->
+					<element geometry="Left=50;Top=250;Right=260;Bottom=330;" subject="EAID_P1_VISUAL" seqno="5" style="DUID=D105;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=245;Right=820;Bottom=335;" subject="EAID_NOTE_VISUAL" seqno="6" style="DUID=D106;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Fila 4: AI -->
+					<element geometry="Left=50;Top=360;Right=260;Bottom=440;" subject="EAID_P1_AI" seqno="7" style="DUID=D107;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=355;Right=820;Bottom=445;" subject="EAID_NOTE_AI" seqno="8" style="DUID=D108;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Fila 5: Data Design -->
+					<element geometry="Left=50;Top=470;Right=260;Bottom=550;" subject="EAID_P1_DATA" seqno="9" style="DUID=D109;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=465;Right=820;Bottom=555;" subject="EAID_NOTE_DATA" seqno="10" style="DUID=D110;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Fila 6: MDD -->
+					<element geometry="Left=50;Top=580;Right=260;Bottom=660;" subject="EAID_P1_MDD" seqno="11" style="DUID=D111;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=575;Right=820;Bottom=665;" subject="EAID_NOTE_MDD" seqno="12" style="DUID=D112;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Fila 7: Mobile -->
+					<element geometry="Left=50;Top=690;Right=260;Bottom=770;" subject="EAID_P1_MOBILE" seqno="13" style="DUID=D113;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=685;Right=820;Bottom=775;" subject="EAID_NOTE_MOBILE" seqno="14" style="DUID=D114;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+
+			<!-- ==================================================================== -->
+			<!-- DIAGRAMA 2: MAPEO DE PAQUETES A CASOS DE USO                         -->
+			<!-- ==================================================================== -->
+			<diagram xmi:id="EAID_DIAG_SUB2_MAP">
+				<model package="EAPK_ANL00003_0001_4000_8000_000000000001" localID="22" owner="EAPK_ANL00003_0001_4000_8000_000000000001"/>
+				<properties name="3.3.1 Mapeo de Paquetes a Casos de Uso" type="Package"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1400;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<!-- Paquetes (Columna Izquierda X: 40 a 240) -->
+					<element geometry="Left=40;Top=30;Right=240;Bottom=100;" subject="EAID_P2_AUTH" seqno="1" style="DUID=D201;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=130;Right=240;Bottom=200;" subject="EAID_P2_PROJ" seqno="2" style="DUID=D202;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=240;Right=240;Bottom=310;" subject="EAID_P2_AI" seqno="3" style="DUID=D203;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=360;Right=240;Bottom=430;" subject="EAID_P2_VISUAL" seqno="4" style="DUID=D204;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=540;Right=240;Bottom=610;" subject="EAID_P2_DATA" seqno="5" style="DUID=D205;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=640;Right=240;Bottom=710;" subject="EAID_P2_MDD" seqno="6" style="DUID=D206;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=860;Right=240;Bottom=930;" subject="EAID_P2_MOBILE" seqno="7" style="DUID=D207;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Casos de Uso (Columna Derecha X: 310 a 760) -->
+					<element geometry="Left=310;Top=40;Right=760;Bottom=90;" subject="EAID_U2_01" seqno="8" style="DUID=D208;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=120;Right=760;Bottom=170;" subject="EAID_U2_02" seqno="9" style="DUID=D209;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=180;Right=760;Bottom=230;" subject="EAID_U2_15" seqno="10" style="DUID=D210;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=250;Right=760;Bottom=300;" subject="EAID_U2_05" seqno="11" style="DUID=D211;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=310;Right=760;Bottom=360;" subject="EAID_U2_13" seqno="12" style="DUID=D212;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=380;Right=760;Bottom=430;" subject="EAID_U2_03" seqno="13" style="DUID=D213;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=440;Right=760;Bottom=490;" subject="EAID_U2_04" seqno="14" style="DUID=D214;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=500;Right=760;Bottom=550;" subject="EAID_U2_07" seqno="15" style="DUID=D215;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=560;Right=760;Bottom=610;" subject="EAID_U2_12" seqno="16" style="DUID=D216;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=620;Right=760;Bottom=670;" subject="EAID_U2_14" seqno="17" style="DUID=D217;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=680;Right=760;Bottom=730;" subject="EAID_U2_16" seqno="18" style="DUID=D218;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=740;Right=760;Bottom=790;" subject="EAID_U2_06" seqno="19" style="DUID=D219;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=800;Right=760;Bottom=850;" subject="EAID_U2_08" seqno="20" style="DUID=D220;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=860;Right=760;Bottom=910;" subject="EAID_U2_09" seqno="21" style="DUID=D221;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=920;Right=760;Bottom=970;" subject="EAID_U2_10" seqno="22" style="DUID=D222;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=980;Right=760;Bottom=1030;" subject="EAID_U2_11" seqno="23" style="DUID=D223;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=310;Top=1040;Right=760;Bottom=1090;" subject="EAID_U2_17" seqno="24" style="DUID=D224;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+
+			<!-- ==================================================================== -->
+			<!-- DIAGRAMA 3: ANÁLISIS DE DEPENDENCIAS ENTRE PAQUETES                  -->
+			<!-- ==================================================================== -->
+			<diagram xmi:id="EAID_DIAG_SUB3_DEP">
+				<model package="EAPK_ANL00004_0001_4000_8000_000000000001" localID="23" owner="EAPK_ANL00004_0001_4000_8000_000000000001"/>
+				<properties name="3.3.1 Analisis de Dependencias Entre Paquetes" type="Package"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1200;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<!-- Columna 1 (Izquierda): Core de Transformacion y Modelado -->
+					<element geometry="Left=70;Top=60;Right=310;Bottom=150;" subject="EAID_P3_AI" seqno="1" style="DUID=D301;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=70;Top=230;Right=310;Bottom=320;" subject="EAID_P3_VISUAL" seqno="2" style="DUID=D302;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=70;Top=400;Right=310;Bottom=490;" subject="EAID_P3_DATA" seqno="3" style="DUID=D303;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=70;Top=570;Right=310;Bottom=660;" subject="EAID_P3_MDD" seqno="4" style="DUID=D304;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Columna 2 (Derecha): Persistencia, Seguridad y Clientes -->
+					<element geometry="Left=430;Top=230;Right=670;Bottom=320;" subject="EAID_P3_PROJ" seqno="5" style="DUID=D305;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=420;Right=670;Bottom=510;" subject="EAID_P3_AUTH" seqno="6" style="DUID=D306;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=60;Right=670;Bottom=150;" subject="EAID_P3_MOBILE" seqno="7" style="DUID=D307;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

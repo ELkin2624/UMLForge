@@ -102,6 +102,12 @@ export function apollonToCanonical(
     connectors: existingCanonical?.connectors || [],
     dependencies: existingCanonical?.dependencies || [],
     diagrams: existingCanonical?.diagrams || [],
+    visual_state: {
+      ...existingCanonical?.visual_state,
+      ...Object.fromEntries(apollonModel.nodes
+        .filter(node => node.position)
+        .map(node => [node.id, { x: node.position.x, y: node.position.y }]))
+    },
   };
 
   // 1. Identificar las clases y nodos UML del diagrama
@@ -276,6 +282,10 @@ export function canonicalToApollon(canonical: CanonicalModel): ApollonModel {
   };
 
   autoLayoutApollonModel(newModel.nodes, newModel.edges);
+  for (const node of newModel.nodes) {
+    const savedPosition = canonical.visual_state?.[node.id];
+    if (savedPosition) node.position = { ...savedPosition };
+  }
   
   return newModel;
 }
@@ -313,7 +323,7 @@ export function applyCanonicalModelToApollon(
     if (forceLayout) return newNode;
 
     const existingNode = existingNodesMap.get(newNode.id);
-    const remotePos = visualState?.[newNode.id];
+    const remotePos = visualState?.[newNode.id] ?? canonical.visual_state?.[newNode.id];
 
     if (existingNode) {
       // Prioridad: 1) Posición remota (visualState), 2) Posición local existente
@@ -345,7 +355,10 @@ export function applyCanonicalModelToApollon(
   };
 
   // 5. Aplicar layout automático si se fuerza layout, o si el diagrama no tiene nodos previos ni posiciones guardadas
-  const hasCustomPositions = !forceLayout && visualState && Object.keys(visualState).length > 0;
+  const hasCustomPositions = !forceLayout && (
+    Object.keys(visualState || {}).length > 0 ||
+    Object.keys(canonical.visual_state || {}).length > 0
+  );
   if (forceLayout || (existingNodesMap.size === 0 && !hasCustomPositions)) {
     autoLayoutApollonModel(finalApollon.nodes, finalApollon.edges);
   }
@@ -379,7 +392,7 @@ export function autoDecomposeManyToMany(
     );
   };
 
-  const newVisualState = { ...(visualState || {}) };
+  const newVisualState = { ...canonical.visual_state, ...visualState };
   let decomposed = false;
   const newClasses = [...canonical.classes];
   const newRelationships: typeof canonical.relationships = [];
@@ -482,6 +495,7 @@ export function autoDecomposeManyToMany(
       ...canonical,
       classes: newClasses,
       relationships: newRelationships,
+      visual_state: newVisualState,
     },
     visualState: newVisualState,
     decomposed,

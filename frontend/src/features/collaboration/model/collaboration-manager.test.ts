@@ -117,6 +117,24 @@ describe('CollaborationManager · conexión', () => {
     expect((fake.instances[0].getAwareness() as { clientID: number }).clientID).toBe(clientId);
   });
 
+  it('envía solo las posiciones modificadas al recibir cambios remotos', () => {
+    manager.connect('1');
+    fake.instances[0].emitSync(true);
+    const received = vi.fn();
+    manager.subscribeToVisualState(received);
+    const doc = manager.getDoc()!;
+    const positions = doc.getMap<{ x: number; y: number }>('visual-state');
+
+    doc.transact(() => {
+      positions.set('a', { x: 10, y: 20 });
+      positions.set('b', { x: 30, y: 40 });
+    }, 'remote');
+    expect(received).toHaveBeenLastCalledWith({ a: { x: 10, y: 20 }, b: { x: 30, y: 40 } });
+
+    positions.set('b', { x: 35, y: 40 });
+    expect(received).toHaveBeenLastCalledWith({ b: { x: 35, y: 40 } });
+  });
+
   it('actualizar el nombre en una reconexión idempotente lo refleja en la presencia', () => {
     manager.connect('1', 'Alan');
     manager.connect('1', 'Alan Melgar');

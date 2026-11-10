@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" name="3.1.4 Casos de Uso del Negocio" xmi:id="EAPK_CUN00001_0001_4000_8000_000000000001" visibility="public">
+			<packagedElement xmi:type="uml:Actor" name="Arquitecto" xmi:id="EAID_ACT_ARQUITECTO" visibility="public"/>
+			<packagedElement xmi:type="uml:Actor" name="Desarrollador Backend" xmi:id="EAID_ACT_DEV_BACKEND" visibility="public"/>
+			<packagedElement xmi:type="uml:Actor" name="Desarrollador Frontend" xmi:id="EAID_ACT_DEV_FRONTEND" visibility="public"/>
+			<packagedElement xmi:type="uml:UseCase" name="CUN-01 Modelado y Validacion Asistida de Arquitectura" xmi:id="EAID_CUN_01" visibility="public"/>
+			<packagedElement xmi:type="uml:UseCase" name="CUN-02 Generacion MDD y Entrega de Artefactos" xmi:id="EAID_CUN_02" visibility="public"/>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_CUN_01">
+				<memberEnd xmi:idref="EAID_ACT_ARQUITECTO"/>
+				<memberEnd xmi:idref="EAID_CUN_01"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_CUN_02">
+				<memberEnd xmi:idref="EAID_ACT_DEV_BACKEND"/>
+				<memberEnd xmi:idref="EAID_CUN_02"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_CUN_03">
+				<memberEnd xmi:idref="EAID_ACT_DEV_FRONTEND"/>
+				<memberEnd xmi:idref="EAID_CUN_02"/>
+			</packagedElement>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_CUN00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.1.4 Casos de Uso del Negocio" scope="public">
+				<model package2="EAPK_CUN00001_0001_4000_8000_000000000001" package="EAPK_CUN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ACT_ARQUITECTO" xmi:type="uml:Actor" name="Arquitecto" scope="public">
+				<model package="EAPK_CUN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="101" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Actor" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_ACT_DEV_BACKEND" xmi:type="uml:Actor" name="Desarrollador Backend" scope="public">
+				<model package="EAPK_CUN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="102" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Actor" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_ACT_DEV_FRONTEND" xmi:type="uml:Actor" name="Desarrollador Frontend" scope="public">
+				<model package="EAPK_CUN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="103" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Actor" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_CUN_01" xmi:type="uml:UseCase" name="CUN-01 Modelado y Validacion Asistida de Arquitectura" scope="public">
+				<model package="EAPK_CUN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="201" ea_eleType="element"/>
+				<properties isSpecification="false" sType="UseCase" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_CUN_02" xmi:type="uml:UseCase" name="CUN-02 Generacion MDD y Entrega de Artefactos" scope="public">
+				<model package="EAPK_CUN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="202" ea_eleType="element"/>
+				<properties isSpecification="false" sType="UseCase" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_ASSOC_CUN_01">
+				<source xmi:idref="EAID_ACT_ARQUITECTO"><role visibility="Public"/></source>
+				<target xmi:idref="EAID_CUN_01"><role visibility="Public"/></target>
+				<model ea_localid="501"/>
+				<properties ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+			</connector>
+			<connector xmi:idref="EAID_ASSOC_CUN_02">
+				<source xmi:idref="EAID_ACT_DEV_BACKEND"><role visibility="Public"/></source>
+				<target xmi:idref="EAID_CUN_02"><role visibility="Public"/></target>
+				<model ea_localid="502"/>
+				<properties ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+			</connector>
+			<connector xmi:idref="EAID_ASSOC_CUN_03">
+				<source xmi:idref="EAID_ACT_DEV_FRONTEND"><role visibility="Public"/></source>
+				<target xmi:idref="EAID_CUN_02"><role visibility="Public"/></target>
+				<model ea_localid="503"/>
+				<properties ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+			</connector>
+		</connectors>
+		<diagrams>
+			<diagram xmi:id="EAID_DIAG_CUN_0001">
+				<model package="EAPK_CUN00001_0001_4000_8000_000000000001" localID="1" owner="EAPK_CUN00001_0001_4000_8000_000000000001"/>
+				<properties name="3.1.4 Diagrama de Casos de Uso del Negocio" type="Use Case"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1200;ShowDetails=0;Orientation=L;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=80;Top=100;Right=140;Bottom=210;" subject="EAID_ACT_ARQUITECTO" seqno="1" style="DUID=D0001;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=80;Top=280;Right=140;Bottom=390;" subject="EAID_ACT_DEV_BACKEND" seqno="2" style="DUID=D0002;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=80;Top=460;Right=140;Bottom=570;" subject="EAID_ACT_DEV_FRONTEND" seqno="3" style="DUID=D0003;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=125;Right=740;Bottom=185;" subject="EAID_CUN_01" seqno="4" style="DUID=D0004;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=365;Right=740;Bottom=425;" subject="EAID_CUN_02" seqno="5" style="DUID=D0005;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, Check, X, Users, CheckCircle2, ExternalLink } from 'lucide-react';
 import { request } from '../../../api/client';
-import { useShareStore } from '../../sharing/model/share-store';
-import { useModelStore } from '../../../store/model-store';
-import { useCollaboration } from '../../../hooks/use-collaboration';
+import { switchToDiagram, useDiagramManagerStore } from '../../diagram-manager';
+import { useDashboardStore } from '../../projects-dashboard/model/dashboard-store';
 import { buildInvitationDeepLink } from '../../sharing/model/invite-utils';
 import './NotificationsMenu.css';
 
@@ -14,6 +13,7 @@ interface NotificationData {
   inviter_id?: number;
   inviter_name?: string;
   role?: string;
+  invitation_status?: string;
 }
 
 interface Notification {
@@ -26,19 +26,19 @@ interface Notification {
   created_at: string;
 }
 
+const INVITATION_STATUS_LABELS: Record<string, string> = {
+  ACCEPTED: 'Aceptada',
+  REJECTED: 'Rechazada',
+  CANCELLED: 'Cancelada',
+  EXPIRED: 'Expirada',
+};
+
 export function NotificationsMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
   const [actionFeedback, setActionFeedback] = useState<{ id: number; message: string; success: boolean } | null>(null);
-
-  const { joinSession } = useShareStore();
-  const { setModel } = useModelStore();
-  const { connect } = useCollaboration();
-
-  // Ref para el polling del badge de no-leídas
-  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchNotifications = async () => {
     try {
@@ -58,20 +58,20 @@ export function NotificationsMenu() {
     }
   };
 
-  // Polling ligero cada 30s para el badge de no-leídas
+  // Actualizar la campana y el panel abierto cuando llega una invitación.
   useEffect(() => {
-    fetchNotifications();
-    pollIntervalRef.current = setInterval(fetchNotifications, 30_000);
-    return () => {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    void fetchNotifications();
+    if (isOpen) void fetchFullList();
+    const refresh = () => {
+      void fetchNotifications();
+      if (isOpen) void fetchFullList();
     };
-  }, []);
-
-  // Lista completa sólo cuando se abre el panel
-  useEffect(() => {
-    if (isOpen) {
-      fetchFullList();
-    }
+    const interval = setInterval(refresh, 30_000);
+    window.addEventListener('focus', refresh);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', refresh);
+    };
   }, [isOpen]);
 
   const markAsRead = async (id: number) => {
@@ -112,27 +112,17 @@ export function NotificationsMenu() {
         success: true,
       });
 
-      const roomStr = res.diagram_id.toString();
       try {
-        sessionStorage.setItem('umlforge-active-diagram', roomStr);
-        sessionStorage.setItem('umlforge-collab-active', 'true');
-        const url = new URL(window.location.href);
-        url.searchParams.set('diagram', roomStr);
-        window.history.replaceState({}, '', url.toString());
-      } catch {}
-
-      // Cargar diagrama compartido en el lienzo
-      try {
-        const diagramData = await request<any>(`/diagrams/${res.diagram_id}`);
-        if (diagramData) {
-          joinSession(roomStr, res.role as any);
-          connect(roomStr);
-          if (diagramData.data && (diagramData.data.classes?.length || diagramData.data.components?.length)) {
-            setModel(diagramData.data);
-          }
-        }
+        await switchToDiagram(res.diagram_id);
+        await useDiagramManagerStore.getState().refresh();
+        useDashboardStore.getState().showEditor();
       } catch (err) {
-        console.warn('Diagrama aceptado pero no se pudo cargar automáticamente:', err);
+        setActionFeedback({
+          id: notification.id,
+          message: 'Invitación aceptada. Abre el diagrama desde Mis proyectos.',
+          success: true,
+        });
+        await useDiagramManagerStore.getState().refresh();
       }
 
       fetchNotifications();
@@ -145,6 +135,7 @@ export function NotificationsMenu() {
         message: err.message || 'La invitación ya fue respondida o no es válida.',
         success: false,
       });
+      void fetchFullList();
     } finally {
       setActionLoadingId(null);
     }
@@ -171,6 +162,7 @@ export function NotificationsMenu() {
         message: err.message || 'Error al rechazar invitación.',
         success: false,
       });
+      void fetchFullList();
     } finally {
       setActionLoadingId(null);
     }
@@ -217,6 +209,7 @@ export function NotificationsMenu() {
 
             {notifications.map((n) => {
               const isInvitation = n.type === 'DIAGRAM_INVITATION' && n.data?.invitation_id;
+              const isPendingInvitation = isInvitation && n.data?.invitation_status === 'PENDING';
               const feedbackForThis = actionFeedback?.id === n.id ? actionFeedback : null;
               const isAlreadyRead = n.read;
 
@@ -232,9 +225,14 @@ export function NotificationsMenu() {
                   </div>
                   <p>{n.message}</p>
                   <small>{new Date(n.created_at).toLocaleString()}</small>
+                  {isInvitation && n.data?.invitation_status && !isPendingInvitation && (
+                    <span className="notif-status">
+                      {INVITATION_STATUS_LABELS[n.data.invitation_status] || n.data.invitation_status}
+                    </span>
+                  )}
 
                   {/* Acciones interactivas para invitaciones pendientes */}
-                  {isInvitation && !isAlreadyRead && (
+                  {isPendingInvitation && (
                     <div className="notification-actions-row">
                       <button
                         className="notif-btn-accept"

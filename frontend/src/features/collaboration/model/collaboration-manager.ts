@@ -323,9 +323,14 @@ export class CollaborationManager {
 
     const map = doc.getMap<{ x: number; y: number }>('visual-state');
 
-    const observer = (_event: Y.YMapEvent<{ x: number; y: number }>, transaction: Y.Transaction) => {
+    const observer = (event: Y.YMapEvent<{ x: number; y: number }>, transaction: Y.Transaction) => {
       if (transaction.origin === 'umlforge-local') return;
-      const state = map.toJSON();
+      const state: Record<string, { x: number; y: number }> = {};
+      event.keysChanged.forEach((nodeId) => {
+        const position = map.get(nodeId);
+        if (position) state[nodeId] = position;
+      });
+      if (Object.keys(state).length === 0) return;
       this._visualSubscribers.forEach(cb => {
         try { cb(state); } catch (e) { console.error('[VisualState] Error en subscriber:', e); }
       });

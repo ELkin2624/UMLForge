@@ -48,3 +48,13 @@ def test_relaciones_y_renombrar():
 def test_resumen_trunca():
     ch = [{"op": "added", "kind": "clase", "name": f"C{i}", "parent": None} for i in range(6)]
     assert summarize(ch).endswith("y 2 cambios más")
+
+
+def test_cambio_de_posicion_resume_sin_volcar_todo_el_lienzo():
+    old = {"visual_state": {"a": {"x": 1, "y": 2}}}
+    new = {"visual_state": {"a": {"x": 3, "y": 2}}}
+
+    changes = diff_models(old, new)
+
+    assert summarize(changes) == "Modificó lienzo posiciones"
+    assert changes[0]["detail"] == "Cambió la posición de 1 elemento(s)"

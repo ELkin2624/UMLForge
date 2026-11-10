@@ -1,15 +1,12 @@
 import { useState, useCallback } from 'react';
 import {
-  Users,
   ChevronUp,
   ChevronDown,
   AlertCircle,
   X,
   Loader,
-  Bot,
 } from 'lucide-react';
 import { useCollaboration } from '../model/use-collaboration';
-import { usePresence } from '../model/use-presence';
 import { StatusIcon } from './StatusIcon';
 import type { CollaborationStatus } from '../model/types';
 
@@ -43,13 +40,10 @@ export function CollaborationPanel() {
     disconnect,
     status,
     roomName,
-    peersCount,
     error,
     roomNameWarning,
     clearWarning,
   } = useCollaboration();
-
-  const { peers } = usePresence();
 
   const isConnected = status === 'connected' || status === 'synced';
   const isConnecting = status === 'connecting';
@@ -77,15 +71,6 @@ export function CollaborationPanel() {
         <div className="collab-panel__header-left">
           <StatusIcon status={status} />
           <span className="collab-panel__title">Colaboración</span>
-          {isConnected && (
-            <span
-              className="collab-panel__peers-badge"
-              title={`${peersCount} usuarios online (incluido tú)`}
-            >
-              <Users size={12} />
-              {peersCount}
-            </span>
-          )}
         </div>
         <button
           className="collab-panel__toggle"
@@ -135,30 +120,6 @@ export function CollaborationPanel() {
                   {roomName}
                 </span>
               )}
-            </div>
-          )}
-
-          {/* Lista de peers (solo cuando hay conexión) */}
-          {isConnected && peers.length > 0 && (
-            <div className="collab-panel__peers">
-              <span className="collab-panel__peers-title">
-                {peersCount} usuario{peersCount !== 1 ? 's' : ''} online
-              </span>
-              <div
-                className="collab-panel__avatars"
-                aria-label="Usuarios conectados"
-              >
-                {peers.map((peer) => (
-                  <div
-                    key={peer.clientId}
-                    className="collab-panel__avatar"
-                    style={{ backgroundColor: peer.color }}
-                    title={peer.name}
-                  >
-                    {peer.isAgent ? <Bot size={14} aria-label="Agente de IA" /> : peer.name.charAt(0).toUpperCase()}
-                  </div>
-                ))}
-              </div>
             </div>
           )}
 

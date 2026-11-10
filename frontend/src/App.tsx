@@ -4,7 +4,6 @@ import { TopMenuBar } from './components/TopMenuBar';
 import { ValidationPanel, E2EResultPanel, LoadingOverlay } from './features/model-validation';
 import { DeploymentResultPanel } from './features/project-deployment';
 import { Notification } from './shared/ui';
-import { CollaborationPanel } from './components/CollaborationPanel';
 import { PresenceToasts } from './components/presence/PresenceToasts';
 import { AIAssistantSidebar, AISuggestionsOverlay } from './features/ai-assistant';
 import { ShareDialog } from './features/sharing/ui/ShareDialog';
@@ -13,10 +12,11 @@ import { useModelStore } from './store/model-store';
 import { parseInviteFromUrl, clearInviteParamsFromUrl } from './features/sharing/model/invite-utils';
 import { useShareStore } from './features/sharing/model/share-store';
 import { useCollaboration } from './hooks/use-collaboration';
+import { getSharedCollaborationManager } from './features/collaboration';
 import { useAuthStore } from './features/auth/store';
 import { AuthPage } from './features/auth/ui/AuthPage';
 import { useAutosave, HistoryDialog } from './features/versioning';
-import { DiagramManagerDialog } from './features/diagram-manager';
+import { DiagramManagerDialog, switchToDiagram, useDiagramManagerStore } from './features/diagram-manager';
 import { DataDesignDialog } from './features/data-design';
 import { ProjectsDashboard, useDashboardStore } from './features/projects-dashboard';
 import './style.css';
@@ -41,6 +41,18 @@ function App() {
   const screen = useDashboardStore(s => s.screen);
   const showEditor = useDashboardStore(s => s.showEditor);
   const showDashboard = useDashboardStore(s => s.showDashboard);
+
+  useEffect(() => {
+    if (screen === 'dashboard') {
+      getSharedCollaborationManager().disconnect();
+      return;
+    }
+    const roomId = useShareStore.getState().roomId;
+    if (roomId) {
+      connect(roomId);
+      sessionStorage.setItem('umlforge-collab-active', 'true');
+    }
+  }, [screen, connect]);
 
   // Al cerrar sesión, el próximo inicio de sesión vuelve a la pantalla de proyectos.
   const hadToken = useRef(Boolean(token));
@@ -113,30 +125,11 @@ function App() {
           let joined = false;
           try {
             const { joinByShareLink } = await import('./features/sharing/api/share-link-api');
-            const { request } = await import('./api/client');
             const res = await joinByShareLink(activeInvite!.joinToken as string);
-            const roomStr = res.diagram_id.toString();
-            try {
-              sessionStorage.setItem('umlforge-active-diagram', roomStr);
-              sessionStorage.setItem('umlforge-collab-active', 'true');
-              const url = new URL(window.location.href);
-              url.searchParams.set('diagram', roomStr);
-              window.history.replaceState({}, '', url.toString());
-            } catch {}
-
+            await switchToDiagram(res.diagram_id);
             showEditor();
-            useShareStore.getState().setRoomId(roomStr);
-            joinSession(roomStr, res.role as any);
-            connect(roomStr);
+            await useDiagramManagerStore.getState().refresh();
             joined = true;
-            try {
-              const diagramData = await request<any>(`/diagrams/${res.diagram_id}`);
-              if (diagramData?.data && (diagramData.data.classes?.length || diagramData.data.components?.length)) {
-                useModelStore.getState().setModel(diagramData.data);
-              }
-            } catch (e) {
-              console.warn('Acceso concedido pero no se pudo cargar el diagrama:', e);
-            }
           } catch (e: any) {
             setErrorMsg(e?.message || 'No se pudo usar el enlace de acceso.');
           } finally {
@@ -159,27 +152,9 @@ function App() {
               { method: 'POST' }
             );
             if (res && res.diagram_id) {
-              const roomStr = res.diagram_id.toString();
-              try {
-                sessionStorage.setItem('umlforge-active-diagram', roomStr);
-                sessionStorage.setItem('umlforge-collab-active', 'true');
-                const url = new URL(window.location.href);
-                url.searchParams.set('diagram', roomStr);
-                window.history.replaceState({}, '', url.toString());
-              } catch {}
-
+              await switchToDiagram(res.diagram_id);
+              await useDiagramManagerStore.getState().refresh();
               showEditor();
-              joinSession(roomStr, res.role as any);
-              connect(roomStr);
-              // Cargar datos del diagrama
-              try {
-                const diagramData = await request<any>(`/diagrams/${res.diagram_id}`);
-                if (diagramData?.data && (diagramData.data.classes?.length || diagramData.data.components?.length)) {
-                  useModelStore.getState().setModel(diagramData.data);
-                }
-              } catch (e) {
-                console.warn('Invitación aceptada pero no se pudo cargar el diagrama:', e);
-              }
             }
           } catch (e: any) {
             console.warn('No se pudo aceptar la invitación automáticamente:', e.message);
@@ -245,9 +220,9 @@ function App() {
             }
           }
 
-          // Solo conectar WebSocket si el usuario estaba activamente en una sesión colaborativa
-          const isCollabActive = sessionStorage.getItem('umlforge-collab-active') === 'true';
-          if (isCollabActive) {
+          // Al abrir el editor, todos los usuarios con permiso entran a la misma sala.
+          if (useDashboardStore.getState().screen === 'editor') {
+            sessionStorage.setItem('umlforge-collab-active', 'true');
             if (isOwner) {
               startSession(roomStr);
             } else {
@@ -327,10 +302,6 @@ function App() {
       {/* Panel E2E — position:fixed bottom, clase case-result-panel */}
       {/* No toca el layout del editor Apollon en absoluto */}
       <E2EResultPanel result={e2eResult} onClose={() => setE2EResult(null)} />
-
-      {/* ── Colaboración — position:fixed inferior-izquierda ── */}
-      {/* No modifica el layout del lienzo. No provoca resize/reflow del editor. */}
-      <CollaborationPanel />
 
       {/* ── Modo Sugerencias IA (Google Docs style) ── */}
       <AISuggestionsOverlay />

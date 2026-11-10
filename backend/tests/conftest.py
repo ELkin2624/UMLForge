@@ -31,6 +31,16 @@ class InMemoryNoSQLRepository:
             for msg in res
         ]
 
+    async def get_team_history(self, diagram_id: str, user_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+        rows = [
+            m for m in self.private_messages
+            if m["diagram_id"] == str(diagram_id) and m["user_id"] != str(user_id)
+        ]
+        return [
+            {"user_id": m["user_id"], "role": m["role"], "content": m["content"][:500]}
+            for m in rows[-limit:]
+        ]
+
     async def append_private_message(
         self,
         diagram_id: str,

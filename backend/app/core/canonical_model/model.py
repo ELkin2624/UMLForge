@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
+
 from app.core.uml_core.constants import UML_VERSION
 
 from .class_model import UMLClass
@@ -50,6 +51,9 @@ class UMLModel(BaseModel):
     )
     diagrams: list[UMLDiagram] = Field(
         default_factory=list, description="Diagramas visuales asociados al modelo"
+    )
+    visual_state: dict[str, dict[str, float]] = Field(
+        default_factory=dict, description="Posiciones compartidas de los elementos del lienzo"
     )
 
     model_config = ConfigDict(validate_assignment=True)

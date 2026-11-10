@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" name="3.1.5 Diagrama de Actividades del Negocio" xmi:id="EAPK_ACT00001_0001_4000_8000_000000000001" visibility="public">
+			<packagedElement xmi:type="uml:Activity" name="Proceso de Negocio UMLForge" xmi:id="EAID_ACTV_NEGOCIO" visibility="public">
+				<!-- Particiones del Negocio (UML 2.5.1 ActivityPartition) -->
+				<packagedElement xmi:type="uml:ActivityPartition" name="Arquitecto" xmi:id="EAID_PART_ARQ" visibility="public"/>
+				<packagedElement xmi:type="uml:ActivityPartition" name="Sistema UMLForge" xmi:id="EAID_PART_SYS" visibility="public"/>
+				<packagedElement xmi:type="uml:ActivityPartition" name="Equipo de Desarrollo" xmi:id="EAID_PART_DEV" visibility="public"/>
+
+				<packagedElement xmi:type="uml:InitialNode" name="Inicio" xmi:id="EAID_ND_INIT" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Iniciar proyecto de diseno" xmi:id="EAID_ND_ACT_INIT" visibility="public"/>
+				<packagedElement xmi:type="uml:ForkNode" name="Fork_Diseno" xmi:id="EAID_ND_FORK1" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Modelar en editor visual" xmi:id="EAID_ND_VISUAL" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Emitir comando de voz o texto" xmi:id="EAID_ND_VOICE" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Interpretar intencion IA" xmi:id="EAID_ND_INTERP" visibility="public"/>
+				<packagedElement xmi:type="uml:JoinNode" name="Join_Diseno" xmi:id="EAID_ND_JOIN1" visibility="public"/>
+				<!-- Merge Node conforme a UML 2.5.1 (rombo sin texto de fusion) -->
+				<packagedElement xmi:type="uml:MergeNode" name="" xmi:id="EAID_ND_DEC_RETRY" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Solicitar validacion del modelo" xmi:id="EAID_ND_REQ_VAL" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Validar semantica UML y reglas del mapeo" xmi:id="EAID_ND_VAL_SEM" visibility="public"/>
+				<!-- Decision Node conforme a UML 2.5.1 (rombo de decision con guardas) -->
+				<packagedElement xmi:type="uml:DecisionNode" name="Es valido?" xmi:id="EAID_ND_DEC_VALID" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Corregir errores de diseno" xmi:id="EAID_ND_CORRECT" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Solicitar generacion MDD" xmi:id="EAID_ND_REQ_MDD" visibility="public"/>
+
+				<packagedElement xmi:type="uml:ForkNode" name="Fork_Generacion" xmi:id="EAID_ND_FORK2" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Generar backend" xmi:id="EAID_ND_GEN_BACK" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Generar Base de datos" xmi:id="EAID_ND_GEN_DB" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Generar pruebas" xmi:id="EAID_ND_GEN_TEST" visibility="public"/>
+				<packagedElement xmi:type="uml:JoinNode" name="Join_Generacion" xmi:id="EAID_ND_JOIN2" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Empaquetar artefactos" xmi:id="EAID_ND_PKG" visibility="public"/>
+
+				<packagedElement xmi:type="uml:ForkNode" name="Fork_Consumo" xmi:id="EAID_ND_FORK3" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Descargar y extender codigo base" xmi:id="EAID_ND_DEV_EXT" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Importar coleccion" xmi:id="EAID_ND_DEV_POST" visibility="public"/>
+				<packagedElement xmi:type="uml:JoinNode" name="Join_Consumo" xmi:id="EAID_ND_JOIN3" visibility="public"/>
+				<packagedElement xmi:type="uml:Action" name="Hacer pruebas" xmi:id="EAID_ND_TESTS" visibility="public"/>
+				<packagedElement xmi:type="uml:ActivityFinalNode" name="Fin" xmi:id="EAID_ND_FINAL" visibility="public"/>
+
+				<!-- Flujos de Control (ControlFlow UML 2.5.1) -->
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F01" source="EAID_ND_INIT" target="EAID_ND_ACT_INIT"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F02" source="EAID_ND_ACT_INIT" target="EAID_ND_FORK1"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F03" source="EAID_ND_FORK1" target="EAID_ND_VISUAL"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F04" source="EAID_ND_FORK1" target="EAID_ND_VOICE"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F05" source="EAID_ND_VOICE" target="EAID_ND_INTERP"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F06" source="EAID_ND_INTERP" target="EAID_ND_JOIN1"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F07" source="EAID_ND_VISUAL" target="EAID_ND_JOIN1"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F08" source="EAID_ND_JOIN1" target="EAID_ND_DEC_RETRY"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F09" source="EAID_ND_DEC_RETRY" target="EAID_ND_REQ_VAL"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F10" source="EAID_ND_REQ_VAL" target="EAID_ND_VAL_SEM"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F11" source="EAID_ND_VAL_SEM" target="EAID_ND_DEC_VALID"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="No valido" xmi:id="EAID_F12" source="EAID_ND_DEC_VALID" target="EAID_ND_CORRECT"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F13" source="EAID_ND_CORRECT" target="EAID_ND_DEC_RETRY"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="Es valido" xmi:id="EAID_F14" source="EAID_ND_DEC_VALID" target="EAID_ND_REQ_MDD"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F15" source="EAID_ND_REQ_MDD" target="EAID_ND_FORK2"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F16" source="EAID_ND_FORK2" target="EAID_ND_GEN_BACK"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F17" source="EAID_ND_FORK2" target="EAID_ND_GEN_DB"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F18" source="EAID_ND_FORK2" target="EAID_ND_GEN_TEST"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F19" source="EAID_ND_GEN_BACK" target="EAID_ND_JOIN2"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F20" source="EAID_ND_GEN_DB" target="EAID_ND_JOIN2"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F21" source="EAID_ND_GEN_TEST" target="EAID_ND_JOIN2"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F22" source="EAID_ND_JOIN2" target="EAID_ND_PKG"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F23" source="EAID_ND_PKG" target="EAID_ND_FORK3"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F24" source="EAID_ND_FORK3" target="EAID_ND_DEV_EXT"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F25" source="EAID_ND_FORK3" target="EAID_ND_DEV_POST"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F26" source="EAID_ND_DEV_EXT" target="EAID_ND_JOIN3"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F27" source="EAID_ND_DEV_POST" target="EAID_ND_JOIN3"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F28" source="EAID_ND_JOIN3" target="EAID_ND_TESTS"/>
+				<packagedElement xmi:type="uml:ControlFlow" name="" xmi:id="EAID_F29" source="EAID_ND_TESTS" target="EAID_ND_FINAL"/>
+			</packagedElement>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_ACT00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.1.5 Diagrama de Actividades del Negocio" scope="public">
+				<model package2="EAPK_ACT00001_0001_4000_8000_000000000001" package="EAPK_ACT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ACTV_NEGOCIO" xmi:type="uml:Activity" name="Proceso de Negocio UMLForge" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="2" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+
+			<!-- Particiones Verticales (ActivityPartition) con VPartition=1 para titulo arriba -->
+			<element xmi:idref="EAID_PART_ARQ" xmi:type="uml:ActivityPartition" name="Arquitecto" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="10" ea_eleType="element"/>
+				<properties isSpecification="false" sType="ActivityPartition" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_PART_SYS" xmi:type="uml:ActivityPartition" name="Sistema UMLForge" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="11" ea_eleType="element"/>
+				<properties isSpecification="false" sType="ActivityPartition" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_PART_DEV" xmi:type="uml:ActivityPartition" name="Equipo de Desarrollo" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="12" ea_eleType="element"/>
+				<properties isSpecification="false" sType="ActivityPartition" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+
+			<!-- Nodos de Actividad -->
+			<element xmi:idref="EAID_ND_INIT" xmi:type="uml:StateNode" name="Inicio" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="101" ea_eleType="element"/>
+				<properties isSpecification="false" sType="StateNode" nType="100" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_ACT_INIT" xmi:type="uml:Activity" name="Iniciar proyecto de diseno" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="102" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_FORK1" xmi:type="uml:Synchronization" name="Fork_Diseno" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="103" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Synchronization" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_VISUAL" xmi:type="uml:Activity" name="Modelar en editor visual" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="104" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_VOICE" xmi:type="uml:Activity" name="Emitir comando de voz o texto" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="105" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_INTERP" xmi:type="uml:Activity" name="Interpretar intencion IA" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="106" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_JOIN1" xmi:type="uml:Synchronization" name="Join_Diseno" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="107" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Synchronization" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_DEC_RETRY" xmi:type="uml:Decision" name="" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="108" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Decision" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_REQ_VAL" xmi:type="uml:Activity" name="Solicitar validacion del modelo" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="109" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_VAL_SEM" xmi:type="uml:Activity" name="Validar semantica UML y reglas del mapeo" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="110" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_DEC_VALID" xmi:type="uml:Decision" name="Es valido?" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="111" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Decision" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_CORRECT" xmi:type="uml:Activity" name="Corregir errores de diseno" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="112" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_REQ_MDD" xmi:type="uml:Activity" name="Solicitar generacion MDD" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="113" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_FORK2" xmi:type="uml:Synchronization" name="Fork_Generacion" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="114" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Synchronization" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_GEN_BACK" xmi:type="uml:Activity" name="Generar backend" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="115" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_GEN_DB" xmi:type="uml:Activity" name="Generar Base de datos" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="116" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_GEN_TEST" xmi:type="uml:Activity" name="Generar pruebas" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="117" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_JOIN2" xmi:type="uml:Synchronization" name="Join_Generacion" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="118" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Synchronization" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_PKG" xmi:type="uml:Activity" name="Empaquetar artefactos" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="119" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_FORK3" xmi:type="uml:Synchronization" name="Fork_Consumo" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="120" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Synchronization" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_DEV_EXT" xmi:type="uml:Activity" name="Descargar y extender codigo base" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="121" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_DEV_POST" xmi:type="uml:Activity" name="Importar coleccion" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="122" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_JOIN3" xmi:type="uml:Synchronization" name="Join_Consumo" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="123" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Synchronization" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_TESTS" xmi:type="uml:Activity" name="Hacer pruebas" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="124" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Activity" nType="0" scope="public"/>
+			</element>
+			<element xmi:idref="EAID_ND_FINAL" xmi:type="uml:StateNode" name="Fin" scope="public">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" owner="EAID_ACTV_NEGOCIO" tpos="0" ea_localid="125" ea_eleType="element"/>
+				<properties isSpecification="false" sType="StateNode" nType="101" scope="public"/>
+			</element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_F01"><source xmi:idref="EAID_ND_INIT"/><target xmi:idref="EAID_ND_ACT_INIT"/><model ea_localid="301"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F02"><source xmi:idref="EAID_ND_ACT_INIT"/><target xmi:idref="EAID_ND_FORK1"/><model ea_localid="302"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F03"><source xmi:idref="EAID_ND_FORK1"/><target xmi:idref="EAID_ND_VISUAL"/><model ea_localid="303"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F04"><source xmi:idref="EAID_ND_FORK1"/><target xmi:idref="EAID_ND_VOICE"/><model ea_localid="304"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F05"><source xmi:idref="EAID_ND_VOICE"/><target xmi:idref="EAID_ND_INTERP"/><model ea_localid="305"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F06"><source xmi:idref="EAID_ND_INTERP"/><target xmi:idref="EAID_ND_JOIN1"/><model ea_localid="306"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F07"><source xmi:idref="EAID_ND_VISUAL"/><target xmi:idref="EAID_ND_JOIN1"/><model ea_localid="307"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F08"><source xmi:idref="EAID_ND_JOIN1"/><target xmi:idref="EAID_ND_DEC_RETRY"/><model ea_localid="308"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F09"><source xmi:idref="EAID_ND_DEC_RETRY"/><target xmi:idref="EAID_ND_REQ_VAL"/><model ea_localid="309"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F10"><source xmi:idref="EAID_ND_REQ_VAL"/><target xmi:idref="EAID_ND_VAL_SEM"/><model ea_localid="310"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F11"><source xmi:idref="EAID_ND_VAL_SEM"/><target xmi:idref="EAID_ND_DEC_VALID"/><model ea_localid="311"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<!-- Salida No Valido hacia Corregir errores -->
+			<connector xmi:idref="EAID_F12"><source xmi:idref="EAID_ND_DEC_VALID"/><target xmi:idref="EAID_ND_CORRECT"/><model ea_localid="312"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/><labels mt="No valido"/></connector>
+			<!-- Retorno del loop hacia el MergeNode -->
+			<connector xmi:idref="EAID_F13"><source xmi:idref="EAID_ND_CORRECT"/><target xmi:idref="EAID_ND_DEC_RETRY"/><model ea_localid="313"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F14"><source xmi:idref="EAID_ND_DEC_VALID"/><target xmi:idref="EAID_ND_REQ_MDD"/><model ea_localid="314"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/><labels mt="Es valido"/></connector>
+			<connector xmi:idref="EAID_F15"><source xmi:idref="EAID_ND_REQ_MDD"/><target xmi:idref="EAID_ND_FORK2"/><model ea_localid="315"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F16"><source xmi:idref="EAID_ND_FORK2"/><target xmi:idref="EAID_ND_GEN_BACK"/><model ea_localid="316"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F17"><source xmi:idref="EAID_ND_FORK2"/><target xmi:idref="EAID_ND_GEN_DB"/><model ea_localid="317"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F18"><source xmi:idref="EAID_ND_FORK2"/><target xmi:idref="EAID_ND_GEN_TEST"/><model ea_localid="318"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F19"><source xmi:idref="EAID_ND_GEN_BACK"/><target xmi:idref="EAID_ND_JOIN2"/><model ea_localid="319"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F20"><source xmi:idref="EAID_ND_GEN_DB"/><target xmi:idref="EAID_ND_JOIN2"/><model ea_localid="320"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F21"><source xmi:idref="EAID_ND_GEN_TEST"/><target xmi:idref="EAID_ND_JOIN2"/><model ea_localid="321"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F22"><source xmi:idref="EAID_ND_JOIN2"/><target xmi:idref="EAID_ND_PKG"/><model ea_localid="322"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F23"><source xmi:idref="EAID_ND_PKG"/><target xmi:idref="EAID_ND_FORK3"/><model ea_localid="323"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F24"><source xmi:idref="EAID_ND_FORK3"/><target xmi:idref="EAID_ND_DEV_EXT"/><model ea_localid="324"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F25"><source xmi:idref="EAID_ND_FORK3"/><target xmi:idref="EAID_ND_DEV_POST"/><model ea_localid="325"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F26"><source xmi:idref="EAID_ND_DEV_EXT"/><target xmi:idref="EAID_ND_JOIN3"/><model ea_localid="326"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F27"><source xmi:idref="EAID_ND_DEV_POST"/><target xmi:idref="EAID_ND_JOIN3"/><model ea_localid="327"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F28"><source xmi:idref="EAID_ND_JOIN3"/><target xmi:idref="EAID_ND_TESTS"/><model ea_localid="328"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_F29"><source xmi:idref="EAID_ND_TESTS"/><target xmi:idref="EAID_ND_FINAL"/><model ea_localid="329"/><properties ea_type="ControlFlow" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+		</connectors>
+		<diagrams>
+			<diagram xmi:id="EAID_DIAG_ACT_0001">
+				<model package="EAPK_ACT00001_0001_4000_8000_000000000001" localID="2" owner="EAPK_ACT00001_0001_4000_8000_000000000001"/>
+				<properties name="3.1.5 Diagrama de Actividades del Negocio" type="Activity"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1400;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;SwimlaneType=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<!-- Particiones / Swimlanes (seqno=1,2,3 con VPartition=1 para TITULO HORIZONTAL ARRIBA) -->
+					<element geometry="Left=40;Top=30;Right=380;Bottom=1280;" subject="EAID_PART_ARQ" seqno="1" style="DUID=D0001;VPartition=1;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=390;Top=30;Right=750;Bottom=1280;" subject="EAID_PART_SYS" seqno="2" style="DUID=D0002;VPartition=1;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=760;Top=30;Right=1120;Bottom=1280;" subject="EAID_PART_DEV" seqno="3" style="DUID=D0003;VPartition=1;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Nodos Columna 1: Arquitecto (X: 50 a 370) -->
+					<element geometry="Left=200;Top=60;Right=230;Bottom=90;" subject="EAID_ND_INIT" seqno="4" style="DUID=D0004;"/>
+					<element geometry="Left=130;Top=120;Right=300;Bottom=175;" subject="EAID_ND_ACT_INIT" seqno="5" style="DUID=D0005;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=110;Top=210;Right=320;Bottom=216;" subject="EAID_ND_FORK1" seqno="6" style="DUID=D0006;"/>
+					<element geometry="Left=50;Top=250;Right=195;Bottom=305;" subject="EAID_ND_VISUAL" seqno="7" style="DUID=D0007;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=210;Top=250;Right=365;Bottom=305;" subject="EAID_ND_VOICE" seqno="8" style="DUID=D0008;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=110;Top=340;Right=320;Bottom=346;" subject="EAID_ND_JOIN1" seqno="9" style="DUID=D0009;"/>
+					<!-- MergeNode limpio de union sin texto superpuesto -->
+					<element geometry="Left=200;Top=380;Right=230;Bottom=410;" subject="EAID_ND_DEC_RETRY" seqno="10" style="DUID=D0010;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=125;Top=450;Right=305;Bottom=505;" subject="EAID_ND_REQ_VAL" seqno="11" style="DUID=D0011;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<!-- Corregir errores ubicado con espacio amplio para el flujo No valido -->
+					<element geometry="Left=125;Top=610;Right=305;Bottom=665;" subject="EAID_ND_CORRECT" seqno="12" style="DUID=D0012;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=125;Top=720;Right=305;Bottom=775;" subject="EAID_ND_REQ_MDD" seqno="13" style="DUID=D0013;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Nodos Columna 2: Sistema UMLForge (X: 380 a 750) -->
+					<element geometry="Left=460;Top=250;Right=650;Bottom=305;" subject="EAID_ND_INTERP" seqno="14" style="DUID=D0014;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=440;Top=450;Right=680;Bottom=505;" subject="EAID_ND_VAL_SEM" seqno="15" style="DUID=D0015;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<!-- DecisionNode Es valido? con espacio suficiente arriba de la barra de generacion -->
+					<element geometry="Left=545;Top=545;Right=575;Bottom=575;" subject="EAID_ND_DEC_VALID" seqno="16" style="DUID=D0016;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=720;Right=700;Bottom=726;" subject="EAID_ND_FORK2" seqno="17" style="DUID=D0017;"/>
+					<element geometry="Left=410;Top=760;Right=495;Bottom=815;" subject="EAID_ND_GEN_BACK" seqno="18" style="DUID=D0018;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=510;Top=760;Right=615;Bottom=815;" subject="EAID_ND_GEN_DB" seqno="19" style="DUID=D0019;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=630;Top=760;Right=720;Bottom=815;" subject="EAID_ND_GEN_TEST" seqno="20" style="DUID=D0020;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=850;Right=700;Bottom=856;" subject="EAID_ND_JOIN2" seqno="21" style="DUID=D0021;"/>
+					<element geometry="Left=470;Top=890;Right=650;Bottom=945;" subject="EAID_ND_PKG" seqno="22" style="DUID=D0022;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<!-- Nodos Columna 3: Equipo de Desarrollo (X: 760 a 1130) -->
+					<element geometry="Left=810;Top=890;Right=1080;Bottom=896;" subject="EAID_ND_FORK3" seqno="23" style="DUID=D0023;"/>
+					<element geometry="Left=780;Top=935;Right=935;Bottom=990;" subject="EAID_ND_DEV_EXT" seqno="24" style="DUID=D0024;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=955;Top=935;Right=1110;Bottom=990;" subject="EAID_ND_DEV_POST" seqno="25" style="DUID=D0025;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=810;Top=1025;Right=1080;Bottom=1031;" subject="EAID_ND_JOIN3" seqno="26" style="DUID=D0026;"/>
+					<element geometry="Left=870;Top=1070;Right=1020;Bottom=1125;" subject="EAID_ND_TESTS" seqno="27" style="DUID=D0027;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=930;Top=1160;Right=960;Bottom=1190;" subject="EAID_ND_FINAL" seqno="28" style="DUID=D0028;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

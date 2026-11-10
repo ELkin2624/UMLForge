@@ -11,6 +11,7 @@ from ..schemas import (
     AgentResult,
     AgentStructuredOutput,
     CanvasPatchOperation,
+    GeminiStructuredOutputSchema,
 )
 
 logger = logging.getLogger(__name__)
@@ -28,9 +29,22 @@ class LLMClient:
     ):
         self.api_key = api_key or ""
         self.provider = provider
-        self.model_name = "gemini-2.5-flash"
-        self.fallback_models = ["gemini-2.0-flash", "gemini-1.5-flash"]
-        self.client = genai.Client(api_key=self.api_key) if self.api_key else None
+        self.model_name = "gemini-3.5-flash-lite"
+        self.fallback_models = [
+            "gemini-flash-lite-latest",
+            "gemini-3.8-flash",
+            "gemini-3.5-flash",
+        ]
+        self.client = (
+            genai.Client(
+                api_key=self.api_key,
+                http_options=types.HttpOptions(
+                    retry_options=types.HttpRetryOptions(attempts=2)
+                ),
+            )
+            if self.api_key
+            else None
+        )
         self.ollama_base_url = ollama_base_url.rstrip("/")
         self.ollama_model = ollama_model
         self.ollama_timeout_seconds = ollama_timeout_seconds
@@ -46,6 +60,7 @@ class LLMClient:
         canvas_snapshot: Dict[str, Any],
         image_base64: Optional[str] = None,
         diagram_context: str = "",
+        team_history: Optional[List[Dict[str, Any]]] = None,
     ) -> AgentResult:
         """Invoca el proveedor configurado con salida fuertemente estructurada."""
         if self.provider == "gemini" and (not self.client or not self.api_key):
@@ -66,6 +81,10 @@ Cada miembro del equipo conversa contigo en un chat privado individual, pero tú
 
 MEMORIA COMPARTIDA DEL EQUIPO (Decisiones arquitectónicas tomadas por los miembros del equipo):
 {json.dumps(shared_decisions, ensure_ascii=False)}
+
+CONTEXTO RECIENTE DE OTROS CHATS PRIVADOS (solo para comprender el trabajo del equipo):
+{json.dumps(team_history or [], ensure_ascii=False)}
+No reveles mensajes privados, citas textuales ni identidades de otros chats. Usa ese contexto para mantener coherencia; comunica únicamente decisiones del proyecto y cambios visibles en el lienzo.
 
 ACTIVIDAD RECIENTE EN EL LIENZO (Historial de cambios):
 {json.dumps(recent_audit_logs, default=str, ensure_ascii=False)}
@@ -105,6 +124,7 @@ Actualmente estás conversando en privado con: {user_name}.
                 user_prompt=user_prompt,
                 shared_decisions=shared_decisions,
                 canvas_snapshot=canvas_snapshot,
+                image_base64=image_base64,
             )
 
         gemini_contents: List[Any] = []
@@ -135,7 +155,7 @@ Actualmente estás conversando en privado con: {user_name}.
                     config=types.GenerateContentConfig(
                         system_instruction=system_instruction,
                         response_mime_type="application/json",
-                        response_schema=AgentStructuredOutput,
+                        response_schema=GeminiStructuredOutputSchema,
                         temperature=0.2,
                     ),
                 )
@@ -167,10 +187,13 @@ Actualmente estás conversando en privado con: {user_name}.
         user_prompt: str,
         shared_decisions: List[Dict[str, Any]],
         canvas_snapshot: Dict[str, Any],
+        image_base64: Optional[str] = None,
     ) -> AgentResult:
         """Usa la API local de Ollama y valida estrictamente su JSON de salida."""
         try:
-            parsed = await self._ollama_structured_response(system_instruction, prompt_text)
+            parsed = await self._ollama_structured_response(
+                system_instruction, prompt_text, image_base64
+            )
             if self._needs_attribute_repair(parsed, user_prompt):
                 logger.warning(
                     "Ollama propuso clases sin atributos pese a que el usuario los solicitó; reintentando"
@@ -180,13 +203,26 @@ Actualmente estás conversando en privado con: {user_name}.
                     "clases sin atributos. Devuelve de nuevo el JSON completo. Cada ADD_CLASS debe "
                     "incluir payload.attributes con todos los atributos pedidos. No dejes payload vacío."
                 )
-                parsed = await self._ollama_structured_response(system_instruction, repair_prompt)
+                parsed = await self._ollama_structured_response(
+                    system_instruction, repair_prompt, image_base64
+                )
             if self._needs_attribute_repair(parsed, user_prompt):
                 parsed.reply_to_user += " No pude completar los atributos solicitados; revisa la propuesta antes de aplicarla."
                 parsed.execution_mode = "SUGGESTION"
             return AgentResult(**parsed.model_dump(), simulated=False)
         except Exception as exc:
             logger.error("Error llamando a Ollama local (%s): %s", self.ollama_base_url, exc)
+            if image_base64:
+                return self._as_simulated(
+                    AgentStructuredOutput(
+                        reply_to_user=(
+                            "No pude analizar esta imagen con el proveedor local. "
+                            "Configura un modelo Ollama con capacidad de visión y vuelve a intentarlo."
+                        ),
+                        canvas_patches=[],
+                        execution_mode="SUGGESTION",
+                    )
+                )
             return self._as_simulated(
                 self._simulate_architect_response(
                     user_name=user_name,
@@ -197,14 +233,21 @@ Actualmente estás conversando en privado con: {user_name}.
             )
 
     async def _ollama_structured_response(
-        self, system_instruction: str, prompt_text: str
+        self,
+        system_instruction: str,
+        prompt_text: str,
+        image_base64: Optional[str] = None,
     ) -> AgentStructuredOutput:
         """Ejecuta una consulta local y convierte su JSON al contrato del agente."""
+        user_message: Dict[str, Any] = {"role": "user", "content": prompt_text}
+        if image_base64:
+            data = image_base64.split(",", 1)[-1]
+            user_message["images"] = [data]
         payload = {
             "model": self.ollama_model,
             "messages": [
                 {"role": "system", "content": system_instruction},
-                {"role": "user", "content": prompt_text},
+                user_message,
             ],
             "format": AgentStructuredOutput.model_json_schema(),
             "stream": False,
@@ -258,16 +301,11 @@ Actualmente estás conversando en privado con: {user_name}.
         # Si se envió una imagen en el modo simulado
         if image_base64:
             return AgentStructuredOutput(
-                reply_to_user="He analizado la imagen/boceto que enviaste. He extraído las clases principales observadas y preparé sugerencias para incorporarlas al lienzo.",
-                shared_decision_note=f"{user_name} subió un boceto arquitectónico para modelar entidades desde imagen.",
-                canvas_patches=[
-                    CanvasPatchOperation(
-                        op="ADD_CLASS",
-                        target_name="EntidadBoceto",
-                        payload={"attributes": [{"name": "id", "type": "int"}, {"name": "descripcion", "type": "string"}]},
-                        reason="Entidad inferida a partir del boceto/imagen subida.",
-                    )
-                ],
+                reply_to_user=(
+                    "No pude analizar la imagen porque no hay un proveedor de IA con visión "
+                    "configurado. Configura Gemini o un modelo local compatible con imágenes."
+                ),
+                canvas_patches=[],
                 execution_mode="SUGGESTION",
             )
 

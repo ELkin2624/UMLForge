@@ -1,7 +1,13 @@
 import { request } from '../../../api/client';
 import { useAuthStore } from '../../auth/store';
 
-/** URL HTTP del servidor de colaboración (derivada de VITE_YJS_WS_URL, default ws://localhost:1234). */
+export type AgentPermission = 'ask' | 'safe' | 'full';
+export interface AgentSettings {
+  enabled: boolean;
+  permission: AgentPermission;
+}
+
+/** URL HTTP del servidor de colaboración (derivada de VITE_YJS_WS_URL). */
 function collabHttpUrl(): string {
   const wsUrl =
     (typeof import.meta !== 'undefined' && import.meta.env?.VITE_YJS_WS_URL) ||
@@ -9,31 +15,29 @@ function collabHttpUrl(): string {
   return wsUrl.replace(/^ws/, 'http').replace(/\/$/, '');
 }
 
-/** Estado de la presencia del agente de IA en el diagrama (solo propietario). */
-export function getAgentEnabled(diagramId: string): Promise<{ enabled: boolean }> {
-  return request<{ enabled: boolean }>(`/diagrams/${diagramId}/agent`);
+/** Presencia común y preferencia personal de IA del usuario autenticado. */
+export function getAgentEnabled(diagramId: string): Promise<AgentSettings> {
+  return request<AgentSettings>(`/diagrams/${diagramId}/agent`);
 }
 
-/**
- * Activa o desactiva al agente en el backend (fuente de verdad) y luego avisa al servidor
- * de colaboración para que lo muestre u oculte en la sala al instante. El aviso es
- * "best effort": si el servidor no responde, el estado se aplicará en la próxima conexión.
- */
+/** Guarda la preferencia personal o la presencia común; solo esta última refresca Yjs. */
 export async function setAgentEnabled(
   diagramId: string,
-  enabled: boolean,
-): Promise<{ enabled: boolean }> {
-  const result = await request<{ enabled: boolean }>(`/diagrams/${diagramId}/agent`, {
+  settings: Partial<AgentSettings>,
+): Promise<AgentSettings> {
+  const result = await request<AgentSettings>(`/diagrams/${diagramId}/agent`, {
     method: 'PUT',
-    body: JSON.stringify({ enabled }),
+    body: JSON.stringify(settings),
   });
-  try {
-    await fetch(`${collabHttpUrl()}/agent/${diagramId}/refresh`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${useAuthStore.getState().token || ''}` },
-    });
-  } catch {
-    // servidor de colaboración caído: no es un error de la activación
+  if (settings.enabled !== undefined) {
+    try {
+      await fetch(`${collabHttpUrl()}/agent/${diagramId}/refresh`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token || ''}` },
+      });
+    } catch {
+      // La presencia se actualizará cuando el servidor Yjs vuelva a estar disponible.
+    }
   }
   return result;
 }

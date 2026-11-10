@@ -169,6 +169,14 @@ def test_create_invitation_flow_and_conflict(client, test_diagram, test_users, a
     assert notif.read is False
     assert notif.data["invitation_id"] == data["invitation_id"]
 
+    visible = client.get("/api/v1/notifications", headers=auth_headers["collab"])
+    assert visible.status_code == 200
+    assert visible.json()[0]["data"]["invitation_status"] == "PENDING"
+
+    client.put("/api/v1/notifications/read-all", headers=auth_headers["collab"])
+    still_pending = client.get("/api/v1/notifications", headers=auth_headers["collab"])
+    assert still_pending.json()[0]["data"]["invitation_status"] == "PENDING"
+
     # 2. Intentar invitarlo de nuevo mientras está PENDING -> Debe retornar 409 Conflict
     res_dup = client.post(
         f"/api/v1/diagrams/{test_diagram.id}/invitations",
@@ -239,6 +247,8 @@ def test_accept_invitation_flow(client, test_diagram, test_users, auth_headers, 
         Notification.recipient_user_id == test_users["collab"].id
     ).first()
     assert notif.read is True
+    visible = client.get("/api/v1/notifications", headers=auth_headers["collab"])
+    assert visible.json()[0]["data"]["invitation_status"] == "ACCEPTED"
 
     # 6. Intentar aceptarla por segunda vez -> 409 Conflict (Item 3)
     res_second = client.post(
@@ -269,6 +279,8 @@ def test_reject_invitation_flow(client, test_diagram, test_users, auth_headers, 
         Notification.recipient_user_id == test_users["collab"].id
     ).first()
     assert notif.read is True
+    visible = client.get("/api/v1/notifications", headers=auth_headers["collab"])
+    assert visible.json()[0]["data"]["invitation_status"] == "REJECTED"
 
     # 4. Verificar que NO tiene permiso en el diagrama
     perm = db_session.query(DiagramPermission).filter(
@@ -283,6 +295,27 @@ def test_reject_invitation_flow(client, test_diagram, test_users, auth_headers, 
         headers=auth_headers["collab"]
     )
     assert res_accept_after.status_code == 409
+
+
+def test_cancelled_invitation_no_longer_appears_pending(
+    client, test_diagram, test_users, auth_headers
+):
+    created = client.post(
+        f"/api/v1/diagrams/{test_diagram.id}/invitations",
+        json={"user_id": test_users["collab"].id, "role": "EDITOR"},
+        headers=auth_headers["owner"],
+    )
+    invitation_id = created.json()["invitation_id"]
+
+    cancelled = client.post(
+        f"/api/v1/diagrams/{test_diagram.id}/invitations/{invitation_id}/cancel",
+        headers=auth_headers["owner"],
+    )
+    assert cancelled.status_code == 200
+
+    visible = client.get("/api/v1/notifications", headers=auth_headers["collab"])
+    assert visible.json()[0]["data"]["invitation_status"] == "CANCELLED"
+    assert visible.json()[0]["read"] is True
 
 # ==================== PRUEBA 6: INVARIANTE SINGLE-OWNER Y SEGURIDAD BACKEND ====================
 def test_single_owner_invariance_and_rbac(client, test_diagram, test_users, auth_headers, db_session):

@@ -1,0 +1,1116 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" name="3.3.3 Clases de Entidad (Entity)" xmi:id="EAPK_ENT00001_0001_4000_8000_000000000001" visibility="public">
+			<!-- Actores -->
+			<packagedElement xmi:type="uml:Actor" name="Arquitecto" xmi:id="EAID_ACT_ARQ" visibility="public"/>
+			<packagedElement xmi:type="uml:Actor" name="Desarrollador" xmi:id="EAID_ACT_DEV" visibility="public"/>
+
+			<!-- Titulo CU13 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_13" name="CU13. Colaborar con Agente IA Co-Desarrollador" body="CU13. Colaborar con Agente IA Co-Desarrollador"/>
+			<packagedElement xmi:type="uml:Class" name="AIAssistantView" xmi:id="EAID_C13_VIEW" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="mensajePrompt" visibility="public" xmi:id="EAID_A_13_VIE_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="audioGrabado" visibility="public" xmi:id="EAID_A_13_VIE_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#byte"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="estadoGrabacion" visibility="public" xmi:id="EAID_A_13_VIE_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="historialChat" visibility="public" xmi:id="EAID_A_13_VIE_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="capturarVoz" visibility="public" xmi:id="EAID_O_13_VIE_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="enviarMensajePrompt" visibility="public" xmi:id="EAID_O_13_VIE_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="renderizarRespuestaIA" visibility="public" xmi:id="EAID_O_13_VIE_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="limpiarConversacion" visibility="public" xmi:id="EAID_O_13_VIE_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="AIAssistantController" xmi:id="EAID_C13_CTRL" visibility="public">
+				<ownedOperation xmi:type="uml:Operation" name="transcribirAudioWhisper" visibility="public" xmi:id="EAID_O_13_CON_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="procesarPromptColaborativo" visibility="public" xmi:id="EAID_O_13_CON_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="construirContextoModelo" visibility="public" xmi:id="EAID_O_13_CON_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="consultarMemoriaEquipo" visibility="public" xmi:id="EAID_O_13_CON_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="MemoriaCompartidaIA" xmi:id="EAID_C13_ENT" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="id_memoria" visibility="public" xmi:id="EAID_A_13_ENT_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="diagram_id" visibility="public" xmi:id="EAID_A_13_ENT_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="decisionesArquitectura" visibility="public" xmi:id="EAID_A_13_ENT_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="reglasDiseno" visibility="public" xmi:id="EAID_A_13_ENT_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="ultimaActualizacion" visibility="public" xmi:id="EAID_A_13_ENT_5">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#date"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="guardarDecision" visibility="public" xmi:id="EAID_O_13_ENT_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="obtenerMemoriaCompartida" visibility="public" xmi:id="EAID_O_13_ENT_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="limpiarHistorial" visibility="public" xmi:id="EAID_O_13_ENT_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_13_1">
+				<memberEnd xmi:idref="EAID_ACT_ARQ"/>
+				<memberEnd xmi:idref="EAID_C13_VIEW"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_13_2">
+				<memberEnd xmi:idref="EAID_C13_VIEW"/>
+				<memberEnd xmi:idref="EAID_C13_CTRL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_13_3">
+				<memberEnd xmi:idref="EAID_C13_CTRL"/>
+				<memberEnd xmi:idref="EAID_C13_ENT"/>
+			</packagedElement>
+
+			<!-- Titulo CU14 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_14" name="CU14. Reflejar y Aplicar Sugerencias de la IA en el Lienzo" body="CU14. Reflejar y Aplicar Sugerencias de la IA en el Lienzo"/>
+			<packagedElement xmi:type="uml:Class" name="OverlayLienzoView" xmi:id="EAID_C14_VIEW" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="parchePendiente" visibility="public" xmi:id="EAID_A_14_VIE_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="cursorVirtualIA" visibility="public" xmi:id="EAID_A_14_VIE_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="espejoActivo" visibility="public" xmi:id="EAID_A_14_VIE_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="sugerenciaSeleccionada" visibility="public" xmi:id="EAID_A_14_VIE_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="renderizarCursorIA" visibility="public" xmi:id="EAID_O_14_VIE_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="proyectarSugerenciaVisual" visibility="public" xmi:id="EAID_O_14_VIE_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="aceptarPropuesta" visibility="public" xmi:id="EAID_O_14_VIE_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="rechazarPropuesta" visibility="public" xmi:id="EAID_O_14_VIE_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="ParchesIAController" xmi:id="EAID_C14_CTRL" visibility="public">
+				<ownedOperation xmi:type="uml:Operation" name="generarDeltaCambios" visibility="public" xmi:id="EAID_O_14_CON_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="validarConsistenciaParche" visibility="public" xmi:id="EAID_O_14_CON_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="aplicarTransaccionAtomica" visibility="public" xmi:id="EAID_O_14_CON_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="difundirAwarenessIA" visibility="public" xmi:id="EAID_O_14_CON_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="ParcheCanonico" xmi:id="EAID_C14_ENT" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="id_parche" visibility="public" xmi:id="EAID_A_14_ENT_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="tipoOperacion" visibility="public" xmi:id="EAID_A_14_ENT_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="rutaElemento" visibility="public" xmi:id="EAID_A_14_ENT_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="valorDelta" visibility="public" xmi:id="EAID_A_14_ENT_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="esAutorIA" visibility="public" xmi:id="EAID_A_14_ENT_5">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="serializarOperacion" visibility="public" xmi:id="EAID_O_14_ENT_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="revertirOperacion" visibility="public" xmi:id="EAID_O_14_ENT_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="validarSintaxisPatch" visibility="public" xmi:id="EAID_O_14_ENT_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_14_1">
+				<memberEnd xmi:idref="EAID_ACT_ARQ"/>
+				<memberEnd xmi:idref="EAID_C14_VIEW"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_14_2">
+				<memberEnd xmi:idref="EAID_C14_VIEW"/>
+				<memberEnd xmi:idref="EAID_C14_CTRL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_14_3">
+				<memberEnd xmi:idref="EAID_C14_CTRL"/>
+				<memberEnd xmi:idref="EAID_C14_ENT"/>
+			</packagedElement>
+
+			<!-- Titulo CU15 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_15" name="CU15. Gestionar Memoria, Auditoria y Versiones en NoSQL" body="CU15. Gestionar Memoria, Auditoria y Versiones en NoSQL"/>
+			<packagedElement xmi:type="uml:Class" name="HistorialVersionesView" xmi:id="EAID_C15_VIEW" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="versionSeleccionadaId" visibility="public" xmi:id="EAID_A_15_VIE_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="listaVersiones" visibility="public" xmi:id="EAID_A_15_VIE_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="filtroAutor" visibility="public" xmi:id="EAID_A_15_VIE_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="modoComparacionDiff" visibility="public" xmi:id="EAID_A_15_VIE_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="mostrarListaVersiones" visibility="public" xmi:id="EAID_O_15_VIE_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="mostrarPrevisualizacion" visibility="public" xmi:id="EAID_O_15_VIE_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="solicitarRestauracion" visibility="public" xmi:id="EAID_O_15_VIE_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="filtrarPorAutor" visibility="public" xmi:id="EAID_O_15_VIE_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="VersionadorNoSQLController" xmi:id="EAID_C15_CTRL" visibility="public">
+				<ownedOperation xmi:type="uml:Operation" name="crearSnapshotAutoguardado" visibility="public" xmi:id="EAID_O_15_CON_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="obtenerHistorialVersiones" visibility="public" xmi:id="EAID_O_15_CON_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="restaurarVersionHistorica" visibility="public" xmi:id="EAID_O_15_CON_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="registrarEventoAuditoria" visibility="public" xmi:id="EAID_O_15_CON_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="VersionDiagramaNoSQL" xmi:id="EAID_C15_ENT" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="id_version" visibility="public" xmi:id="EAID_A_15_ENT_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="diagram_id" visibility="public" xmi:id="EAID_A_15_ENT_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="modeloSnapshotJson" visibility="public" xmi:id="EAID_A_15_ENT_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="autorId" visibility="public" xmi:id="EAID_A_15_ENT_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="esAutorIA" visibility="public" xmi:id="EAID_A_15_ENT_5">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="fechaRegistro" visibility="public" xmi:id="EAID_A_15_ENT_6">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#date"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="persistirDocumentoMongo" visibility="public" xmi:id="EAID_O_15_ENT_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="recuperarSnapshot" visibility="public" xmi:id="EAID_O_15_ENT_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="calcularDiffVersion" visibility="public" xmi:id="EAID_O_15_ENT_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_15_1">
+				<memberEnd xmi:idref="EAID_ACT_DEV"/>
+				<memberEnd xmi:idref="EAID_C15_VIEW"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_15_2">
+				<memberEnd xmi:idref="EAID_C15_VIEW"/>
+				<memberEnd xmi:idref="EAID_C15_CTRL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_15_3">
+				<memberEnd xmi:idref="EAID_C15_CTRL"/>
+				<memberEnd xmi:idref="EAID_C15_ENT"/>
+			</packagedElement>
+
+			<!-- Titulo CU16 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_16" name="CU16. Disenar y Normalizar Esquema de Datos (1FN-FNBC)" body="CU16. Disenar y Normalizar Esquema de Datos (1FN-FNBC)"/>
+			<packagedElement xmi:type="uml:Class" name="DisenoDatosView" xmi:id="EAID_C16_VIEW" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="modoVistaNormalizada" visibility="public" xmi:id="EAID_A_16_VIE_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="tablaSeleccionada" visibility="public" xmi:id="EAID_A_16_VIE_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="listaDependenciasInput" visibility="public" xmi:id="EAID_A_16_VIE_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="esquemaLogicoActivo" visibility="public" xmi:id="EAID_A_16_VIE_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="mostrarTablasRelacionales" visibility="public" xmi:id="EAID_O_16_VIE_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="mostrarFormaNormal" visibility="public" xmi:id="EAID_O_16_VIE_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="agregarDependenciaFuncional" visibility="public" xmi:id="EAID_O_16_VIE_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="ejecutarBernstein" visibility="public" xmi:id="EAID_O_16_VIE_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="NormalizadorDatosController" xmi:id="EAID_C16_CTRL" visibility="public">
+				<ownedOperation xmi:type="uml:Operation" name="derivarModeloLogico" visibility="public" xmi:id="EAID_O_16_CON_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="inferirDependenciasFuncionales" visibility="public" xmi:id="EAID_O_16_CON_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="verificarViolacionesFNBC" visibility="public" xmi:id="EAID_O_16_CON_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="sintetizarTablasBernstein" visibility="public" xmi:id="EAID_O_16_CON_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="EsquemaRelacionalNormalizado" xmi:id="EAID_C16_ENT" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="id_esquema" visibility="public" xmi:id="EAID_A_16_ENT_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="tablasRelacionales" visibility="public" xmi:id="EAID_A_16_ENT_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="dependenciasFuncionales" visibility="public" xmi:id="EAID_A_16_ENT_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="formaNormalAlcanzada" visibility="public" xmi:id="EAID_A_16_ENT_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="clavesCandidatas" visibility="public" xmi:id="EAID_A_16_ENT_5">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="validarClavesPrimarias" visibility="public" xmi:id="EAID_O_16_ENT_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="descomponerTabla" visibility="public" xmi:id="EAID_O_16_ENT_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="obtenerDDLPostgreSQL" visibility="public" xmi:id="EAID_O_16_ENT_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_16_1">
+				<memberEnd xmi:idref="EAID_ACT_ARQ"/>
+				<memberEnd xmi:idref="EAID_C16_VIEW"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_16_2">
+				<memberEnd xmi:idref="EAID_C16_VIEW"/>
+				<memberEnd xmi:idref="EAID_C16_CTRL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_16_3">
+				<memberEnd xmi:idref="EAID_C16_CTRL"/>
+				<memberEnd xmi:idref="EAID_C16_ENT"/>
+			</packagedElement>
+
+			<!-- Titulo CU17 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_17" name="CU17. Supervisar Diagramas en Dispositivo Movil" body="CU17. Supervisar Diagramas en Dispositivo Movil"/>
+			<packagedElement xmi:type="uml:Class" name="VisorMovilAppView" xmi:id="EAID_C17_VIEW" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="escalaZoom" visibility="public" xmi:id="EAID_A_17_VIE_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#float"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="nodoSeleccionadoId" visibility="public" xmi:id="EAID_A_17_VIE_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="listaNotificaciones" visibility="public" xmi:id="EAID_A_17_VIE_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="modoSoloLectura" visibility="public" xmi:id="EAID_A_17_VIE_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="renderizarLienzoVectorial" visibility="public" xmi:id="EAID_O_17_VIE_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="manejarGestosZoomPan" visibility="public" xmi:id="EAID_O_17_VIE_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="mostrarDetalleElemento" visibility="public" xmi:id="EAID_O_17_VIE_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="marcarNotificacionLeida" visibility="public" xmi:id="EAID_O_17_VIE_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="VisorMovilController" xmi:id="EAID_C17_CTRL" visibility="public">
+				<ownedOperation xmi:type="uml:Operation" name="cargarSnapshotSoloLectura" visibility="public" xmi:id="EAID_O_17_CON_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#dict"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="sincronizarNotificaciones" visibility="public" xmi:id="EAID_O_17_CON_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="consultarVersionesMovil" visibility="public" xmi:id="EAID_O_17_CON_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#list"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="responderInvitacion" visibility="public" xmi:id="EAID_O_17_CON_4">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" name="DiagramaMovilSnapshot" xmi:id="EAID_C17_ENT" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" name="id_diagrama" visibility="public" xmi:id="EAID_A_17_ENT_1">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="nombreProyecto" visibility="public" xmi:id="EAID_A_17_ENT_2">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="esquemaVisualSvg" visibility="public" xmi:id="EAID_A_17_ENT_3">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="totalNodos" visibility="public" xmi:id="EAID_A_17_ENT_4">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#int"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" name="timestampCache" visibility="public" xmi:id="EAID_A_17_ENT_5">
+					<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#date"/>
+				</ownedAttribute>
+				<ownedOperation xmi:type="uml:Operation" name="generarProyeccionSvg" visibility="public" xmi:id="EAID_O_17_ENT_1">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#string"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="verificarPermisoLectura" visibility="public" xmi:id="EAID_O_17_ENT_2">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#bool"/>
+					</ownedParameter>
+				</ownedOperation>
+				<ownedOperation xmi:type="uml:Operation" name="invalidarCacheLocal" visibility="public" xmi:id="EAID_O_17_ENT_3">
+					<ownedParameter xmi:type="uml:Parameter" name="return" direction="return">
+						<type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1/uml.xml#void"/>
+					</ownedParameter>
+				</ownedOperation>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_17_1">
+				<memberEnd xmi:idref="EAID_ACT_DEV"/>
+				<memberEnd xmi:idref="EAID_C17_VIEW"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_17_2">
+				<memberEnd xmi:idref="EAID_C17_VIEW"/>
+				<memberEnd xmi:idref="EAID_C17_CTRL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASC_17_3">
+				<memberEnd xmi:idref="EAID_C17_CTRL"/>
+				<memberEnd xmi:idref="EAID_C17_ENT"/>
+			</packagedElement>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_ENT00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.3.3 Clases de Entidad (Entity)" scope="public">
+				<model package2="EAPK_ENT00001_0001_4000_8000_000000000001" package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ACT_ARQ" xmi:type="uml:Actor" name="Arquitecto" scope="public"><model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="10" ea_eleType="element"/><properties sType="Actor"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_ACT_DEV" xmi:type="uml:Actor" name="Desarrollador" scope="public"><model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="11" ea_eleType="element"/><properties sType="Actor"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_T_13" xmi:type="uml:Text" name="CU13. Colaborar con Agente IA Co-Desarrollador" scope="public"><model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="101" ea_eleType="element"/><properties sType="Text"/><documentation value="CU13. Colaborar con Agente IA Co-Desarrollador"/></element>
+			<element xmi:idref="EAID_C13_VIEW" xmi:type="uml:Class" name="AIAssistantView" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="102" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_13_VIE_1" name="mensajePrompt" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_13_VIE_2" name="audioGrabado" scope="Public">
+						<properties type="byte"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_13_VIE_3" name="estadoGrabacion" scope="Public">
+						<properties type="bool"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_13_VIE_4" name="historialChat" scope="Public">
+						<properties type="list"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_13_VIE_1" name="capturarVoz" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_VIE_2" name="enviarMensajePrompt" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_VIE_3" name="renderizarRespuestaIA" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_VIE_4" name="limpiarConversacion" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C13_CTRL" xmi:type="uml:Class" name="AIAssistantController" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="103" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<operations>
+					<operation xmi:idref="EAID_O_13_CON_1" name="transcribirAudioWhisper" scope="Public">
+						<properties type="string"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_CON_2" name="procesarPromptColaborativo" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_CON_3" name="construirContextoModelo" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_CON_4" name="consultarMemoriaEquipo" scope="Public">
+						<properties type="list"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C13_ENT" xmi:type="uml:Class" name="MemoriaCompartidaIA" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="104" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_13_ENT_1" name="id_memoria" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_13_ENT_2" name="diagram_id" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_13_ENT_3" name="decisionesArquitectura" scope="Public">
+						<properties type="list"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_13_ENT_4" name="reglasDiseno" scope="Public">
+						<properties type="list"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_13_ENT_5" name="ultimaActualizacion" scope="Public">
+						<properties type="date"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_13_ENT_1" name="guardarDecision" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_ENT_2" name="obtenerMemoriaCompartida" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_13_ENT_3" name="limpiarHistorial" scope="Public">
+						<properties type="bool"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_T_14" xmi:type="uml:Text" name="CU14. Reflejar y Aplicar Sugerencias de la IA en el Lienzo" scope="public"><model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="105" ea_eleType="element"/><properties sType="Text"/><documentation value="CU14. Reflejar y Aplicar Sugerencias de la IA en el Lienzo"/></element>
+			<element xmi:idref="EAID_C14_VIEW" xmi:type="uml:Class" name="OverlayLienzoView" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="106" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_14_VIE_1" name="parchePendiente" scope="Public">
+						<properties type="dict"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_14_VIE_2" name="cursorVirtualIA" scope="Public">
+						<properties type="dict"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_14_VIE_3" name="espejoActivo" scope="Public">
+						<properties type="bool"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_14_VIE_4" name="sugerenciaSeleccionada" scope="Public">
+						<properties type="string"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_14_VIE_1" name="renderizarCursorIA" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_VIE_2" name="proyectarSugerenciaVisual" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_VIE_3" name="aceptarPropuesta" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_VIE_4" name="rechazarPropuesta" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C14_CTRL" xmi:type="uml:Class" name="ParchesIAController" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="107" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<operations>
+					<operation xmi:idref="EAID_O_14_CON_1" name="generarDeltaCambios" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_CON_2" name="validarConsistenciaParche" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_CON_3" name="aplicarTransaccionAtomica" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_CON_4" name="difundirAwarenessIA" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C14_ENT" xmi:type="uml:Class" name="ParcheCanonico" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="108" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_14_ENT_1" name="id_parche" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_14_ENT_2" name="tipoOperacion" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_14_ENT_3" name="rutaElemento" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_14_ENT_4" name="valorDelta" scope="Public">
+						<properties type="dict"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_14_ENT_5" name="esAutorIA" scope="Public">
+						<properties type="bool"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_14_ENT_1" name="serializarOperacion" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_ENT_2" name="revertirOperacion" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_14_ENT_3" name="validarSintaxisPatch" scope="Public">
+						<properties type="bool"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_T_15" xmi:type="uml:Text" name="CU15. Gestionar Memoria, Auditoria y Versiones en NoSQL" scope="public"><model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="109" ea_eleType="element"/><properties sType="Text"/><documentation value="CU15. Gestionar Memoria, Auditoria y Versiones en NoSQL"/></element>
+			<element xmi:idref="EAID_C15_VIEW" xmi:type="uml:Class" name="HistorialVersionesView" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="110" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_15_VIE_1" name="versionSeleccionadaId" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_VIE_2" name="listaVersiones" scope="Public">
+						<properties type="list"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_VIE_3" name="filtroAutor" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_VIE_4" name="modoComparacionDiff" scope="Public">
+						<properties type="bool"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_15_VIE_1" name="mostrarListaVersiones" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_VIE_2" name="mostrarPrevisualizacion" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_VIE_3" name="solicitarRestauracion" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_VIE_4" name="filtrarPorAutor" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C15_CTRL" xmi:type="uml:Class" name="VersionadorNoSQLController" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="111" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<operations>
+					<operation xmi:idref="EAID_O_15_CON_1" name="crearSnapshotAutoguardado" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_CON_2" name="obtenerHistorialVersiones" scope="Public">
+						<properties type="list"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_CON_3" name="restaurarVersionHistorica" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_CON_4" name="registrarEventoAuditoria" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C15_ENT" xmi:type="uml:Class" name="VersionDiagramaNoSQL" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="112" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_15_ENT_1" name="id_version" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_ENT_2" name="diagram_id" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_ENT_3" name="modeloSnapshotJson" scope="Public">
+						<properties type="dict"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_ENT_4" name="autorId" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_ENT_5" name="esAutorIA" scope="Public">
+						<properties type="bool"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_15_ENT_6" name="fechaRegistro" scope="Public">
+						<properties type="date"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_15_ENT_1" name="persistirDocumentoMongo" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_ENT_2" name="recuperarSnapshot" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_15_ENT_3" name="calcularDiffVersion" scope="Public">
+						<properties type="dict"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_T_16" xmi:type="uml:Text" name="CU16. Disenar y Normalizar Esquema de Datos (1FN-FNBC)" scope="public"><model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="113" ea_eleType="element"/><properties sType="Text"/><documentation value="CU16. Disenar y Normalizar Esquema de Datos (1FN-FNBC)"/></element>
+			<element xmi:idref="EAID_C16_VIEW" xmi:type="uml:Class" name="DisenoDatosView" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="114" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_16_VIE_1" name="modoVistaNormalizada" scope="Public">
+						<properties type="bool"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_16_VIE_2" name="tablaSeleccionada" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_16_VIE_3" name="listaDependenciasInput" scope="Public">
+						<properties type="list"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_16_VIE_4" name="esquemaLogicoActivo" scope="Public">
+						<properties type="dict"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_16_VIE_1" name="mostrarTablasRelacionales" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_VIE_2" name="mostrarFormaNormal" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_VIE_3" name="agregarDependenciaFuncional" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_VIE_4" name="ejecutarBernstein" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C16_CTRL" xmi:type="uml:Class" name="NormalizadorDatosController" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="115" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<operations>
+					<operation xmi:idref="EAID_O_16_CON_1" name="derivarModeloLogico" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_CON_2" name="inferirDependenciasFuncionales" scope="Public">
+						<properties type="list"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_CON_3" name="verificarViolacionesFNBC" scope="Public">
+						<properties type="list"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_CON_4" name="sintetizarTablasBernstein" scope="Public">
+						<properties type="dict"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C16_ENT" xmi:type="uml:Class" name="EsquemaRelacionalNormalizado" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="116" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_16_ENT_1" name="id_esquema" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_16_ENT_2" name="tablasRelacionales" scope="Public">
+						<properties type="list"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_16_ENT_3" name="dependenciasFuncionales" scope="Public">
+						<properties type="list"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_16_ENT_4" name="formaNormalAlcanzada" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_16_ENT_5" name="clavesCandidatas" scope="Public">
+						<properties type="list"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_16_ENT_1" name="validarClavesPrimarias" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_ENT_2" name="descomponerTabla" scope="Public">
+						<properties type="list"/>
+					</operation>
+					<operation xmi:idref="EAID_O_16_ENT_3" name="obtenerDDLPostgreSQL" scope="Public">
+						<properties type="string"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_T_17" xmi:type="uml:Text" name="CU17. Supervisar Diagramas en Dispositivo Movil" scope="public"><model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="117" ea_eleType="element"/><properties sType="Text"/><documentation value="CU17. Supervisar Diagramas en Dispositivo Movil"/></element>
+			<element xmi:idref="EAID_C17_VIEW" xmi:type="uml:Class" name="VisorMovilAppView" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="118" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_17_VIE_1" name="escalaZoom" scope="Public">
+						<properties type="float"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_17_VIE_2" name="nodoSeleccionadoId" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_17_VIE_3" name="listaNotificaciones" scope="Public">
+						<properties type="list"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_17_VIE_4" name="modoSoloLectura" scope="Public">
+						<properties type="bool"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_17_VIE_1" name="renderizarLienzoVectorial" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_VIE_2" name="manejarGestosZoomPan" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_VIE_3" name="mostrarDetalleElemento" scope="Public">
+						<properties type="void"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_VIE_4" name="marcarNotificacionLeida" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C17_CTRL" xmi:type="uml:Class" name="VisorMovilController" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="119" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<operations>
+					<operation xmi:idref="EAID_O_17_CON_1" name="cargarSnapshotSoloLectura" scope="Public">
+						<properties type="dict"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_CON_2" name="sincronizarNotificaciones" scope="Public">
+						<properties type="list"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_CON_3" name="consultarVersionesMovil" scope="Public">
+						<properties type="list"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_CON_4" name="responderInvitacion" scope="Public">
+						<properties type="bool"/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_C17_ENT" xmi:type="uml:Class" name="DiagramaMovilSnapshot" scope="public">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" tpos="0" ea_localid="120" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_17_ENT_1" name="id_diagrama" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_17_ENT_2" name="nombreProyecto" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_17_ENT_3" name="esquemaVisualSvg" scope="Public">
+						<properties type="string"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_17_ENT_4" name="totalNodos" scope="Public">
+						<properties type="int"/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_17_ENT_5" name="timestampCache" scope="Public">
+						<properties type="date"/>
+					</attribute>
+				</attributes>
+				<operations>
+					<operation xmi:idref="EAID_O_17_ENT_1" name="generarProyeccionSvg" scope="Public">
+						<properties type="string"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_ENT_2" name="verificarPermisoLectura" scope="Public">
+						<properties type="bool"/>
+					</operation>
+					<operation xmi:idref="EAID_O_17_ENT_3" name="invalidarCacheLocal" scope="Public">
+						<properties type="void"/>
+					</operation>
+				</operations>
+			</element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_ASC_13_1"><source xmi:idref="EAID_ACT_ARQ"><role visibility="Public"/></source><target xmi:idref="EAID_C13_VIEW"><role visibility="Public"/></target><model ea_localid="501"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_13_2"><source xmi:idref="EAID_C13_VIEW"><role visibility="Public"/></source><target xmi:idref="EAID_C13_CTRL"><role visibility="Public"/></target><model ea_localid="502"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_13_3"><source xmi:idref="EAID_C13_CTRL"><role visibility="Public"/></source><target xmi:idref="EAID_C13_ENT"><role visibility="Public"/></target><model ea_localid="503"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_14_1"><source xmi:idref="EAID_ACT_ARQ"><role visibility="Public"/></source><target xmi:idref="EAID_C14_VIEW"><role visibility="Public"/></target><model ea_localid="504"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_14_2"><source xmi:idref="EAID_C14_VIEW"><role visibility="Public"/></source><target xmi:idref="EAID_C14_CTRL"><role visibility="Public"/></target><model ea_localid="505"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_14_3"><source xmi:idref="EAID_C14_CTRL"><role visibility="Public"/></source><target xmi:idref="EAID_C14_ENT"><role visibility="Public"/></target><model ea_localid="506"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_15_1"><source xmi:idref="EAID_ACT_DEV"><role visibility="Public"/></source><target xmi:idref="EAID_C15_VIEW"><role visibility="Public"/></target><model ea_localid="507"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_15_2"><source xmi:idref="EAID_C15_VIEW"><role visibility="Public"/></source><target xmi:idref="EAID_C15_CTRL"><role visibility="Public"/></target><model ea_localid="508"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_15_3"><source xmi:idref="EAID_C15_CTRL"><role visibility="Public"/></source><target xmi:idref="EAID_C15_ENT"><role visibility="Public"/></target><model ea_localid="509"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_16_1"><source xmi:idref="EAID_ACT_ARQ"><role visibility="Public"/></source><target xmi:idref="EAID_C16_VIEW"><role visibility="Public"/></target><model ea_localid="510"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_16_2"><source xmi:idref="EAID_C16_VIEW"><role visibility="Public"/></source><target xmi:idref="EAID_C16_CTRL"><role visibility="Public"/></target><model ea_localid="511"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_16_3"><source xmi:idref="EAID_C16_CTRL"><role visibility="Public"/></source><target xmi:idref="EAID_C16_ENT"><role visibility="Public"/></target><model ea_localid="512"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_17_1"><source xmi:idref="EAID_ACT_DEV"><role visibility="Public"/></source><target xmi:idref="EAID_C17_VIEW"><role visibility="Public"/></target><model ea_localid="513"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_17_2"><source xmi:idref="EAID_C17_VIEW"><role visibility="Public"/></source><target xmi:idref="EAID_C17_CTRL"><role visibility="Public"/></target><model ea_localid="514"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASC_17_3"><source xmi:idref="EAID_C17_CTRL"><role visibility="Public"/></source><target xmi:idref="EAID_C17_ENT"><role visibility="Public"/></target><model ea_localid="515"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+		</connectors>
+		<diagrams>
+			<diagram xmi:id="EAID_DIAG_ENT_GEN">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" localID="51" owner="EAPK_ENT00001_0001_4000_8000_000000000001"/>
+				<properties name="3.3.3 Clases de Entidad (Entity)" type="Logical"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1600;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=1;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=1;ShowOpRetType=1;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=50;Top=30;Right=650;Bottom=55;" subject="EAID_T_13" seqno="1" style="DUID=T13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=75;Right=110;Bottom=175;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=A13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=65;Right=370;Bottom=225;" subject="EAID_C13_VIEW" seqno="3" style="DUID=V13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=65;Right=630;Bottom=225;" subject="EAID_C13_CTRL" seqno="4" style="DUID=C13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=65;Right=890;Bottom=225;" subject="EAID_C13_ENT" seqno="5" style="DUID=E13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=280;Right=650;Bottom=305;" subject="EAID_T_14" seqno="6" style="DUID=T14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=325;Right=110;Bottom=425;" subject="EAID_ACT_ARQ" seqno="7" style="DUID=A14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=315;Right=370;Bottom=475;" subject="EAID_C14_VIEW" seqno="8" style="DUID=V14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=315;Right=630;Bottom=475;" subject="EAID_C14_CTRL" seqno="9" style="DUID=C14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=315;Right=890;Bottom=475;" subject="EAID_C14_ENT" seqno="10" style="DUID=E14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=530;Right=650;Bottom=555;" subject="EAID_T_15" seqno="11" style="DUID=T15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=575;Right=110;Bottom=675;" subject="EAID_ACT_DEV" seqno="12" style="DUID=A15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=565;Right=370;Bottom=725;" subject="EAID_C15_VIEW" seqno="13" style="DUID=V15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=565;Right=630;Bottom=725;" subject="EAID_C15_CTRL" seqno="14" style="DUID=C15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=565;Right=890;Bottom=725;" subject="EAID_C15_ENT" seqno="15" style="DUID=E15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=780;Right=650;Bottom=805;" subject="EAID_T_16" seqno="16" style="DUID=T16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=825;Right=110;Bottom=925;" subject="EAID_ACT_ARQ" seqno="17" style="DUID=A16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=815;Right=370;Bottom=975;" subject="EAID_C16_VIEW" seqno="18" style="DUID=V16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=815;Right=630;Bottom=975;" subject="EAID_C16_CTRL" seqno="19" style="DUID=C16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=815;Right=890;Bottom=975;" subject="EAID_C16_ENT" seqno="20" style="DUID=E16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=1030;Right=650;Bottom=1055;" subject="EAID_T_17" seqno="21" style="DUID=T17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=1075;Right=110;Bottom=1175;" subject="EAID_ACT_DEV" seqno="22" style="DUID=A17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=1065;Right=370;Bottom=1225;" subject="EAID_C17_VIEW" seqno="23" style="DUID=V17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=1065;Right=630;Bottom=1225;" subject="EAID_C17_CTRL" seqno="24" style="DUID=C17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=1065;Right=890;Bottom=1225;" subject="EAID_C17_ENT" seqno="25" style="DUID=E17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU13 -->
+			<diagram xmi:id="EAID_DIAG_ENT_CU13">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" localID="52" owner="EAPK_ENT00001_0001_4000_8000_000000000001"/>
+				<properties name="CU13. Colaborar con Agente IA Co-Desarrollador - Clases" type="Logical"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=600;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=1;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=1;ShowOpRetType=1;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=50;Top=30;Right=650;Bottom=55;" subject="EAID_T_13" seqno="1" style="DUID=TI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=75;Right=110;Bottom=175;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=AI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=65;Right=370;Bottom=225;" subject="EAID_C13_VIEW" seqno="3" style="DUID=VI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=65;Right=630;Bottom=225;" subject="EAID_C13_CTRL" seqno="4" style="DUID=CI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=65;Right=890;Bottom=225;" subject="EAID_C13_ENT" seqno="5" style="DUID=EI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU14 -->
+			<diagram xmi:id="EAID_DIAG_ENT_CU14">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" localID="53" owner="EAPK_ENT00001_0001_4000_8000_000000000001"/>
+				<properties name="CU14. Reflejar y Aplicar Sugerencias de la IA en el Lienzo - Clases" type="Logical"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=600;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=1;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=1;ShowOpRetType=1;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=50;Top=30;Right=650;Bottom=55;" subject="EAID_T_14" seqno="1" style="DUID=TI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=75;Right=110;Bottom=175;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=AI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=65;Right=370;Bottom=225;" subject="EAID_C14_VIEW" seqno="3" style="DUID=VI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=65;Right=630;Bottom=225;" subject="EAID_C14_CTRL" seqno="4" style="DUID=CI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=65;Right=890;Bottom=225;" subject="EAID_C14_ENT" seqno="5" style="DUID=EI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU15 -->
+			<diagram xmi:id="EAID_DIAG_ENT_CU15">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" localID="54" owner="EAPK_ENT00001_0001_4000_8000_000000000001"/>
+				<properties name="CU15. Gestionar Memoria, Auditoria y Versiones en NoSQL - Clases" type="Logical"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=600;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=1;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=1;ShowOpRetType=1;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=50;Top=30;Right=650;Bottom=55;" subject="EAID_T_15" seqno="1" style="DUID=TI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=75;Right=110;Bottom=175;" subject="EAID_ACT_DEV" seqno="2" style="DUID=AI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=65;Right=370;Bottom=225;" subject="EAID_C15_VIEW" seqno="3" style="DUID=VI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=65;Right=630;Bottom=225;" subject="EAID_C15_CTRL" seqno="4" style="DUID=CI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=65;Right=890;Bottom=225;" subject="EAID_C15_ENT" seqno="5" style="DUID=EI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU16 -->
+			<diagram xmi:id="EAID_DIAG_ENT_CU16">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" localID="55" owner="EAPK_ENT00001_0001_4000_8000_000000000001"/>
+				<properties name="CU16. Disenar y Normalizar Esquema de Datos (1FN-FNBC) - Clases" type="Logical"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=600;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=1;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=1;ShowOpRetType=1;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=50;Top=30;Right=650;Bottom=55;" subject="EAID_T_16" seqno="1" style="DUID=TI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=75;Right=110;Bottom=175;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=AI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=65;Right=370;Bottom=225;" subject="EAID_C16_VIEW" seqno="3" style="DUID=VI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=65;Right=630;Bottom=225;" subject="EAID_C16_CTRL" seqno="4" style="DUID=CI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=65;Right=890;Bottom=225;" subject="EAID_C16_ENT" seqno="5" style="DUID=EI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU17 -->
+			<diagram xmi:id="EAID_DIAG_ENT_CU17">
+				<model package="EAPK_ENT00001_0001_4000_8000_000000000001" localID="56" owner="EAPK_ENT00001_0001_4000_8000_000000000001"/>
+				<properties name="CU17. Supervisar Diagramas en Dispositivo Movil - Clases" type="Logical"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=600;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=1;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=1;ShowOpRetType=1;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=50;Top=30;Right=650;Bottom=55;" subject="EAID_T_17" seqno="1" style="DUID=TI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=75;Right=110;Bottom=175;" subject="EAID_ACT_DEV" seqno="2" style="DUID=AI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=170;Top=65;Right=370;Bottom=225;" subject="EAID_C17_VIEW" seqno="3" style="DUID=VI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=430;Top=65;Right=630;Bottom=225;" subject="EAID_C17_CTRL" seqno="4" style="DUID=CI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=690;Top=65;Right=890;Bottom=225;" subject="EAID_C17_ENT" seqno="5" style="DUID=EI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

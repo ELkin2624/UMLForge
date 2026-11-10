@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/features/auth/store';
 
-import { API_BASE_URL } from './config';
+import { getApiBaseUrl } from './config';
 
 /** Decodifica base64url sin depender de `atob` (Hermes lo trae, pero así es testeable en node). */
 function decodeBase64Url(input: string): string {
@@ -36,7 +36,7 @@ export function refreshToken(): Promise<string | null> {
     try {
       const savedRefreshToken = useAuthStore.getState().refreshToken;
       if (!savedRefreshToken) return null;
-      const res = await fetch(`${API_BASE_URL}/auth/mobile/refresh`, {
+      const res = await fetch(`${getApiBaseUrl()}/auth/mobile/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: savedRefreshToken }),
@@ -89,7 +89,7 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
   }
 
   const send = (bearer: string | null) =>
-    fetch(`${API_BASE_URL}${path}`, {
+    fetch(`${getApiBaseUrl()}${path}`, {
       ...options,
       credentials: 'include',
       headers: {

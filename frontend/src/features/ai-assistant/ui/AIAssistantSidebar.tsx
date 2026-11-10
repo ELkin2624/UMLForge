@@ -11,6 +11,7 @@ import {
   Mic,
   MicOff,
   Image as ImageIcon,
+  Camera,
   X,
   ChevronRight,
   Loader2,
@@ -20,12 +21,15 @@ import {
 import { useAIAssistantStore } from '../model/ai-store';
 import { useAuthStore } from '../../auth/store';
 import { useShareStore } from '../../sharing/model/share-store';
+import { canManageAccess } from '../../sharing/model/capabilities';
 import { getSharedCollaborationManager } from '../../collaboration';
+import { useAgentPresence } from '../../collaboration/model/use-agent-presence';
 import { SpeechEngine } from '../../voice/api/speech-engine';
 import { WhisperEngine } from '../../voice/api/whisper-engine';
 import { useCommandHistory } from '../../uml-commands';
 import { AuditFeedTab } from './AuditFeedTab';
 import { PatchPreview } from './PatchPreview';
+import { AgentPermissionControl } from './AgentPermissionControl';
 import './AIAssistantSidebar.css';
 
 export const AIAssistantSidebar: React.FC = () => {
@@ -50,16 +54,25 @@ export const AIAssistantSidebar: React.FC = () => {
   );
   const [inputText, setInputText] = useState('');
   const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const speechEngineRef = useRef<SpeechEngine | null>(null);
   const whisperEngineRef = useRef<WhisperEngine | null>(null);
   const recognitionRef = useRef<any>(null);
 
   const roomId = useShareStore((s) => s.roomId) || 'default-room';
+  const localRole = useShareStore((s) => s.localRole);
+  const canManageAIPermissions = canManageAccess(localRole);
+  const agentSettings = useAgentPresence(
+    roomId === 'default-room' ? null : roomId,
+    !collapsed,
+    canManageAIPermissions,
+  );
   const history = useCommandHistory();
   const sameDiagram = history.diagramId === roomId;
   const lastUndo = sameDiagram ? history.undoStack.at(-1) : undefined;
@@ -100,6 +113,36 @@ export const AIAssistantSidebar: React.FC = () => {
     }
   }, [privateHistory, collapsed, activeTab]);
 
+  const readImageFile = async (file: File) => {
+    setImageError(null);
+    if (!file.type.startsWith('image/')) {
+      setImageError('Selecciona un archivo de imagen.');
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      setImageError('La imagen debe pesar menos de 15 MB.');
+      return;
+    }
+    try {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close();
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.85),
+      );
+      if (!blob) throw new Error('No se pudo preparar la imagen.');
+      const reader = new FileReader();
+      reader.onload = () => setAttachedImage(reader.result as string);
+      reader.readAsDataURL(blob);
+    } catch {
+      setImageError('No se pudo abrir la imagen. Prueba con JPG o PNG.');
+    }
+  };
+
   // Soporte para pegar imágenes directamente (Ctrl + V)
   const handlePaste = (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
@@ -108,13 +151,7 @@ export const AIAssistantSidebar: React.FC = () => {
       if (items[i].type.startsWith('image/')) {
         const file = items[i].getAsFile();
         if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            if (event.target?.result) {
-              setAttachedImage(event.target.result as string);
-            }
-          };
-          reader.readAsDataURL(file);
+          void readImageFile(file);
         }
         break;
       }
@@ -123,15 +160,8 @@ export const AIAssistantSidebar: React.FC = () => {
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setAttachedImage(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+    if (file) void readImageFile(file);
+    e.target.value = '';
   };
 
   // Manejo de grabación por voz (Micrófono dual: Web Speech API tiempo real + Whisper backend)
@@ -376,13 +406,27 @@ export const AIAssistantSidebar: React.FC = () => {
                   <span className="ai-preview-info">Boceto/Imagen lista para análisis</span>
                   <button
                     type="button"
-                    onClick={() => setAttachedImage(null)}
+                    onClick={() => {
+                      setAttachedImage(null);
+                      setImageError(null);
+                    }}
                     className="ai-preview-remove-btn"
                     title="Quitar imagen"
                   >
                     <X size={15} />
                   </button>
                 </div>
+              )}
+              {imageError && <span className="ai-preview-info" role="alert">{imageError}</span>}
+
+              {roomId !== 'default-room' && (
+                <AgentPermissionControl
+                  permission={agentSettings.permission}
+                  loading={agentSettings.loading}
+                  loaded={agentSettings.loaded}
+                  error={agentSettings.error}
+                  onChange={(permission) => void agentSettings.update(permission)}
+                />
               )}
 
               {/* Input file invisible */}
@@ -391,6 +435,14 @@ export const AIAssistantSidebar: React.FC = () => {
                 ref={fileInputRef}
                 onChange={handleImageSelect}
                 accept="image/*"
+                style={{ display: 'none' }}
+              />
+              <input
+                type="file"
+                ref={cameraInputRef}
+                onChange={handleImageSelect}
+                accept="image/*"
+                capture="environment"
                 style={{ display: 'none' }}
               />
 
@@ -404,6 +456,16 @@ export const AIAssistantSidebar: React.FC = () => {
                   title="Subir imagen o boceto de diagrama (también puedes pegar con Ctrl+V)"
                 >
                   <ImageIcon size={17} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={isThinking || isRecording}
+                  className="ai-btn-addon"
+                  title="Tomar una foto con la cámara"
+                  aria-label="Tomar una foto"
+                >
+                  <Camera size={17} />
                 </button>
 
                 {/* Botón Micrófono / Voz */}

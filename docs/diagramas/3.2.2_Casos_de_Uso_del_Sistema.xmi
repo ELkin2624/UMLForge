@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" name="3.2.2 Casos de Uso del Sistema (Ciclo #2)" xmi:id="EAPK_CUS00001_0001_4000_8000_000000000001" visibility="public">
+			<!-- Actores del Sistema (UML 2.5.1 Actor) -->
+			<packagedElement xmi:type="uml:Actor" name="Usuario" xmi:id="EAID_SYS_ACT_USER" visibility="public"/>
+			<packagedElement xmi:type="uml:Actor" name="Arquitecto de Software / Analista" xmi:id="EAID_SYS_ACT_ARQ" visibility="public">
+				<generalization xmi:type="uml:Generalization" xmi:id="EAID_GEN_ARQ_USER" general="EAID_SYS_ACT_USER"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Actor" name="Desarrollador" xmi:id="EAID_SYS_ACT_DEV" visibility="public">
+				<generalization xmi:type="uml:Generalization" xmi:id="EAID_GEN_DEV_USER" general="EAID_SYS_ACT_USER"/>
+			</packagedElement>
+
+			<!-- 5 Casos de Uso del Ciclo #2 (UML 2.5.1 UseCase) -->
+			<packagedElement xmi:type="uml:UseCase" name="CU-13 Colaborar con Agente IA Co-Desarrollador" xmi:id="EAID_CU_13" visibility="public"/>
+			<packagedElement xmi:type="uml:UseCase" name="CU-14 Reflejar y Aplicar Sugerencias de la IA en el Lienzo" xmi:id="EAID_CU_14" visibility="public"/>
+			<packagedElement xmi:type="uml:UseCase" name="CU-15 Gestionar Memoria, Auditoria y Versiones en NoSQL" xmi:id="EAID_CU_15" visibility="public"/>
+			<packagedElement xmi:type="uml:UseCase" name="CU-16 Disenar y Normalizar Esquema de Datos" xmi:id="EAID_CU_16" visibility="public"/>
+			<packagedElement xmi:type="uml:UseCase" name="CU-17 Supervisar Diagramas en Dispositivo Movil" xmi:id="EAID_CU_17" visibility="public"/>
+
+			<!-- Asociaciones Usuario -->
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_USR_13"><memberEnd xmi:idref="EAID_SYS_ACT_USER"/><memberEnd xmi:idref="EAID_CU_13"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_USR_14"><memberEnd xmi:idref="EAID_SYS_ACT_USER"/><memberEnd xmi:idref="EAID_CU_14"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_USR_15"><memberEnd xmi:idref="EAID_SYS_ACT_USER"/><memberEnd xmi:idref="EAID_CU_15"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_USR_16"><memberEnd xmi:idref="EAID_SYS_ACT_USER"/><memberEnd xmi:idref="EAID_CU_16"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_USR_17"><memberEnd xmi:idref="EAID_SYS_ACT_USER"/><memberEnd xmi:idref="EAID_CU_17"/></packagedElement>
+
+			<!-- Asociaciones Arquitecto -->
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_ARQ_13"><memberEnd xmi:idref="EAID_SYS_ACT_ARQ"/><memberEnd xmi:idref="EAID_CU_13"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_ARQ_14"><memberEnd xmi:idref="EAID_SYS_ACT_ARQ"/><memberEnd xmi:idref="EAID_CU_14"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_ARQ_15"><memberEnd xmi:idref="EAID_SYS_ACT_ARQ"/><memberEnd xmi:idref="EAID_CU_15"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_ARQ_16"><memberEnd xmi:idref="EAID_SYS_ACT_ARQ"/><memberEnd xmi:idref="EAID_CU_16"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_ARQ_17"><memberEnd xmi:idref="EAID_SYS_ACT_ARQ"/><memberEnd xmi:idref="EAID_CU_17"/></packagedElement>
+
+			<!-- Asociaciones Desarrollador -->
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_DEV_13"><memberEnd xmi:idref="EAID_SYS_ACT_DEV"/><memberEnd xmi:idref="EAID_CU_13"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_DEV_14"><memberEnd xmi:idref="EAID_SYS_ACT_DEV"/><memberEnd xmi:idref="EAID_CU_14"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_DEV_15"><memberEnd xmi:idref="EAID_SYS_ACT_DEV"/><memberEnd xmi:idref="EAID_CU_15"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_DEV_16"><memberEnd xmi:idref="EAID_SYS_ACT_DEV"/><memberEnd xmi:idref="EAID_CU_16"/></packagedElement>
+			<packagedElement xmi:type="uml:Association" name="" xmi:id="EAID_ASSOC_DEV_17"><memberEnd xmi:idref="EAID_SYS_ACT_DEV"/><memberEnd xmi:idref="EAID_CU_17"/></packagedElement>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_CUS00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.2.2 Casos de Uso del Sistema (Ciclo #2)" scope="public">
+				<model package2="EAPK_CUS00001_0001_4000_8000_000000000001" package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+
+			<!-- Elementos Actores -->
+			<element xmi:idref="EAID_SYS_ACT_USER" xmi:type="uml:Actor" name="Usuario" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="100" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Actor" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_SYS_ACT_ARQ" xmi:type="uml:Actor" name="Arquitecto de Software / Analista" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="101" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Actor" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_SYS_ACT_DEV" xmi:type="uml:Actor" name="Desarrollador" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="102" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Actor" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+
+			<!-- Elementos Casos de Uso -->
+			<element xmi:idref="EAID_CU_13" xmi:type="uml:UseCase" name="CU-13 Colaborar con Agente IA Co-Desarrollador" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="201" ea_eleType="element"/>
+				<properties isSpecification="false" sType="UseCase" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_CU_14" xmi:type="uml:UseCase" name="CU-14 Reflejar y Aplicar Sugerencias de la IA en el Lienzo" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="202" ea_eleType="element"/>
+				<properties isSpecification="false" sType="UseCase" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_CU_15" xmi:type="uml:UseCase" name="CU-15 Gestionar Memoria, Auditoria y Versiones en NoSQL" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="203" ea_eleType="element"/>
+				<properties isSpecification="false" sType="UseCase" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_CU_16" xmi:type="uml:UseCase" name="CU-16 Disenar y Normalizar Esquema de Datos" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="204" ea_eleType="element"/>
+				<properties isSpecification="false" sType="UseCase" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+			<element xmi:idref="EAID_CU_17" xmi:type="uml:UseCase" name="CU-17 Supervisar Diagramas en Dispositivo Movil" scope="public">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="205" ea_eleType="element"/>
+				<properties isSpecification="false" sType="UseCase" nType="0" scope="public"/>
+				<appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/>
+			</element>
+		</elements>
+
+		<connectors>
+			<!-- Generalizaciones -->
+			<connector xmi:idref="EAID_GEN_ARQ_USER"><source xmi:idref="EAID_SYS_ACT_ARQ"/><target xmi:idref="EAID_SYS_ACT_USER"/><model ea_localid="401"/><properties ea_type="Generalization" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_GEN_DEV_USER"><source xmi:idref="EAID_SYS_ACT_DEV"/><target xmi:idref="EAID_SYS_ACT_USER"/><model ea_localid="402"/><properties ea_type="Generalization" direction="Source -&gt; Destination"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+
+			<!-- Conectores Usuario -->
+			<connector xmi:idref="EAID_ASSOC_USR_13"><source xmi:idref="EAID_SYS_ACT_USER"/><target xmi:idref="EAID_CU_13"/><model ea_localid="500"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_USR_14"><source xmi:idref="EAID_SYS_ACT_USER"/><target xmi:idref="EAID_CU_14"/><model ea_localid="501"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_USR_15"><source xmi:idref="EAID_SYS_ACT_USER"/><target xmi:idref="EAID_CU_15"/><model ea_localid="502"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_USR_16"><source xmi:idref="EAID_SYS_ACT_USER"/><target xmi:idref="EAID_CU_16"/><model ea_localid="503"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_USR_17"><source xmi:idref="EAID_SYS_ACT_USER"/><target xmi:idref="EAID_CU_17"/><model ea_localid="504"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+
+			<!-- Conectores Arquitecto -->
+			<connector xmi:idref="EAID_ASSOC_ARQ_13"><source xmi:idref="EAID_SYS_ACT_ARQ"/><target xmi:idref="EAID_CU_13"/><model ea_localid="505"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_ARQ_14"><source xmi:idref="EAID_SYS_ACT_ARQ"/><target xmi:idref="EAID_CU_14"/><model ea_localid="506"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_ARQ_15"><source xmi:idref="EAID_SYS_ACT_ARQ"/><target xmi:idref="EAID_CU_15"/><model ea_localid="507"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_ARQ_16"><source xmi:idref="EAID_SYS_ACT_ARQ"/><target xmi:idref="EAID_CU_16"/><model ea_localid="508"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_ARQ_17"><source xmi:idref="EAID_SYS_ACT_ARQ"/><target xmi:idref="EAID_CU_17"/><model ea_localid="509"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+
+			<!-- Conectores Desarrollador -->
+			<connector xmi:idref="EAID_ASSOC_DEV_13"><source xmi:idref="EAID_SYS_ACT_DEV"/><target xmi:idref="EAID_CU_13"/><model ea_localid="510"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_DEV_14"><source xmi:idref="EAID_SYS_ACT_DEV"/><target xmi:idref="EAID_CU_14"/><model ea_localid="511"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_DEV_15"><source xmi:idref="EAID_SYS_ACT_DEV"/><target xmi:idref="EAID_CU_15"/><model ea_localid="512"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_DEV_16"><source xmi:idref="EAID_SYS_ACT_DEV"/><target xmi:idref="EAID_CU_16"/><model ea_localid="513"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+			<connector xmi:idref="EAID_ASSOC_DEV_17"><source xmi:idref="EAID_SYS_ACT_DEV"/><target xmi:idref="EAID_CU_17"/><model ea_localid="514"/><properties ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1"/></connector>
+		</connectors>
+
+		<diagrams>
+			<!-- 1. CICLO #1 (2do Parcial): IA Base y Memoria NoSQL -->
+			<diagram xmi:id="EAID_DIAG_CICLO_1">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" localID="11" owner="EAPK_CUS00001_0001_4000_8000_000000000001"/>
+				<properties name="CICLO #1 (2do Parcial) - IA Base y Memoria NoSQL" type="Use Case"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1000;ShowDetails=0;Orientation=L;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=520;Top=160;Right=580;Bottom=270;" subject="EAID_SYS_ACT_USER" seqno="1" style="DUID=DC1_01;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=260;Top=80;Right=320;Bottom=190;" subject="EAID_SYS_ACT_DEV" seqno="2" style="DUID=DC1_02;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=260;Top=240;Right=320;Bottom=350;" subject="EAID_SYS_ACT_ARQ" seqno="3" style="DUID=DC1_03;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=25;Right=540;Bottom=80;" subject="EAID_CU_13" seqno="4" style="DUID=DC1_04;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=50;Top=370;Right=540;Bottom=425;" subject="EAID_CU_15" seqno="5" style="DUID=DC1_05;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+
+			<!-- 2. CICLO #2 (2do Parcial): Reflejo Visual y Aprobación en Lienzo -->
+			<diagram xmi:id="EAID_DIAG_CICLO_2">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" localID="12" owner="EAPK_CUS00001_0001_4000_8000_000000000001"/>
+				<properties name="CICLO #2 (2do Parcial) - Reflejo Visual en Lienzo" type="Use Case"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1000;ShowDetails=0;Orientation=L;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=560;Top=180;Right=620;Bottom=290;" subject="EAID_SYS_ACT_USER" seqno="1" style="DUID=DC2_01;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=300;Top=100;Right=360;Bottom=210;" subject="EAID_SYS_ACT_DEV" seqno="2" style="DUID=DC2_02;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=300;Top=260;Right=360;Bottom=370;" subject="EAID_SYS_ACT_ARQ" seqno="3" style="DUID=DC2_03;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=30;Right=540;Bottom=85;" subject="EAID_CU_13" seqno="4" style="DUID=DC2_04;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=180;Right=540;Bottom=235;" subject="EAID_CU_14" seqno="5" style="DUID=DC2_05;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=380;Right=540;Bottom=435;" subject="EAID_CU_15" seqno="6" style="DUID=DC2_06;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+
+			<!-- 3. CICLO #3 (2do Parcial): Diseño Lógico y Normalización -->
+			<diagram xmi:id="EAID_DIAG_CICLO_3">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" localID="13" owner="EAPK_CUS00001_0001_4000_8000_000000000001"/>
+				<properties name="CICLO #3 (2do Parcial) - Diseno Logico y Normalizacion" type="Use Case"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1100;ShowDetails=0;Orientation=L;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=580;Top=220;Right=640;Bottom=330;" subject="EAID_SYS_ACT_USER" seqno="1" style="DUID=DC3_01;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=120;Right=380;Bottom=230;" subject="EAID_SYS_ACT_DEV" seqno="2" style="DUID=DC3_02;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=320;Top=300;Right=380;Bottom=410;" subject="EAID_SYS_ACT_ARQ" seqno="3" style="DUID=DC3_03;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=30;Right=540;Bottom=85;" subject="EAID_CU_13" seqno="4" style="DUID=DC3_04;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=160;Right=540;Bottom=215;" subject="EAID_CU_14" seqno="5" style="DUID=DC3_05;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=340;Right=540;Bottom=395;" subject="EAID_CU_15" seqno="6" style="DUID=DC3_06;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=450;Right=540;Bottom=505;" subject="EAID_CU_16" seqno="7" style="DUID=DC3_07;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+
+			<!-- 4. CICLO #4 (2do Parcial): Supervisión Móvil y Cierre -->
+			<diagram xmi:id="EAID_DIAG_CICLO_4">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" localID="14" owner="EAPK_CUS00001_0001_4000_8000_000000000001"/>
+				<properties name="CICLO #4 (2do Parcial) - Supervision Movil y Cierre" type="Use Case"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1200;ShowDetails=0;Orientation=L;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=600;Top=250;Right=660;Bottom=360;" subject="EAID_SYS_ACT_USER" seqno="1" style="DUID=DC4_01;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=340;Top=140;Right=400;Bottom=250;" subject="EAID_SYS_ACT_DEV" seqno="2" style="DUID=DC4_02;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=340;Top=330;Right=400;Bottom=440;" subject="EAID_SYS_ACT_ARQ" seqno="3" style="DUID=DC4_03;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=30;Right=540;Bottom=85;" subject="EAID_CU_13" seqno="4" style="DUID=DC4_04;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=140;Right=540;Bottom=195;" subject="EAID_CU_14" seqno="5" style="DUID=DC4_05;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=260;Right=540;Bottom=315;" subject="EAID_CU_15" seqno="6" style="DUID=DC4_06;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=420;Right=540;Bottom=475;" subject="EAID_CU_16" seqno="7" style="DUID=DC4_07;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=30;Top=520;Right=540;Bottom=575;" subject="EAID_CU_17" seqno="8" style="DUID=DC4_08;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+
+			<!-- 5. DIAGRAMA GENERAL DE CASOS DE USO (CICLO #2) -->
+			<diagram xmi:id="EAID_DIAG_CUS_GEN">
+				<model package="EAPK_CUS00001_0001_4000_8000_000000000001" localID="3" owner="EAPK_CUS00001_0001_4000_8000_000000000001"/>
+				<properties name="3.2.2 Diagrama General de Casos de Uso (Ciclo #2)" type="Use Case"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-08 00:00:00" modified="2026-11-08 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1200;ShowDetails=0;Orientation=L;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=160;Right=140;Bottom=270;" subject="EAID_SYS_ACT_ARQ" seqno="1" style="DUID=D0001;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=420;Right=140;Bottom=530;" subject="EAID_SYS_ACT_DEV" seqno="2" style="DUID=D0002;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+
+					<element geometry="Left=280;Top=80;Right=780;Bottom=140;" subject="EAID_CU_13" seqno="3" style="DUID=D0003;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=180;Right=780;Bottom=240;" subject="EAID_CU_14" seqno="4" style="DUID=D0004;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=280;Right=780;Bottom=340;" subject="EAID_CU_15" seqno="5" style="DUID=D0005;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=380;Right=780;Bottom=440;" subject="EAID_CU_16" seqno="6" style="DUID=D0006;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=480;Right=780;Bottom=540;" subject="EAID_CU_17" seqno="7" style="DUID=D0007;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

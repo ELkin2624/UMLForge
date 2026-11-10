@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
@@ -11,6 +11,7 @@ import { colors } from '@/shared/theme/tokens';
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function RegisterScreen() {
+  const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
   const [username, setUsername] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -41,6 +42,7 @@ export default function RegisterScreen() {
       });
       const res = await login(username.trim(), password);
       setAuth(res.access_token, res.user, res.refresh_token);
+      router.replace('/(tabs)');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo crear la cuenta');
     } finally {

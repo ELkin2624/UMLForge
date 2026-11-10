@@ -3,6 +3,7 @@ import { AlertCircle, Loader2, LogOut, Plus, Search, Shapes } from 'lucide-react
 import { createDiagram, deleteDiagram, renameDiagram, type DiagramSummary } from '../../../api/diagrams-api';
 import { request } from '../../../api/client';
 import { useAuthStore } from '../../auth/store';
+import { NotificationsMenu } from '../../auth/ui/NotificationsMenu';
 import { useShareStore } from '../../sharing/model/share-store';
 import { useVersioningStore } from '../../versioning';
 import {
@@ -105,6 +106,7 @@ export const ProjectsDashboard: React.FC = () => {
       <header className="pd-topbar">
         <div className="pd-brand"><Shapes size={18} /> UMLForge</div>
         <div className="pd-user">
+          <NotificationsMenu />
           <span className="pd-avatar" aria-hidden="true">{displayName.charAt(0).toUpperCase()}</span>
           <span className="pd-user__name" title={displayName}>{displayName}</span>
           <button className="pd-icon-btn" onClick={handleLogout} aria-label="Cerrar sesión" title="Cerrar sesión"><LogOut size={14} /></button>

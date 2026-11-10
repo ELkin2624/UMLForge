@@ -302,6 +302,12 @@ def cancel_invitation(
 
     invitation.status = InvitationStatus.CANCELLED.value
     invitation.responded_at = datetime.datetime.utcnow()
+    for notification in db.query(Notification).filter(
+        Notification.recipient_user_id == invitation.invitee_user_id,
+        Notification.type == "DIAGRAM_INVITATION",
+    ).all():
+        if notification.data and notification.data.get("invitation_id") == invitation.id:
+            notification.read = True
     db.commit()
 
     return {"success": True, "message": "Invitación cancelada correctamente"}

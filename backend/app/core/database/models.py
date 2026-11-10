@@ -84,6 +84,8 @@ class DiagramPermission(Base):
     diagram_id = Column(Integer, ForeignKey("diagrams.id"), nullable=False, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     role = Column(String, nullable=False, default=DiagramRole.EDITOR.value) # OWNER, EDITOR, READER
+    # Cada miembro configura cómo la IA aplica sus propias solicitudes.
+    agent_permission = Column(String, nullable=False, default="ask", server_default="ask")
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 

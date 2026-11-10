@@ -21,6 +21,7 @@
   user-select: none;
   position: relative;
   transition: all 0.2s ease;
+  min-width: 0;
 }
 
 .top-menu-left {
@@ -29,6 +30,16 @@
   gap: 14px;
   min-width: 0;
 }
+
+.top-menu-back {
+  display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto;
+  min-height: 34px; padding: 5px 8px;
+  color: var(--ink-black); background: var(--bg-card);
+  border: var(--border-ink-thin); border-radius: 10px;
+  font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.top-menu-back:hover { background: var(--bg-cream); box-shadow: var(--shadow-hard-sm); }
+.top-menu-back:focus-visible { outline: 2px solid var(--ink-black); outline-offset: 2px; }
 
 /* ── Brand Logo & Title ─────────────────────────────────── */
 .top-menu-brand {
@@ -344,7 +355,10 @@
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  min-width: 0;
 }
+
+.top-menu-right .ai-presence-indicator { display: inline-flex; }
 
 .status-pill {
   display: inline-flex;
@@ -854,11 +868,14 @@
    RESPONSIVE BREAKPOINTS
    ────────────────────────────────────────────────────────── */
 
-/* 1. Medium Tablets (<= 960px) */
-@media (max-width: 960px) {
+/* La navegación pasa al cajón antes de que empuje los controles del header. */
+@media (max-width: 1320px) {
   .top-menu-bar {
     margin: 6px 10px;
   }
+  .top-menu-mobile-toggle { display: flex; }
+  .top-menu-items { display: none; }
+  .top-menu-back span { display: none; }
 }
 
 /* 2. Small Tablets & Mobile (<= 768px) */
@@ -891,6 +908,18 @@
     gap: 6px;
   }
 
+  .top-menu-right .ai-presence-indicator,
+  .top-menu-right > .status-pill--success {
+    display: none;
+  }
+
+  .top-menu-right .share-button > span:not(.share-button__avatars),
+  .top-menu-right .user-display-name {
+    display: none;
+  }
+
+  .top-menu-right .share-button { padding: 6px 8px; min-width: 36px; justify-content: center; }
+
   .status-pill-text {
     display: none;
   }
@@ -914,6 +943,11 @@
   .brand-shape-box {
     width: 28px;
     height: 28px;
+  }
+
+  .top-menu-brand .brand-text-group,
+  .top-menu-right .user-menu-container {
+    display: none;
   }
 }
 

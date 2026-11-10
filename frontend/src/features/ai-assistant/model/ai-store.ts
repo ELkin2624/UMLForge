@@ -249,7 +249,9 @@ export const useAIAssistantStore = create<AIAssistantState>((set, get) => ({
 
       // Las eliminaciones siempre requieren aprobación explícita, incluso en modo directo.
       const direct = !res.simulated && res.execution_mode === 'DIRECT'
-        ? rawPatches.filter((p) => !p.operation.startsWith('DELETE_'))
+        ? rawPatches.filter(
+            (p) => res.allow_delete === true || !p.operation.startsWith('DELETE_'),
+          )
         : [];
       if (direct.length && ydoc) {
         set({ suggestions: ydoc.getMap<AIPatch>('ai_suggestions').toJSON() });

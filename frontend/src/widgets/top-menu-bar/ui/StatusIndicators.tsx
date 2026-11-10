@@ -5,6 +5,7 @@ import { UserMenu } from '../../../features/auth/ui/UserMenu';
 import { NotificationsMenu } from '../../../features/auth/ui/NotificationsMenu';
 import { AIPresenceIndicator } from '../../../features/ai-assistant';
 import { SaveStatus } from '../../../features/versioning';
+import { ConnectedUsersMenu } from '../../../features/collaboration/ui/ConnectedUsersMenu';
 import { GenState } from '../model/types';
 
 interface StatusIndicatorsProps {
@@ -63,6 +64,7 @@ export const StatusIndicators: React.FC<StatusIndicatorsProps> = ({
       {/* Indicador de Presencia de IA Omnisciente (Yjs) */}
       <AIPresenceIndicator />
 
+      <ConnectedUsersMenu />
       <ShareButton disabled={isBusy && localRole !== 'READER'} />
       <NotificationsMenu />
       <UserMenu />

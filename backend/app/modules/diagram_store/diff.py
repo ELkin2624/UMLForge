@@ -131,6 +131,17 @@ def diff_models(old: dict[str, Any] | None, new: dict[str, Any] | None) -> list[
                 parent=None,
                 out=out,
             )
+        elif key == "visual_state" and o != n:
+            old_positions, new_positions = o or {}, n or {}
+            moved = sum(
+                old_positions.get(node_id) != new_positions.get(node_id)
+                for node_id in old_positions.keys() | new_positions.keys()
+            )
+            out.append({
+                "op": "modified", "kind": "lienzo", "id": key,
+                "name": "posiciones", "parent": None,
+                "detail": f"Cambió la posición de {moved} elemento(s)",
+            })
         elif o != n and key not in _IGNORED_SCALARS:
             out.append({
                 "op": "modified", "kind": "modelo", "id": key, "name": key,

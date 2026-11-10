@@ -5,6 +5,7 @@ import { useShareStore } from '../../sharing/model/share-store';
 import * as collab from '../../collaboration';
 import { switchToDiagram } from './switch-diagram';
 import type { UMLModel } from '../../../types/canonical-model';
+import { useDashboardStore } from '../../projects-dashboard/model/dashboard-store';
 
 const withClass = (name: string) =>
   ({ id: name, name, classes: [{ id: name }], relationships: [], components: [], interfaces: [], diagrams: [] }) as unknown as UMLModel;
@@ -15,17 +16,20 @@ const detail = (id: number, data: UMLModel, role = 'EDITOR') =>
 describe('switchToDiagram', () => {
   let order: string[];
   let disconnect: ReturnType<typeof vi.fn>;
+  let connect: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     order = [];
     disconnect = vi.fn(() => { order.push('disconnect'); });
-    vi.spyOn(collab, 'getSharedCollaborationManager').mockReturnValue({ disconnect } as never);
+    connect = vi.fn((room: string) => { order.push(`connect:${room}`); });
+    vi.spyOn(collab, 'getSharedCollaborationManager').mockReturnValue({ disconnect, connect } as never);
     vi.spyOn(api, 'saveDiagram').mockImplementation(async (room) => {
       order.push(`save:${room}`);
       return detail(Number(room), withClass('x'));
     });
     useShareStore.getState().setRoomId('1');
     useShareStore.getState().setLocalRole('OWNER');
+    useDashboardStore.getState().showEditor();
     useModelStore.setState({ model: withClass('A') });
   });
 
@@ -41,7 +45,7 @@ describe('switchToDiagram', () => {
     await switchToDiagram(2);
     unsub();
 
-    expect(order).toEqual(['save:1', 'disconnect']);
+    expect(order).toEqual(['save:1', 'disconnect', 'connect:2']);
     expect(seenRoomWhenModelSet).toEqual(['2']);
     expect(useShareStore.getState().roomId).toBe('2');
     expect(useShareStore.getState().localRole).toBe('READER');
@@ -72,9 +76,19 @@ describe('switchToDiagram', () => {
     expect(useModelStore.getState().model?.name).toBe('A');
   });
 
-  it('no hace nada si ya es el diagrama activo', async () => {
+  it('conecta la sala si ya es el diagrama activo', async () => {
     const get = vi.spyOn(api, 'getDiagram');
     await switchToDiagram(1);
     expect(get).not.toHaveBeenCalled();
+    expect(connect.mock.calls[0][0]).toBe('1');
+  });
+
+  it('al seleccionar desde Mis proyectos espera hasta abrir el editor para conectar', async () => {
+    useDashboardStore.getState().showDashboard();
+    vi.spyOn(api, 'getDiagram').mockResolvedValue(detail(2, withClass('B')));
+
+    await switchToDiagram(2);
+
+    expect(connect).not.toHaveBeenCalled();
   });
 });

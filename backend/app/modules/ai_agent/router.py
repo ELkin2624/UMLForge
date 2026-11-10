@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.auth_deps import require_authenticated_user
 from app.core.config import settings
-from app.core.database.models import User
+from app.core.database.models import DiagramPermission, User
 from app.core.database.session import get_db
 from app.core.dependencies import get_diagram_repo
 from app.modules.diagram_store import DiagramRepository
@@ -71,14 +71,18 @@ async def collaborate(
     db: Session = Depends(get_db),
     service: AIAgentService = Depends(get_ai_service),
 ) -> CollaborateResponse:
-    """Interacción privada con el agente. Requiere rol OWNER o EDITOR sobre el diagrama."""
-    require_ai_access(db, req.diagram_id, current_user, WRITE_ROLES)
+    """Chat privado para cualquier miembro; un lector no puede aplicar parches."""
+    role = require_ai_access(db, req.diagram_id, current_user, READ_ROLES)
     collaborate_limiter.enforce(current_user.id)
+    membership = db.query(DiagramPermission).filter_by(
+        diagram_id=req.diagram_id, user_id=current_user.id
+    ).one()
     try:
         result = await service.process_private_interaction(
             req,
             user_id=str(current_user.id),
             user_name=display_name(current_user),
+            permission=membership.agent_permission if role in WRITE_ROLES else "ask",
         )
         return CollaborateResponse(
             reply=result["reply"],
@@ -87,6 +91,8 @@ async def collaborate(
             shared_decision_note=result.get("shared_decision_note"),
             simulated=result.get("simulated", False),
             context=result.get("context", {}),
+            permission=result.get("permission", "ask"),
+            allow_delete=result.get("allow_delete", False),
         )
     except Exception as e:
         # El detalle técnico va al log, no al cliente.

@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore, getUserFallbackFromToken } from '../../../features/auth/store';
 import { useShareStore } from '../../../features/sharing/model/share-store';
+import { usePresence } from '../../../features/collaboration/model/use-presence';
 import { request } from '../../../api/client';
 
 interface MobileToggleProps {
@@ -86,7 +87,8 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   const user = useAuthStore(s => s.user);
   const token = useAuthStore(s => s.token);
   const clearAuth = useAuthStore(s => s.clearAuth);
-  const { localRole, collaborators, roomId, openShareDialog } = useShareStore();
+  const { localRole, roomId, openShareDialog } = useShareStore();
+  const { peersCount } = usePresence();
 
   if (!isOpen) return null;
 
@@ -196,14 +198,14 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
             <div className="mobile-collab-text">
               <span className="collab-title">Colaboración en Vivo</span>
               <span className="collab-subtitle">
-                {collaborators.length > 0 
-                  ? `${collaborators.length + 1} participantes activos`
+                {peersCount > 0
+                  ? `${peersCount} persona${peersCount !== 1 ? 's' : ''} conectada${peersCount !== 1 ? 's' : ''}`
                   : 'Invitar con enlace'}
               </span>
             </div>
           </div>
           <div className="mobile-collab-btn">
-            {collaborators.length > 0 ? <Users size={13} /> : <Share2 size={13} />}
+            {peersCount > 0 ? <Users size={13} /> : <Share2 size={13} />}
             <span>Compartir</span>
           </div>
         </div>

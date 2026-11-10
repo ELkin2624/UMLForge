@@ -82,4 +82,5 @@ export interface UMLModel {
   connectors?: UMLConnector[];
   dependencies?: UMLDependency[];
   diagrams: unknown[];
+  visual_state?: Record<string, { x: number; y: number }>;
 }

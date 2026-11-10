@@ -1,0 +1,1026 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" xmi:id="EAPK_CLS00001_0001_4000_8000_000000000001" name="3.4.3 Diagrama de Clases de Diseno" visibility="public">
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_USUARIO" name="Usuario" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_USUARIO_1" name="idUsuario" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_USUARIO_2" name="username" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_USUARIO_3" name="email" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_USUARIO_4" name="passwordHash" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_USUARIO_5" name="rolGlobal" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_USUARIO_6" name="isActive" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_USUARIO_7" name="fechaRegistro" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_PROYECTO" name="Proyecto" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PROYECTO_1" name="idProyecto" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PROYECTO_2" name="nombre" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PROYECTO_3" name="descripcion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PROYECTO_4" name="ownerId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PROYECTO_5" name="fechaCreacion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PROYECTO_6" name="ultimaModificacion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PROYECTO_7" name="isPublic" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_PERMISO" name="PermisoColaborador" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PERMISO_1" name="idPermiso" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PERMISO_2" name="proyectoId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PERMISO_3" name="usuarioId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PERMISO_4" name="rolColaboracion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_PERMISO_5" name="fechaAsignacion" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_DIAGRAM_DOC" name="DiagramDocument" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_DOC_1" name="idDiagrama" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_DOC_2" name="proyectoId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_DOC_3" name="nombre" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_DOC_4" name="versionActual" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_DOC_5" name="fechaGuardado" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_DOC_6" name="agentEnabled" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_DIAGRAM_VER" name="DiagramVersion" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_1" name="idVersion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_2" name="diagramaId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_3" name="versionNumero" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_4" name="canonicalData" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_5" name="autorId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_6" name="tipoAutor" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_7" name="descripcionCambio" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DIAGRAM_VER_8" name="timestamp" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_YJS_ENGINE" name="YjsCollaborationEngine" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_YJS_ENGINE_1" name="salasActivas" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_YJS_ENGINE_2" name="clientesConectados" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_YJS_ENGINE_3" name="mapaAwareness" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_TEAM_MEM" name="TeamMemoryAudit" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_1" name="idAuditoria" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_2" name="diagramaId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_3" name="usuarioId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_4" name="promptUsuario" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_5" name="explicacionIA" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_6" name="patchesPropuestos" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_7" name="estadoAprobacion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_TEAM_MEM_8" name="timestamp" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_AI_ORCH" name="AIAssistantOrchestrator" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_AI_ORCH_1" name="modeloProveedor" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_AI_ORCH_2" name="tokenBudget" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_AI_ORCH_3" name="contextoActual" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_VOICE_SRV" name="VoiceTranscriptionService" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_VOICE_SRV_1" name="modeloWhisper" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_VOICE_SRV_2" name="formatoPrecision" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_VOICE_SRV_3" name="idiomaSoportado" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_UML_ELEM" name="UMLElement" visibility="public" isAbstract="true">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ELEM_1" name="id" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ELEM_2" name="name" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ELEM_3" name="description" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ELEM_4" name="stereotype" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_CANONICAL_MDL" name="CanonicalModel" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_CANONICAL_MDL_1" name="umlVersion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_CANONICAL_MDL_2" name="classesCount" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_CANONICAL_MDL_3" name="relationshipsCount" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_CANONICAL_MDL_4" name="packagesCount" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_UML_CLASS" name="UMLClass" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_CLASS_1" name="isAbstract" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_CLASS_2" name="visibility" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_CLASS_3" name="isInterface" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_CLASS_4" name="packageId" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_UML_ATTR" name="UMLAttribute" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ATTR_1" name="dataType" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ATTR_2" name="visibility" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ATTR_3" name="multiplicity" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ATTR_4" name="isPrimaryKey" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ATTR_5" name="isNullable" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ATTR_6" name="isStatic" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_ATTR_7" name="defaultValue" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_UML_REL" name="UMLRelationship" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_REL_1" name="type" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_REL_2" name="sourceId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_REL_3" name="targetId" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_REL_4" name="sourceMultiplicity" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_REL_5" name="targetMultiplicity" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_UML_REL_6" name="navigability" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_DOM_ANALYZER" name="DomainAnalyzer" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DOM_ANALYZER_1" name="reglasValidacion" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DOM_ANALYZER_2" name="erroresDetectados" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DOM_ANALYZER_3" name="warnings" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_POSTMAN_MAP" name="PostmanMapper" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_POSTMAN_MAP_1" name="coleccionV2Json" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_POSTMAN_MAP_2" name="scriptsTestNewman" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_DEP_GRAPH" name="DependencyGraph" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DEP_GRAPH_1" name="nodosGrafo" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DEP_GRAPH_2" name="aristasDependencia" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_DEP_GRAPH_3" name="ordenTopologico" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_SPRING_GEN" name="SpringGenerator" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_SPRING_GEN_1" name="plantillasJinja" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_SPRING_GEN_2" name="paqueteBaseJava" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_SPRING_GEN_3" name="versionSpringBoot" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_SYNTH_GEN" name="SyntheticDataGenerator" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_SYNTH_GEN_1" name="cantidadRegistros" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_SYNTH_GEN_2" name="generadorFaker" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_SYNTH_GEN_3" name="cacheClavesForaneas" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_BERNSTEIN" name="BernsteinSynthesizer" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_BERNSTEIN_1" name="dependenciasFuncionales" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_BERNSTEIN_2" name="clavesCandidatas" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_BERNSTEIN_3" name="tablasResultantes" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Class" xmi:id="EAID_C_XMI_ADAPTER" name="XmiEAAdapter" visibility="public">
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_XMI_ADAPTER_1" name="perfilEnterpriseArchitect" visibility="public"/>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A_XMI_ADAPTER_2" name="exporterVersion" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Generalization" xmi:id="EAID_R_GEN_CAN" specific="EAID_C_CANONICAL_MDL" general="EAID_C_UML_ELEM"/>
+			<packagedElement xmi:type="uml:Generalization" xmi:id="EAID_R_GEN_CLS" specific="EAID_C_UML_CLASS" general="EAID_C_UML_ELEM"/>
+			<packagedElement xmi:type="uml:Generalization" xmi:id="EAID_R_GEN_REL" specific="EAID_C_UML_REL" general="EAID_C_UML_ELEM"/>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_CMP_MDL_CLS" name="contieneClases">
+				<memberEnd xmi:idref="EAID_C_CANONICAL_MDL"/>
+				<memberEnd xmi:idref="EAID_C_UML_CLASS"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_CMP_MDL_REL" name="contieneRelaciones">
+				<memberEnd xmi:idref="EAID_C_CANONICAL_MDL"/>
+				<memberEnd xmi:idref="EAID_C_UML_REL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_CMP_CLS_ATT" name="poseeAtributos">
+				<memberEnd xmi:idref="EAID_C_UML_CLASS"/>
+				<memberEnd xmi:idref="EAID_C_UML_ATTR"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_CMP_PRJ_DOC" name="diagramas">
+				<memberEnd xmi:idref="EAID_C_PROYECTO"/>
+				<memberEnd xmi:idref="EAID_C_DIAGRAM_DOC"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_CMP_PRJ_PRM" name="permisos">
+				<memberEnd xmi:idref="EAID_C_PROYECTO"/>
+				<memberEnd xmi:idref="EAID_C_PERMISO"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_CMP_DOC_VER" name="historialVersiones">
+				<memberEnd xmi:idref="EAID_C_DIAGRAM_DOC"/>
+				<memberEnd xmi:idref="EAID_C_DIAGRAM_VER"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_CMP_DOC_MEM" name="auditoriaDecisiones">
+				<memberEnd xmi:idref="EAID_C_DIAGRAM_DOC"/>
+				<memberEnd xmi:idref="EAID_C_TEAM_MEM"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_ASC_USR_PRJ" name="esPropietario">
+				<memberEnd xmi:idref="EAID_C_USUARIO"/>
+				<memberEnd xmi:idref="EAID_C_PROYECTO"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_ASC_USR_PRM" name="tienePermiso">
+				<memberEnd xmi:idref="EAID_C_USUARIO"/>
+				<memberEnd xmi:idref="EAID_C_PERMISO"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_ASC_DOC_MDL" name="modeloCanonicoActual">
+				<memberEnd xmi:idref="EAID_C_DIAGRAM_DOC"/>
+				<memberEnd xmi:idref="EAID_C_CANONICAL_MDL"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_ASC_DOC_BSN" name="esquemaNormalizado">
+				<memberEnd xmi:idref="EAID_C_DIAGRAM_DOC"/>
+				<memberEnd xmi:idref="EAID_C_BERNSTEIN"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_ASC_SPG_DEP" name="grafoOrdenado">
+				<memberEnd xmi:idref="EAID_C_SPRING_GEN"/>
+				<memberEnd xmi:idref="EAID_C_DEP_GRAPH"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_ASC_SYN_DEP" name="ordenReferencial">
+				<memberEnd xmi:idref="EAID_C_SYNTH_GEN"/>
+				<memberEnd xmi:idref="EAID_C_DEP_GRAPH"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" xmi:id="EAID_R_ASC_AI_MEM" name="memoriaEquipo">
+				<memberEnd xmi:idref="EAID_C_AI_ORCH"/>
+				<memberEnd xmi:idref="EAID_C_TEAM_MEM"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_R_DEP_ANL_MDL" name="use" client="EAID_C_DOM_ANALYZER" supplier="EAID_C_CANONICAL_MDL"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_R_DEP_GRP_MDL" name="use" client="EAID_C_DEP_GRAPH" supplier="EAID_C_CANONICAL_MDL"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_R_DEP_PST_MDL" name="use" client="EAID_C_POSTMAN_MAP" supplier="EAID_C_CANONICAL_MDL"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_R_DEP_XMI_MDL" name="use" client="EAID_C_XMI_ADAPTER" supplier="EAID_C_CANONICAL_MDL"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_R_DEP_VOI_AI" name="call" client="EAID_C_VOICE_SRV" supplier="EAID_C_AI_ORCH"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_R_DEP_YJS_DOC" name="sync" client="EAID_C_YJS_ENGINE" supplier="EAID_C_DIAGRAM_DOC"/>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_CLS00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.4.3 Diagrama de Clases de Diseno" scope="public">
+				<model package2="EAPK_CLS00001_0001_4000_8000_000000000001" package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_C_USUARIO" xmi:type="uml:Class" name="Usuario" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="11" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_USUARIO_1" name="idUsuario" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_USUARIO_2" name="username" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_USUARIO_3" name="email" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_USUARIO_4" name="passwordHash" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_USUARIO_5" name="rolGlobal" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_USUARIO_6" name="isActive" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_USUARIO_7" name="fechaRegistro" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_PROYECTO" xmi:type="uml:Class" name="Proyecto" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="12" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_PROYECTO_1" name="idProyecto" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PROYECTO_2" name="nombre" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PROYECTO_3" name="descripcion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PROYECTO_4" name="ownerId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PROYECTO_5" name="fechaCreacion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PROYECTO_6" name="ultimaModificacion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PROYECTO_7" name="isPublic" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_PERMISO" xmi:type="uml:Class" name="PermisoColaborador" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="13" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_PERMISO_1" name="idPermiso" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PERMISO_2" name="proyectoId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PERMISO_3" name="usuarioId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PERMISO_4" name="rolColaboracion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_PERMISO_5" name="fechaAsignacion" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_DIAGRAM_DOC" xmi:type="uml:Class" name="DiagramDocument" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="14" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_DIAGRAM_DOC_1" name="idDiagrama" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_DOC_2" name="proyectoId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_DOC_3" name="nombre" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_DOC_4" name="versionActual" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_DOC_5" name="fechaGuardado" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_DOC_6" name="agentEnabled" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_DIAGRAM_VER" xmi:type="uml:Class" name="DiagramVersion" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="15" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_1" name="idVersion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_2" name="diagramaId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_3" name="versionNumero" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_4" name="canonicalData" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_5" name="autorId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_6" name="tipoAutor" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_7" name="descripcionCambio" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DIAGRAM_VER_8" name="timestamp" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_YJS_ENGINE" xmi:type="uml:Class" name="YjsCollaborationEngine" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="16" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_YJS_ENGINE_1" name="salasActivas" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_YJS_ENGINE_2" name="clientesConectados" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_YJS_ENGINE_3" name="mapaAwareness" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_TEAM_MEM" xmi:type="uml:Class" name="TeamMemoryAudit" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="17" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_1" name="idAuditoria" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_2" name="diagramaId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_3" name="usuarioId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_4" name="promptUsuario" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_5" name="explicacionIA" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_6" name="patchesPropuestos" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_7" name="estadoAprobacion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_TEAM_MEM_8" name="timestamp" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_AI_ORCH" xmi:type="uml:Class" name="AIAssistantOrchestrator" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="18" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_AI_ORCH_1" name="modeloProveedor" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_AI_ORCH_2" name="tokenBudget" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_AI_ORCH_3" name="contextoActual" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_VOICE_SRV" xmi:type="uml:Class" name="VoiceTranscriptionService" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="19" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_VOICE_SRV_1" name="modeloWhisper" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_VOICE_SRV_2" name="formatoPrecision" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_VOICE_SRV_3" name="idiomaSoportado" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_UML_ELEM" xmi:type="uml:Class" name="UMLElement" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="20" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="true"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_UML_ELEM_1" name="id" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ELEM_2" name="name" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ELEM_3" name="description" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ELEM_4" name="stereotype" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_CANONICAL_MDL" xmi:type="uml:Class" name="CanonicalModel" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="21" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_CANONICAL_MDL_1" name="umlVersion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_CANONICAL_MDL_2" name="classesCount" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_CANONICAL_MDL_3" name="relationshipsCount" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_CANONICAL_MDL_4" name="packagesCount" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_UML_CLASS" xmi:type="uml:Class" name="UMLClass" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="22" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_UML_CLASS_1" name="isAbstract" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_CLASS_2" name="visibility" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_CLASS_3" name="isInterface" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_CLASS_4" name="packageId" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_UML_ATTR" xmi:type="uml:Class" name="UMLAttribute" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="23" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_UML_ATTR_1" name="dataType" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ATTR_2" name="visibility" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ATTR_3" name="multiplicity" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ATTR_4" name="isPrimaryKey" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ATTR_5" name="isNullable" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ATTR_6" name="isStatic" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_ATTR_7" name="defaultValue" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_UML_REL" xmi:type="uml:Class" name="UMLRelationship" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="24" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_UML_REL_1" name="type" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_REL_2" name="sourceId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_REL_3" name="targetId" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_REL_4" name="sourceMultiplicity" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_REL_5" name="targetMultiplicity" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_UML_REL_6" name="navigability" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_DOM_ANALYZER" xmi:type="uml:Class" name="DomainAnalyzer" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="25" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_DOM_ANALYZER_1" name="reglasValidacion" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DOM_ANALYZER_2" name="erroresDetectados" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DOM_ANALYZER_3" name="warnings" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_POSTMAN_MAP" xmi:type="uml:Class" name="PostmanMapper" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="26" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_POSTMAN_MAP_1" name="coleccionV2Json" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_POSTMAN_MAP_2" name="scriptsTestNewman" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_DEP_GRAPH" xmi:type="uml:Class" name="DependencyGraph" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="27" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_DEP_GRAPH_1" name="nodosGrafo" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DEP_GRAPH_2" name="aristasDependencia" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_DEP_GRAPH_3" name="ordenTopologico" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_SPRING_GEN" xmi:type="uml:Class" name="SpringGenerator" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="28" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_SPRING_GEN_1" name="plantillasJinja" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_SPRING_GEN_2" name="paqueteBaseJava" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_SPRING_GEN_3" name="versionSpringBoot" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_SYNTH_GEN" xmi:type="uml:Class" name="SyntheticDataGenerator" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="29" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_SYNTH_GEN_1" name="cantidadRegistros" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_SYNTH_GEN_2" name="generadorFaker" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_SYNTH_GEN_3" name="cacheClavesForaneas" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_BERNSTEIN" xmi:type="uml:Class" name="BernsteinSynthesizer" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="30" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_BERNSTEIN_1" name="dependenciasFuncionales" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_BERNSTEIN_2" name="clavesCandidatas" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_BERNSTEIN_3" name="tablasResultantes" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+			<element xmi:idref="EAID_C_XMI_ADAPTER" xmi:type="uml:Class" name="XmiEAAdapter" scope="public">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" tpos="0" ea_localid="31" ea_eleType="element"/>
+				<properties isSpecification="false" sType="Class" nType="0" scope="public" isAbstract="false"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+				<attributes>
+					<attribute xmi:idref="EAID_A_XMI_ADAPTER_1" name="perfilEnterpriseArchitect" scope="public">
+						<properties/>
+					</attribute>
+					<attribute xmi:idref="EAID_A_XMI_ADAPTER_2" name="exporterVersion" scope="public">
+						<properties/>
+					</attribute>
+				</attributes>
+			</element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_R_GEN_CAN">
+				<source xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_UML_ELEM">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="301"/>
+				<properties name="" ea_type="Generalization" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_GEN_CLS">
+				<source xmi:idref="EAID_C_UML_CLASS">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_UML_ELEM">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="302"/>
+				<properties name="" ea_type="Generalization" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_GEN_REL">
+				<source xmi:idref="EAID_C_UML_REL">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_UML_ELEM">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="303"/>
+				<properties name="" ea_type="Generalization" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_CMP_MDL_CLS">
+				<source xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="composite"/>
+				</source>
+				<target xmi:idref="EAID_C_UML_CLASS">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="304"/>
+				<properties name="contieneClases" ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="contieneClases"/>
+			</connector>
+			<connector xmi:idref="EAID_R_CMP_MDL_REL">
+				<source xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="composite"/>
+				</source>
+				<target xmi:idref="EAID_C_UML_REL">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="305"/>
+				<properties name="contieneRelaciones" ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="contieneRelaciones"/>
+			</connector>
+			<connector xmi:idref="EAID_R_CMP_CLS_ATT">
+				<source xmi:idref="EAID_C_UML_CLASS">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="composite"/>
+				</source>
+				<target xmi:idref="EAID_C_UML_ATTR">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="306"/>
+				<properties name="poseeAtributos" ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="poseeAtributos"/>
+			</connector>
+			<connector xmi:idref="EAID_R_CMP_PRJ_DOC">
+				<source xmi:idref="EAID_C_PROYECTO">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="composite"/>
+				</source>
+				<target xmi:idref="EAID_C_DIAGRAM_DOC">
+					<role visibility="Public"/>
+					<type multiplicity="1..*" aggregation="none"/>
+				</target>
+				<model ea_localid="307"/>
+				<properties name="diagramas" ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="1..*" mt="diagramas"/>
+			</connector>
+			<connector xmi:idref="EAID_R_CMP_PRJ_PRM">
+				<source xmi:idref="EAID_C_PROYECTO">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="composite"/>
+				</source>
+				<target xmi:idref="EAID_C_PERMISO">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="308"/>
+				<properties name="permisos" ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="permisos"/>
+			</connector>
+			<connector xmi:idref="EAID_R_CMP_DOC_VER">
+				<source xmi:idref="EAID_C_DIAGRAM_DOC">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="composite"/>
+				</source>
+				<target xmi:idref="EAID_C_DIAGRAM_VER">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="309"/>
+				<properties name="historialVersiones" ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="historialVersiones"/>
+			</connector>
+			<connector xmi:idref="EAID_R_CMP_DOC_MEM">
+				<source xmi:idref="EAID_C_DIAGRAM_DOC">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="composite"/>
+				</source>
+				<target xmi:idref="EAID_C_TEAM_MEM">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="310"/>
+				<properties name="auditoriaDecisiones" ea_type="Association" direction="Unspecified"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="auditoriaDecisiones"/>
+			</connector>
+			<connector xmi:idref="EAID_R_ASC_USR_PRJ">
+				<source xmi:idref="EAID_C_USUARIO">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_PROYECTO">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="311"/>
+				<properties name="esPropietario" ea_type="Association" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="esPropietario"/>
+			</connector>
+			<connector xmi:idref="EAID_R_ASC_USR_PRM">
+				<source xmi:idref="EAID_C_USUARIO">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_PERMISO">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="312"/>
+				<properties name="tienePermiso" ea_type="Association" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="tienePermiso"/>
+			</connector>
+			<connector xmi:idref="EAID_R_ASC_DOC_MDL">
+				<source xmi:idref="EAID_C_DIAGRAM_DOC">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</target>
+				<model ea_localid="313"/>
+				<properties name="modeloCanonicoActual" ea_type="Association" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="1" mt="modeloCanonicoActual"/>
+			</connector>
+			<connector xmi:idref="EAID_R_ASC_DOC_BSN">
+				<source xmi:idref="EAID_C_DIAGRAM_DOC">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_BERNSTEIN">
+					<role visibility="Public"/>
+					<type multiplicity="0..1" aggregation="none"/>
+				</target>
+				<model ea_localid="314"/>
+				<properties name="esquemaNormalizado" ea_type="Association" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="0..1" mt="esquemaNormalizado"/>
+			</connector>
+			<connector xmi:idref="EAID_R_ASC_SPG_DEP">
+				<source xmi:idref="EAID_C_SPRING_GEN">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_DEP_GRAPH">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</target>
+				<model ea_localid="315"/>
+				<properties name="grafoOrdenado" ea_type="Association" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="1" mt="grafoOrdenado"/>
+			</connector>
+			<connector xmi:idref="EAID_R_ASC_SYN_DEP">
+				<source xmi:idref="EAID_C_SYNTH_GEN">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_DEP_GRAPH">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</target>
+				<model ea_localid="316"/>
+				<properties name="ordenReferencial" ea_type="Association" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="1" mt="ordenReferencial"/>
+			</connector>
+			<connector xmi:idref="EAID_R_ASC_AI_MEM">
+				<source xmi:idref="EAID_C_AI_ORCH">
+					<role visibility="Public"/>
+					<type multiplicity="1" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_TEAM_MEM">
+					<role visibility="Public"/>
+					<type multiplicity="*" aggregation="none"/>
+				</target>
+				<model ea_localid="317"/>
+				<properties name="memoriaEquipo" ea_type="Association" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels lb="1" rb="*" mt="memoriaEquipo"/>
+			</connector>
+			<connector xmi:idref="EAID_R_DEP_ANL_MDL">
+				<source xmi:idref="EAID_C_DOM_ANALYZER">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="318"/>
+				<properties name="" ea_type="Dependency" stereotype="use" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_DEP_GRP_MDL">
+				<source xmi:idref="EAID_C_DEP_GRAPH">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="319"/>
+				<properties name="" ea_type="Dependency" stereotype="use" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_DEP_PST_MDL">
+				<source xmi:idref="EAID_C_POSTMAN_MAP">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="320"/>
+				<properties name="" ea_type="Dependency" stereotype="use" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_DEP_XMI_MDL">
+				<source xmi:idref="EAID_C_XMI_ADAPTER">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_CANONICAL_MDL">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="321"/>
+				<properties name="" ea_type="Dependency" stereotype="use" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_DEP_VOI_AI">
+				<source xmi:idref="EAID_C_VOICE_SRV">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_AI_ORCH">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="322"/>
+				<properties name="" ea_type="Dependency" stereotype="call" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+			<connector xmi:idref="EAID_R_DEP_YJS_DOC">
+				<source xmi:idref="EAID_C_YJS_ENGINE">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</source>
+				<target xmi:idref="EAID_C_DIAGRAM_DOC">
+					<role visibility="Public"/>
+					<type multiplicity="" aggregation="none"/>
+				</target>
+				<model ea_localid="323"/>
+				<properties name="" ea_type="Dependency" stereotype="sync" direction="Source -> Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels/>
+			</connector>
+		</connectors>
+		<diagrams>
+			<diagram xmi:id="EAID_DIAG_343_CLS">
+				<model package="EAPK_CLS00001_0001_4000_8000_000000000001" localID="70" owner="EAPK_CLS00001_0001_4000_8000_000000000001"/>
+				<properties name="3.4.3 Diagrama de Clases de Diseno" type="Logical"/>
+				<project author="UMLForge" version="1.0" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=0;SequenceNotes=0;ScalePrintImage=0;PPgs.cx=2;PPgs.cy=1;DocSize.cx=2200;DocSize.cy=1400;ShowDetails=0;Orientation=L;Zoom=90;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=0;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=1;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=0;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=0;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=0;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=100;Top=60;Right=310;Bottom=190;" subject="EAID_C_USUARIO" seqno="1" style="DUID=DC1;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=100;Top=270;Right=310;Bottom=410;" subject="EAID_C_PROYECTO" seqno="2" style="DUID=DC2;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=380;Top=270;Right=590;Bottom=390;" subject="EAID_C_PERMISO" seqno="3" style="DUID=DC3;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=380;Top=480;Right=600;Bottom=610;" subject="EAID_C_DIAGRAM_DOC" seqno="4" style="DUID=DC4;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=100;Top=480;Right=310;Bottom=630;" subject="EAID_C_DIAGRAM_VER" seqno="5" style="DUID=DC5;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=100;Top=700;Right=310;Bottom=810;" subject="EAID_C_YJS_ENGINE" seqno="6" style="DUID=DC6;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=380;Top=700;Right=600;Bottom=850;" subject="EAID_C_TEAM_MEM" seqno="7" style="DUID=DC7;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=380;Top=920;Right=600;Bottom=1040;" subject="EAID_C_AI_ORCH" seqno="8" style="DUID=DC8;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=100;Top=920;Right=310;Bottom=1030;" subject="EAID_C_VOICE_SRV" seqno="9" style="DUID=DC9;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=750;Top=60;Right=960;Bottom=160;" subject="EAID_C_UML_ELEM" seqno="10" style="DUID=DC10;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=750;Top=480;Right=970;Bottom=600;" subject="EAID_C_CANONICAL_MDL" seqno="11" style="DUID=DC11;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=750;Top=700;Right=970;Bottom=810;" subject="EAID_C_UML_CLASS" seqno="12" style="DUID=DC12;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=750;Top=900;Right=970;Bottom=1040;" subject="EAID_C_UML_ATTR" seqno="13" style="DUID=DC13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1040;Top=700;Right=1260;Bottom=820;" subject="EAID_C_UML_REL" seqno="14" style="DUID=DC14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1040;Top=60;Right=1260;Bottom=170;" subject="EAID_C_DOM_ANALYZER" seqno="15" style="DUID=DC15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1040;Top=270;Right=1260;Bottom=380;" subject="EAID_C_POSTMAN_MAP" seqno="16" style="DUID=DC16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1040;Top=480;Right=1260;Bottom=600;" subject="EAID_C_DEP_GRAPH" seqno="17" style="DUID=DC17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1350;Top=480;Right=1570;Bottom=600;" subject="EAID_C_SPRING_GEN" seqno="18" style="DUID=DC18;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1350;Top=700;Right=1570;Bottom=810;" subject="EAID_C_SYNTH_GEN" seqno="19" style="DUID=DC19;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1040;Top=900;Right=1260;Bottom=1020;" subject="EAID_C_BERNSTEIN" seqno="20" style="DUID=DC20;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=1350;Top=270;Right=1570;Bottom=380;" subject="EAID_C_XMI_ADAPTER" seqno="21" style="DUID=DC21;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_GEN_CAN" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_GEN_CLS" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_GEN_REL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_CMP_MDL_CLS" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_CMP_MDL_REL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_CMP_CLS_ATT" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_CMP_PRJ_DOC" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_CMP_PRJ_PRM" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_CMP_DOC_VER" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_CMP_DOC_MEM" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_ASC_USR_PRJ" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_ASC_USR_PRM" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_ASC_DOC_MDL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_ASC_DOC_BSN" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_ASC_SPG_DEP" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_ASC_SYN_DEP" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_ASC_AI_MEM" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_DEP_ANL_MDL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_DEP_GRP_MDL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_DEP_PST_MDL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_DEP_XMI_MDL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_DEP_VOI_AI" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_R_DEP_YJS_DOC" style=";Hidden=0;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

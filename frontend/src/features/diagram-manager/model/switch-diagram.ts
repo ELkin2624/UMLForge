@@ -3,16 +3,26 @@ import { useModelStore } from '../../../store/model-store';
 import { useShareStore } from '../../sharing/model/share-store';
 import { canEdit } from '../../sharing/model/capabilities';
 import { getSharedCollaborationManager } from '../../collaboration';
+import { useAuthStore } from '../../auth/store';
+import { useDashboardStore } from '../../projects-dashboard/model/dashboard-store';
 import { useVersioningStore } from '../../versioning';
 import { emptyModel, hasContent, toRole } from './diagram-utils';
 
 const ACTIVE_KEY = 'umlforge-active-diagram';
 const COLLAB_KEY = 'umlforge-collab-active';
 
+function connectToDiagram(id: string): void {
+  if (useDashboardStore.getState().screen !== 'editor') return;
+  const user = useAuthStore.getState().user;
+  getSharedCollaborationManager().connect(
+    id, user?.display_name || user?.username
+  );
+  try { sessionStorage.setItem(COLLAB_KEY, 'true'); } catch { /* opcional */ }
+}
+
 function rememberActive(id: string): void {
   try {
     sessionStorage.setItem(ACTIVE_KEY, id);
-    sessionStorage.removeItem(COLLAB_KEY);
     const url = new URL(window.location.href);
     url.searchParams.set('diagram', id);
     window.history.replaceState({}, '', url.toString());
@@ -31,7 +41,10 @@ function rememberActive(id: string): void {
 export async function switchToDiagram(id: number | string): Promise<void> {
   const target = String(id);
   const share = useShareStore.getState();
-  if (share.roomId === target) return;
+  if (share.roomId === target) {
+    connectToDiagram(target);
+    return;
+  }
 
   // 1. Traer el destino primero: si falla, no se toca nada del estado actual.
   const diagram = await getDiagram(target);
@@ -58,4 +71,5 @@ export async function switchToDiagram(id: number | string): Promise<void> {
   // 6. Cargar el modelo. Un diagrama vacío usa un modelo vacío (no null: el editor ignora null).
   const model = hasContent(diagram.data) ? diagram.data : emptyModel(diagram.name);
   useModelStore.getState().setModel(model);
+  connectToDiagram(target);
 }

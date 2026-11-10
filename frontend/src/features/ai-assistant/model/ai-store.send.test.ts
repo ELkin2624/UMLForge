@@ -108,6 +108,24 @@ describe('sendMessage: contexto', () => {
     expect(useAIAssistantStore.getState().suggestions.delete).toBeDefined();
   });
 
+  it('permite eliminaciones automáticas solo con acceso completo', async () => {
+    useShareStore.setState({ localRole: 'OWNER' });
+    vi.mocked(collaborateWithAI).mockResolvedValue(response({
+      execution_mode: 'DIRECT',
+      permission: 'full',
+      allow_delete: true,
+      patches: [{
+        patch_id: 'delete-user', operation: 'DELETE_CLASS', target: 'Usuario', data: {},
+        reason: 'Pedido del propietario', requested_by: 'Ana', status: 'pending_approval',
+      }],
+    }));
+
+    await send();
+
+    expect(useModelStore.getState().model?.classes).toEqual([]);
+    expect(useAIAssistantStore.getState().suggestions['delete-user']).toBeUndefined();
+  });
+
   it('no aplica respuestas simuladas aunque declaren modo directo', async () => {
     useShareStore.setState({ localRole: 'OWNER' });
     useAIAssistantStore.setState({ suggestions: {} });

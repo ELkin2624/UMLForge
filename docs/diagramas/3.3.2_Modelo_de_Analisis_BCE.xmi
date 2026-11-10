@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" name="3.3.2 Modelo de Analisis (BCE)" xmi:id="EAPK_BCE00001_0001_4000_8000_000000000001" visibility="public">
+			<!-- Actores -->
+			<packagedElement xmi:type="uml:Actor" name="Arquitecto" xmi:id="EAID_ACT_ARQ" visibility="public"/>
+			<packagedElement xmi:type="uml:Actor" name="Desarrollador" xmi:id="EAID_ACT_DEV" visibility="public"/>
+
+			<!-- Elementos BCE: CU 13 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_13" name="CU 13 COLABORAR CON AGENTE IA CO-DESARROLLADOR" body="CU 13 COLABORAR CON AGENTE IA CO-DESARROLLADOR"/>
+			<packagedElement xmi:type="uml:Class" name="PnlAsistenteIA" xmi:id="EAID_B_13_PNL_IA" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="CtrlAsistenteIA" xmi:id="EAID_C_13_CTRL_IA" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="ContextoModelado" xmi:id="EAID_E_13_CTX_MOD" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="MemoriaCompartidaIA" xmi:id="EAID_E_13_MEM_IA" visibility="public"/>
+			<!-- Asociaciones BCE CU 13 -->
+			<packagedElement xmi:type="uml:Association" name="1. Envia consulta (voz - texto)" xmi:id="EAID_ASSOC_13_1">
+				<memberEnd xmi:idref="EAID_ACT_ARQ"/>
+				<memberEnd xmi:idref="EAID_B_13_PNL_IA"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="2. Transfiere peticion y audio" xmi:id="EAID_ASSOC_13_2">
+				<memberEnd xmi:idref="EAID_B_13_PNL_IA"/>
+				<memberEnd xmi:idref="EAID_C_13_CTRL_IA"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="3. Recupera estado canonico" xmi:id="EAID_ASSOC_13_3">
+				<memberEnd xmi:idref="EAID_C_13_CTRL_IA"/>
+				<memberEnd xmi:idref="EAID_E_13_CTX_MOD"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="4. Consulta memoria y acuerdos" xmi:id="EAID_ASSOC_13_4">
+				<memberEnd xmi:idref="EAID_C_13_CTRL_IA"/>
+				<memberEnd xmi:idref="EAID_E_13_MEM_IA"/>
+			</packagedElement>
+
+			<!-- Elementos BCE: CU 14 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_14" name="CU 14 REFLEJAR Y APLICAR SUGERENCIAS DE LA IA EN EL LIENZO" body="CU 14 REFLEJAR Y APLICAR SUGERENCIAS DE LA IA EN EL LIENZO"/>
+			<packagedElement xmi:type="uml:Class" name="OverlayLienzoIA" xmi:id="EAID_B_14_OVERLAY" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="CtrlParchesIA" xmi:id="EAID_C_14_CTRL_PATCH" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="ParcheCanonico" xmi:id="EAID_E_14_PATCH" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="ModeloCompartidoYjs" xmi:id="EAID_E_14_YJS_DOC" visibility="public"/>
+			<!-- Asociaciones BCE CU 14 -->
+			<packagedElement xmi:type="uml:Association" name="1. Revisa y aprueba propuesta" xmi:id="EAID_ASSOC_14_1">
+				<memberEnd xmi:idref="EAID_ACT_ARQ"/>
+				<memberEnd xmi:idref="EAID_B_14_OVERLAY"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="2. Notifica decision de fusion" xmi:id="EAID_ASSOC_14_2">
+				<memberEnd xmi:idref="EAID_B_14_OVERLAY"/>
+				<memberEnd xmi:idref="EAID_C_14_CTRL_PATCH"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="3. Valida delta de cambios" xmi:id="EAID_ASSOC_14_3">
+				<memberEnd xmi:idref="EAID_C_14_CTRL_PATCH"/>
+				<memberEnd xmi:idref="EAID_E_14_PATCH"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="4. Aplica transaccion atomica" xmi:id="EAID_ASSOC_14_4">
+				<memberEnd xmi:idref="EAID_C_14_CTRL_PATCH"/>
+				<memberEnd xmi:idref="EAID_E_14_YJS_DOC"/>
+			</packagedElement>
+
+			<!-- Elementos BCE: CU 15 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_15" name="CU 15 GESTIONAR MEMORIA, AUDITORIA Y VERSIONES EN NOSQL" body="CU 15 GESTIONAR MEMORIA, AUDITORIA Y VERSIONES EN NOSQL"/>
+			<packagedElement xmi:type="uml:Class" name="PnlHistorialVersiones" xmi:id="EAID_B_15_PNL_VERS" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="CtrlVersionadorNoSQL" xmi:id="EAID_C_15_CTRL_VERS" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="VersionDiagrama" xmi:id="EAID_E_15_VER_SNAP" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="RegistroAuditoria" xmi:id="EAID_E_15_AUDIT_LOG" visibility="public"/>
+			<!-- Asociaciones BCE CU 15 -->
+			<packagedElement xmi:type="uml:Association" name="1. Solicita historial - restaurar" xmi:id="EAID_ASSOC_15_1">
+				<memberEnd xmi:idref="EAID_ACT_DEV"/>
+				<memberEnd xmi:idref="EAID_B_15_PNL_VERS"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="2. Procesa solicitud version" xmi:id="EAID_ASSOC_15_2">
+				<memberEnd xmi:idref="EAID_B_15_PNL_VERS"/>
+				<memberEnd xmi:idref="EAID_C_15_CTRL_VERS"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="3. Consulta - Crea snapshot" xmi:id="EAID_ASSOC_15_3">
+				<memberEnd xmi:idref="EAID_C_15_CTRL_VERS"/>
+				<memberEnd xmi:idref="EAID_E_15_VER_SNAP"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="4. Registra evento de auditoria" xmi:id="EAID_ASSOC_15_4">
+				<memberEnd xmi:idref="EAID_C_15_CTRL_VERS"/>
+				<memberEnd xmi:idref="EAID_E_15_AUDIT_LOG"/>
+			</packagedElement>
+
+			<!-- Elementos BCE: CU 16 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_16" name="CU 16 DISENAR Y NORMALIZAR ESQUEMA DE DATOS (1FN-FNBC)" body="CU 16 DISENAR Y NORMALIZAR ESQUEMA DE DATOS (1FN-FNBC)"/>
+			<packagedElement xmi:type="uml:Class" name="VistaDisenoDatos" xmi:id="EAID_B_16_VISTA_DATA" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="CtrlNormalizadorDatos" xmi:id="EAID_C_16_CTRL_NORM" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="DependenciaFuncional" xmi:id="EAID_E_16_DEP_FUNC" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="EsquemaRelacionalNormalizado" xmi:id="EAID_E_16_ESQ_NORM" visibility="public"/>
+			<!-- Asociaciones BCE CU 16 -->
+			<packagedElement xmi:type="uml:Association" name="1. Solicita diseno y normalizacion" xmi:id="EAID_ASSOC_16_1">
+				<memberEnd xmi:idref="EAID_ACT_ARQ"/>
+				<memberEnd xmi:idref="EAID_B_16_VISTA_DATA"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="2. Solicita derivacion relacional" xmi:id="EAID_ASSOC_16_2">
+				<memberEnd xmi:idref="EAID_B_16_VISTA_DATA"/>
+				<memberEnd xmi:idref="EAID_C_16_CTRL_NORM"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="3. Evalua y valida DFs" xmi:id="EAID_ASSOC_16_3">
+				<memberEnd xmi:idref="EAID_C_16_CTRL_NORM"/>
+				<memberEnd xmi:idref="EAID_E_16_DEP_FUNC"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="4. Descompone y certifica FNBC" xmi:id="EAID_ASSOC_16_4">
+				<memberEnd xmi:idref="EAID_C_16_CTRL_NORM"/>
+				<memberEnd xmi:idref="EAID_E_16_ESQ_NORM"/>
+			</packagedElement>
+
+			<!-- Elementos BCE: CU 17 -->
+			<ownedComment xmi:type="uml:Comment" xmi:id="EAID_T_17" name="CU 17 SUPERVISAR DIAGRAMAS EN DISPOSITIVO MOVIL" body="CU 17 SUPERVISAR DIAGRAMAS EN DISPOSITIVO MOVIL"/>
+			<packagedElement xmi:type="uml:Class" name="VisorMovilApp" xmi:id="EAID_B_17_VISOR_MOB" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="CtrlVisorMovil" xmi:id="EAID_C_17_CTRL_MOB" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="VistaSoloLecturaDiagrama" xmi:id="EAID_E_17_VIEW_MOB" visibility="public"/>
+			<packagedElement xmi:type="uml:Class" name="HistorialMovilNotificacion" xmi:id="EAID_E_17_NOTIF_MOB" visibility="public"/>
+			<!-- Asociaciones BCE CU 17 -->
+			<packagedElement xmi:type="uml:Association" name="1. Navega e inspecciona diagrama" xmi:id="EAID_ASSOC_17_1">
+				<memberEnd xmi:idref="EAID_ACT_DEV"/>
+				<memberEnd xmi:idref="EAID_B_17_VISOR_MOB"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="2. Solicita modelo y versiones" xmi:id="EAID_ASSOC_17_2">
+				<memberEnd xmi:idref="EAID_B_17_VISOR_MOB"/>
+				<memberEnd xmi:idref="EAID_C_17_CTRL_MOB"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="3. Carga esquema visual" xmi:id="EAID_ASSOC_17_3">
+				<memberEnd xmi:idref="EAID_C_17_CTRL_MOB"/>
+				<memberEnd xmi:idref="EAID_E_17_VIEW_MOB"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Association" name="4. Sincroniza notificaciones" xmi:id="EAID_ASSOC_17_4">
+				<memberEnd xmi:idref="EAID_C_17_CTRL_MOB"/>
+				<memberEnd xmi:idref="EAID_E_17_NOTIF_MOB"/>
+			</packagedElement>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_BCE00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.3.2 Modelo de Analisis (BCE)" scope="public">
+				<model package2="EAPK_BCE00001_0001_4000_8000_000000000001" package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_ACT_ARQ" xmi:type="uml:Actor" name="Arquitecto" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="10" ea_eleType="element"/><properties sType="Actor"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_ACT_DEV" xmi:type="uml:Actor" name="Desarrollador" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="11" ea_eleType="element"/><properties sType="Actor"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_T_13" xmi:type="uml:Text" name="CU 13 COLABORAR CON AGENTE IA CO-DESARROLLADOR" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="101" ea_eleType="element"/><properties sType="Text"/><documentation value="CU 13 COLABORAR CON AGENTE IA CO-DESARROLLADOR"/></element>
+			<element xmi:idref="EAID_B_13_PNL_IA" xmi:type="uml:Class" name="PnlAsistenteIA" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="102" ea_eleType="element"/><properties sType="Boundary" stereotype="boundary"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_C_13_CTRL_IA" xmi:type="uml:Class" name="CtrlAsistenteIA" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="103" ea_eleType="element"/><properties sType="Control" stereotype="control"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_13_CTX_MOD" xmi:type="uml:Class" name="ContextoModelado" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="104" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_13_MEM_IA" xmi:type="uml:Class" name="MemoriaCompartidaIA" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="105" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_T_14" xmi:type="uml:Text" name="CU 14 REFLEJAR Y APLICAR SUGERENCIAS DE LA IA EN EL LIENZO" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="106" ea_eleType="element"/><properties sType="Text"/><documentation value="CU 14 REFLEJAR Y APLICAR SUGERENCIAS DE LA IA EN EL LIENZO"/></element>
+			<element xmi:idref="EAID_B_14_OVERLAY" xmi:type="uml:Class" name="OverlayLienzoIA" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="107" ea_eleType="element"/><properties sType="Boundary" stereotype="boundary"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_C_14_CTRL_PATCH" xmi:type="uml:Class" name="CtrlParchesIA" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="108" ea_eleType="element"/><properties sType="Control" stereotype="control"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_14_PATCH" xmi:type="uml:Class" name="ParcheCanonico" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="109" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_14_YJS_DOC" xmi:type="uml:Class" name="ModeloCompartidoYjs" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="110" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_T_15" xmi:type="uml:Text" name="CU 15 GESTIONAR MEMORIA, AUDITORIA Y VERSIONES EN NOSQL" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="111" ea_eleType="element"/><properties sType="Text"/><documentation value="CU 15 GESTIONAR MEMORIA, AUDITORIA Y VERSIONES EN NOSQL"/></element>
+			<element xmi:idref="EAID_B_15_PNL_VERS" xmi:type="uml:Class" name="PnlHistorialVersiones" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="112" ea_eleType="element"/><properties sType="Boundary" stereotype="boundary"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_C_15_CTRL_VERS" xmi:type="uml:Class" name="CtrlVersionadorNoSQL" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="113" ea_eleType="element"/><properties sType="Control" stereotype="control"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_15_VER_SNAP" xmi:type="uml:Class" name="VersionDiagrama" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="114" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_15_AUDIT_LOG" xmi:type="uml:Class" name="RegistroAuditoria" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="115" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_T_16" xmi:type="uml:Text" name="CU 16 DISENAR Y NORMALIZAR ESQUEMA DE DATOS (1FN-FNBC)" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="116" ea_eleType="element"/><properties sType="Text"/><documentation value="CU 16 DISENAR Y NORMALIZAR ESQUEMA DE DATOS (1FN-FNBC)"/></element>
+			<element xmi:idref="EAID_B_16_VISTA_DATA" xmi:type="uml:Class" name="VistaDisenoDatos" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="117" ea_eleType="element"/><properties sType="Boundary" stereotype="boundary"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_C_16_CTRL_NORM" xmi:type="uml:Class" name="CtrlNormalizadorDatos" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="118" ea_eleType="element"/><properties sType="Control" stereotype="control"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_16_DEP_FUNC" xmi:type="uml:Class" name="DependenciaFuncional" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="119" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_16_ESQ_NORM" xmi:type="uml:Class" name="EsquemaRelacionalNormalizado" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="120" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_T_17" xmi:type="uml:Text" name="CU 17 SUPERVISAR DIAGRAMAS EN DISPOSITIVO MOVIL" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="121" ea_eleType="element"/><properties sType="Text"/><documentation value="CU 17 SUPERVISAR DIAGRAMAS EN DISPOSITIVO MOVIL"/></element>
+			<element xmi:idref="EAID_B_17_VISOR_MOB" xmi:type="uml:Class" name="VisorMovilApp" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="122" ea_eleType="element"/><properties sType="Boundary" stereotype="boundary"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_C_17_CTRL_MOB" xmi:type="uml:Class" name="CtrlVisorMovil" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="123" ea_eleType="element"/><properties sType="Control" stereotype="control"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_17_VIEW_MOB" xmi:type="uml:Class" name="VistaSoloLecturaDiagrama" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="124" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+			<element xmi:idref="EAID_E_17_NOTIF_MOB" xmi:type="uml:Class" name="HistorialMovilNotificacion" scope="public"><model package="EAPK_BCE00001_0001_4000_8000_000000000001" tpos="0" ea_localid="125" ea_eleType="element"/><properties sType="Entity" stereotype="entity"/><appearance linemode="3" linecolor="0" fillcolor="16777215" linewidth="1"/></element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_ASSOC_13_1"><source xmi:idref="EAID_ACT_ARQ"><role visibility="Public"/></source><target xmi:idref="EAID_B_13_PNL_IA"><role visibility="Public"/></target><model ea_localid="401"/><properties name="1. Envia consulta (voz - texto)" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_13_2"><source xmi:idref="EAID_B_13_PNL_IA"><role visibility="Public"/></source><target xmi:idref="EAID_C_13_CTRL_IA"><role visibility="Public"/></target><model ea_localid="402"/><properties name="2. Transfiere peticion y audio" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_13_3"><source xmi:idref="EAID_C_13_CTRL_IA"><role visibility="Public"/></source><target xmi:idref="EAID_E_13_CTX_MOD"><role visibility="Public"/></target><model ea_localid="403"/><properties name="3. Recupera estado canonico" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_13_4"><source xmi:idref="EAID_C_13_CTRL_IA"><role visibility="Public"/></source><target xmi:idref="EAID_E_13_MEM_IA"><role visibility="Public"/></target><model ea_localid="404"/><properties name="4. Consulta memoria y acuerdos" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_14_1"><source xmi:idref="EAID_ACT_ARQ"><role visibility="Public"/></source><target xmi:idref="EAID_B_14_OVERLAY"><role visibility="Public"/></target><model ea_localid="405"/><properties name="1. Revisa y aprueba propuesta" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_14_2"><source xmi:idref="EAID_B_14_OVERLAY"><role visibility="Public"/></source><target xmi:idref="EAID_C_14_CTRL_PATCH"><role visibility="Public"/></target><model ea_localid="406"/><properties name="2. Notifica decision de fusion" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_14_3"><source xmi:idref="EAID_C_14_CTRL_PATCH"><role visibility="Public"/></source><target xmi:idref="EAID_E_14_PATCH"><role visibility="Public"/></target><model ea_localid="407"/><properties name="3. Valida delta de cambios" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_14_4"><source xmi:idref="EAID_C_14_CTRL_PATCH"><role visibility="Public"/></source><target xmi:idref="EAID_E_14_YJS_DOC"><role visibility="Public"/></target><model ea_localid="408"/><properties name="4. Aplica transaccion atomica" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_15_1"><source xmi:idref="EAID_ACT_DEV"><role visibility="Public"/></source><target xmi:idref="EAID_B_15_PNL_VERS"><role visibility="Public"/></target><model ea_localid="409"/><properties name="1. Solicita historial - restaurar" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_15_2"><source xmi:idref="EAID_B_15_PNL_VERS"><role visibility="Public"/></source><target xmi:idref="EAID_C_15_CTRL_VERS"><role visibility="Public"/></target><model ea_localid="410"/><properties name="2. Procesa solicitud version" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_15_3"><source xmi:idref="EAID_C_15_CTRL_VERS"><role visibility="Public"/></source><target xmi:idref="EAID_E_15_VER_SNAP"><role visibility="Public"/></target><model ea_localid="411"/><properties name="3. Consulta - Crea snapshot" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_15_4"><source xmi:idref="EAID_C_15_CTRL_VERS"><role visibility="Public"/></source><target xmi:idref="EAID_E_15_AUDIT_LOG"><role visibility="Public"/></target><model ea_localid="412"/><properties name="4. Registra evento de auditoria" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_16_1"><source xmi:idref="EAID_ACT_ARQ"><role visibility="Public"/></source><target xmi:idref="EAID_B_16_VISTA_DATA"><role visibility="Public"/></target><model ea_localid="413"/><properties name="1. Solicita diseno y normalizacion" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_16_2"><source xmi:idref="EAID_B_16_VISTA_DATA"><role visibility="Public"/></source><target xmi:idref="EAID_C_16_CTRL_NORM"><role visibility="Public"/></target><model ea_localid="414"/><properties name="2. Solicita derivacion relacional" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_16_3"><source xmi:idref="EAID_C_16_CTRL_NORM"><role visibility="Public"/></source><target xmi:idref="EAID_E_16_DEP_FUNC"><role visibility="Public"/></target><model ea_localid="415"/><properties name="3. Evalua y valida DFs" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_16_4"><source xmi:idref="EAID_C_16_CTRL_NORM"><role visibility="Public"/></source><target xmi:idref="EAID_E_16_ESQ_NORM"><role visibility="Public"/></target><model ea_localid="416"/><properties name="4. Descompone y certifica FNBC" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_17_1"><source xmi:idref="EAID_ACT_DEV"><role visibility="Public"/></source><target xmi:idref="EAID_B_17_VISOR_MOB"><role visibility="Public"/></target><model ea_localid="417"/><properties name="1. Navega e inspecciona diagrama" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_17_2"><source xmi:idref="EAID_B_17_VISOR_MOB"><role visibility="Public"/></source><target xmi:idref="EAID_C_17_CTRL_MOB"><role visibility="Public"/></target><model ea_localid="418"/><properties name="2. Solicita modelo y versiones" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_17_3"><source xmi:idref="EAID_C_17_CTRL_MOB"><role visibility="Public"/></source><target xmi:idref="EAID_E_17_VIEW_MOB"><role visibility="Public"/></target><model ea_localid="419"/><properties name="3. Carga esquema visual" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+			<connector xmi:idref="EAID_ASSOC_17_4"><source xmi:idref="EAID_C_17_CTRL_MOB"><role visibility="Public"/></source><target xmi:idref="EAID_E_17_NOTIF_MOB"><role visibility="Public"/></target><model ea_localid="420"/><properties name="4. Sincroniza notificaciones" ea_type="Association" direction="Unspecified"/><appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/></connector>
+		</connectors>
+		<diagrams>
+			<diagram xmi:id="EAID_DIAG_BCE_GEN">
+				<model package="EAPK_BCE00001_0001_4000_8000_000000000001" localID="31" owner="EAPK_BCE00001_0001_4000_8000_000000000001"/>
+				<properties name="3.3.2 Modelo de Analisis (BCE) - General" type="Analysis"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1600;DocSize.cy=1600;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=40;Right=750;Bottom=70;" subject="EAID_T_13" seqno="1" style="DUID=T13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=90;Right=120;Bottom=170;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=A13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=95;Right=360;Bottom=165;" subject="EAID_B_13_PNL_IA" seqno="3" style="DUID=B13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=95;Right=600;Bottom=165;" subject="EAID_C_13_CTRL_IA" seqno="4" style="DUID=C13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=95;Right=860;Bottom=165;" subject="EAID_E_13_CTX_MOD" seqno="5" style="DUID=E113;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=200;Right=860;Bottom=270;" subject="EAID_E_13_MEM_IA" seqno="6" style="DUID=E213;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=330;Right=750;Bottom=360;" subject="EAID_T_14" seqno="7" style="DUID=T14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=380;Right=120;Bottom=460;" subject="EAID_ACT_ARQ" seqno="8" style="DUID=A14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=385;Right=360;Bottom=455;" subject="EAID_B_14_OVERLAY" seqno="9" style="DUID=B14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=385;Right=600;Bottom=455;" subject="EAID_C_14_CTRL_PATCH" seqno="10" style="DUID=C14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=385;Right=860;Bottom=455;" subject="EAID_E_14_PATCH" seqno="11" style="DUID=E114;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=490;Right=860;Bottom=560;" subject="EAID_E_14_YJS_DOC" seqno="12" style="DUID=E214;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=620;Right=750;Bottom=650;" subject="EAID_T_15" seqno="13" style="DUID=T15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=670;Right=120;Bottom=750;" subject="EAID_ACT_DEV" seqno="14" style="DUID=A15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=675;Right=360;Bottom=745;" subject="EAID_B_15_PNL_VERS" seqno="15" style="DUID=B15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=675;Right=600;Bottom=745;" subject="EAID_C_15_CTRL_VERS" seqno="16" style="DUID=C15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=675;Right=860;Bottom=745;" subject="EAID_E_15_VER_SNAP" seqno="17" style="DUID=E115;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=780;Right=860;Bottom=850;" subject="EAID_E_15_AUDIT_LOG" seqno="18" style="DUID=E215;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=910;Right=750;Bottom=940;" subject="EAID_T_16" seqno="19" style="DUID=T16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=960;Right=120;Bottom=1040;" subject="EAID_ACT_ARQ" seqno="20" style="DUID=A16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=965;Right=360;Bottom=1035;" subject="EAID_B_16_VISTA_DATA" seqno="21" style="DUID=B16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=965;Right=600;Bottom=1035;" subject="EAID_C_16_CTRL_NORM" seqno="22" style="DUID=C16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=965;Right=860;Bottom=1035;" subject="EAID_E_16_DEP_FUNC" seqno="23" style="DUID=E116;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=1070;Right=860;Bottom=1140;" subject="EAID_E_16_ESQ_NORM" seqno="24" style="DUID=E216;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=1200;Right=750;Bottom=1230;" subject="EAID_T_17" seqno="25" style="DUID=T17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=1250;Right=120;Bottom=1330;" subject="EAID_ACT_DEV" seqno="26" style="DUID=A17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=1255;Right=360;Bottom=1325;" subject="EAID_B_17_VISOR_MOB" seqno="27" style="DUID=B17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=1255;Right=600;Bottom=1325;" subject="EAID_C_17_CTRL_MOB" seqno="28" style="DUID=C17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=1255;Right=860;Bottom=1325;" subject="EAID_E_17_VIEW_MOB" seqno="29" style="DUID=E117;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=1360;Right=860;Bottom=1430;" subject="EAID_E_17_NOTIF_MOB" seqno="30" style="DUID=E217;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU 13 -->
+			<diagram xmi:id="EAID_DIAG_BCE_CU13">
+				<model package="EAPK_BCE00001_0001_4000_8000_000000000001" localID="32" owner="EAPK_BCE00001_0001_4000_8000_000000000001"/>
+				<properties name="CU 13. Colaborar con Agente IA Co-Desarrollador (BCE)" type="Analysis"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=800;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=30;Right=750;Bottom=60;" subject="EAID_T_13" seqno="1" style="DUID=TI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=80;Right=120;Bottom=160;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=AI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=85;Right=360;Bottom=155;" subject="EAID_B_13_PNL_IA" seqno="3" style="DUID=BI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=85;Right=600;Bottom=155;" subject="EAID_C_13_CTRL_IA" seqno="4" style="DUID=CI13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=85;Right=860;Bottom=155;" subject="EAID_E_13_CTX_MOD" seqno="5" style="DUID=E1I13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=190;Right=860;Bottom=260;" subject="EAID_E_13_MEM_IA" seqno="6" style="DUID=E2I13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU 14 -->
+			<diagram xmi:id="EAID_DIAG_BCE_CU14">
+				<model package="EAPK_BCE00001_0001_4000_8000_000000000001" localID="33" owner="EAPK_BCE00001_0001_4000_8000_000000000001"/>
+				<properties name="CU 14. Reflejar y Aplicar Sugerencias de la IA en el Lienzo (BCE)" type="Analysis"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=800;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=30;Right=750;Bottom=60;" subject="EAID_T_14" seqno="1" style="DUID=TI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=80;Right=120;Bottom=160;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=AI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=85;Right=360;Bottom=155;" subject="EAID_B_14_OVERLAY" seqno="3" style="DUID=BI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=85;Right=600;Bottom=155;" subject="EAID_C_14_CTRL_PATCH" seqno="4" style="DUID=CI14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=85;Right=860;Bottom=155;" subject="EAID_E_14_PATCH" seqno="5" style="DUID=E1I14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=190;Right=860;Bottom=260;" subject="EAID_E_14_YJS_DOC" seqno="6" style="DUID=E2I14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU 15 -->
+			<diagram xmi:id="EAID_DIAG_BCE_CU15">
+				<model package="EAPK_BCE00001_0001_4000_8000_000000000001" localID="34" owner="EAPK_BCE00001_0001_4000_8000_000000000001"/>
+				<properties name="CU 15. Gestionar Memoria, Auditoria y Versiones en NoSQL (BCE)" type="Analysis"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=800;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=30;Right=750;Bottom=60;" subject="EAID_T_15" seqno="1" style="DUID=TI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=80;Right=120;Bottom=160;" subject="EAID_ACT_DEV" seqno="2" style="DUID=AI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=85;Right=360;Bottom=155;" subject="EAID_B_15_PNL_VERS" seqno="3" style="DUID=BI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=85;Right=600;Bottom=155;" subject="EAID_C_15_CTRL_VERS" seqno="4" style="DUID=CI15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=85;Right=860;Bottom=155;" subject="EAID_E_15_VER_SNAP" seqno="5" style="DUID=E1I15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=190;Right=860;Bottom=260;" subject="EAID_E_15_AUDIT_LOG" seqno="6" style="DUID=E2I15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU 16 -->
+			<diagram xmi:id="EAID_DIAG_BCE_CU16">
+				<model package="EAPK_BCE00001_0001_4000_8000_000000000001" localID="35" owner="EAPK_BCE00001_0001_4000_8000_000000000001"/>
+				<properties name="CU 16. Disenar y Normalizar Esquema de Datos (1FN-FNBC) (BCE)" type="Analysis"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=800;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=30;Right=750;Bottom=60;" subject="EAID_T_16" seqno="1" style="DUID=TI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=80;Right=120;Bottom=160;" subject="EAID_ACT_ARQ" seqno="2" style="DUID=AI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=85;Right=360;Bottom=155;" subject="EAID_B_16_VISTA_DATA" seqno="3" style="DUID=BI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=85;Right=600;Bottom=155;" subject="EAID_C_16_CTRL_NORM" seqno="4" style="DUID=CI16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=85;Right=860;Bottom=155;" subject="EAID_E_16_DEP_FUNC" seqno="5" style="DUID=E1I16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=190;Right=860;Bottom=260;" subject="EAID_E_16_ESQ_NORM" seqno="6" style="DUID=E2I16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+			<!-- Diagrama Individual: CU 17 -->
+			<diagram xmi:id="EAID_DIAG_BCE_CU17">
+				<model package="EAPK_BCE00001_0001_4000_8000_000000000001" localID="36" owner="EAPK_BCE00001_0001_4000_8000_000000000001"/>
+				<properties name="CU 17. Supervisar Diagramas en Dispositivo Movil (BCE)" type="Analysis"/>
+				<project author="UMLForge" version="2.5.1" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=1;SequenceNotes=0;ScalePrintImage=0;DocSize.cx=1200;DocSize.cy=800;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=0;ShowIcons=1;CollabNums=0;HideProps=1;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=1;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=0;SuppressBrackets=1;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=30;Right=750;Bottom=60;" subject="EAID_T_17" seqno="1" style="DUID=TI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=80;Right=120;Bottom=160;" subject="EAID_ACT_DEV" seqno="2" style="DUID=AI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=280;Top=85;Right=360;Bottom=155;" subject="EAID_B_17_VISOR_MOB" seqno="3" style="DUID=BI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=520;Top=85;Right=600;Bottom=155;" subject="EAID_C_17_CTRL_MOB" seqno="4" style="DUID=CI17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=85;Right=860;Bottom=155;" subject="EAID_E_17_VIEW_MOB" seqno="5" style="DUID=E1I17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=780;Top=190;Right=860;Bottom=260;" subject="EAID_E_17_NOTIF_MOB" seqno="6" style="DUID=E2I17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

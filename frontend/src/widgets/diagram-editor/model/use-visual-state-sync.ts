@@ -30,6 +30,7 @@ export function useVisualStateSync({
   const pendingDeletionsRef = useRef<Set<string>>(new Set());
   const rafScheduledRef = useRef(false);
   const dragEndTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const locallyDraggingNodeRef = useRef<string | null>(null);
 
   const flushVisualUpdates = useCallback(() => {
     const updates = { ...pendingVisualUpdatesRef.current };
@@ -65,9 +66,11 @@ export function useVisualStateSync({
 
         const draggingNodes = Object.keys(delta);
         if (draggingNodes.length > 0) {
+          locallyDraggingNodeRef.current = draggingNodes[0];
           setAwarenessState('draggingNode', draggingNodes[0]);
           if (dragEndTimeoutRef.current) clearTimeout(dragEndTimeoutRef.current);
           dragEndTimeoutRef.current = setTimeout(() => {
+            locallyDraggingNodeRef.current = null;
             setAwarenessState('draggingNode', null);
             flushVisualUpdates();
           }, 150);
@@ -96,14 +99,21 @@ export function useVisualStateSync({
       return subscribeToVisualState((remoteVisualState) => {
         if (isUpdatingFromEditor()) return;
 
+        // No interrumpir el arrastre local del mismo nodo con una posición remota.
+        const activeNode = locallyDraggingNodeRef.current;
+        const applicable = activeNode
+          ? Object.fromEntries(Object.entries(remoteVisualState).filter(([id]) => id !== activeNode))
+          : remoteVisualState;
+        if (Object.keys(applicable).length === 0) return;
+
         lastVisualStateRef.current = {
           ...lastVisualStateRef.current,
-          ...remoteVisualState,
+          ...applicable,
         };
         const currentApollonModel = editor.model;
         const mergedModel = applyVisualStateToModel(
           currentApollonModel,
-          remoteVisualState
+          applicable
         );
 
         setApplyingExternalModel(true);

@@ -64,4 +64,6 @@ export interface CollaborateResponse {
   /** true si la respuesta no vino del modelo real (modo de respaldo sin conexión). */
   simulated?: boolean;
   context?: ContextInfo;
+  permission?: 'ask' | 'safe' | 'full';
+  allow_delete?: boolean;
 }

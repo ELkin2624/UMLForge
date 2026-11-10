@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+	<uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+		<packagedElement xmi:type="uml:Package" xmi:id="EAPK_DSN00001_0001_4000_8000_000000000001" name="3.4.1 Arquitectura de Diseno" visibility="public">
+			<packagedElement xmi:type="uml:Package" xmi:id="EAID_L1_UI" name="UI - React" visibility="public">
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_AUTH_UI" name="Autenticacion y Colaboradores - UI" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_PROJ_UI" name="Gestion de Proyectos y Menus - UI" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_CANVAS_UI" name="Canvas Editor y Asistente IA" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Package" xmi:id="EAID_L2_SERVER" name="Servidor" visibility="public">
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_AUTH_ROUTER" name="AuthRouter (FastAPI / OAuth2)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_CRUD_ROUTER" name="DiagramCrudRouter (FastAPI / Proyectos)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_YJS_SERVER" name="YjsSyncServer (Node.js / ws)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_DEPLOY_API" name="Diagrams &amp; Deploy API (FastAPI Endpoints)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_VOICE_API" name="Voice &amp; IA API (Faster-Whisper)" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Package" xmi:id="EAID_L3_CORE" name="Core MDD" visibility="public">
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_CANONICAL" name="Modelo Canonico UML 2.5 (AST / Pydantic)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_GEN_MDD" name="Generador MDD (Jinja2 / Spring Boot)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_VALIDATORS" name="Validadores (UML / JPA)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_XMI_ADAPT" name="Adaptador XMI 2.1 (Enterprise Architect)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_SYNTH_DDL" name="Generador Sintetico y DDL (Faker / SQL)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_POSTMAN" name="Mapper Postman (Collection v2)" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Package" xmi:id="EAID_L4_BD" name="BD - Env" visibility="public">
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_POSTGRES" name="PostgreSQL 15 (Users, Diagrams, JSON)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_FILESYSTEM" name="FileSystem Local (Export ZIP / XMI Temp)" visibility="public"/>
+				<packagedElement xmi:type="uml:Package" xmi:id="EAID_P_DOCKER" name="Docker Compose (Orquestacion)" visibility="public"/>
+			</packagedElement>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_UI_AUTH" name="(HTTP REST / JWT)" supplier="EAID_P_AUTH_ROUTER" client="EAID_P_AUTH_UI"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_UI_CRUD" name="(HTTP REST)" supplier="EAID_P_CRUD_ROUTER" client="EAID_P_PROJ_UI"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_UI_WS" name="(WebSockets Yjs / Audio)" supplier="EAID_P_YJS_SERVER" client="EAID_P_CANVAS_UI"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L2_DEPLOY" name="" supplier="EAID_P_DEPLOY_API" client="EAID_P_CRUD_ROUTER"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L2_VOICE" name="(Auth check)" supplier="EAID_P_VOICE_API" client="EAID_P_YJS_SERVER"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L2_CANON" name="" supplier="EAID_P_CANONICAL" client="EAID_P_AUTH_ROUTER"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L2_MDD" name="" supplier="EAID_P_GEN_MDD" client="EAID_P_DEPLOY_API"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L2_VAL" name="" supplier="EAID_P_VALIDATORS" client="EAID_P_VOICE_API"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L3_XMI" name="" supplier="EAID_P_XMI_ADAPT" client="EAID_P_CANONICAL"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L3_DDL" name="" supplier="EAID_P_SYNTH_DDL" client="EAID_P_GEN_MDD"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L3_POST" name="" supplier="EAID_P_POSTMAN" client="EAID_P_VALIDATORS"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L4_PG" name="" supplier="EAID_P_POSTGRES" client="EAID_P_XMI_ADAPT"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L4_FS" name="" supplier="EAID_P_FILESYSTEM" client="EAID_P_SYNTH_DDL"/>
+			<packagedElement xmi:type="uml:Dependency" xmi:id="EAID_C_L4_DC" name="" supplier="EAID_P_DOCKER" client="EAID_P_POSTMAN"/>
+		</packagedElement>
+	</uml:Model>
+	<xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+			<element xmi:idref="EAPK_DSN00001_0001_4000_8000_000000000001" xmi:type="uml:Package" name="3.4.1 Arquitectura de Diseno" scope="public">
+				<model package2="EAPK_DSN00001_0001_4000_8000_000000000001" package="EAPK_DSN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="1" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_L1_UI" xmi:type="uml:Package" name="UI - React" scope="public">
+				<model package="EAPK_DSN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="11" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" stereotype="capa de presentación" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_AUTH_UI" xmi:type="uml:Package" name="Autenticacion y Colaboradores - UI" scope="public">
+				<model package="EAID_L1_UI" tpos="0" ea_localid="12" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_PROJ_UI" xmi:type="uml:Package" name="Gestion de Proyectos y Menus - UI" scope="public">
+				<model package="EAID_L1_UI" tpos="0" ea_localid="13" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_CANVAS_UI" xmi:type="uml:Package" name="Canvas Editor y Asistente IA" scope="public">
+				<model package="EAID_L1_UI" tpos="0" ea_localid="14" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_L2_SERVER" xmi:type="uml:Package" name="Servidor" scope="public">
+				<model package="EAPK_DSN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="15" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" stereotype="capa de aplicación y servicios" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_AUTH_ROUTER" xmi:type="uml:Package" name="AuthRouter (FastAPI / OAuth2)" scope="public">
+				<model package="EAID_L2_SERVER" tpos="0" ea_localid="16" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_CRUD_ROUTER" xmi:type="uml:Package" name="DiagramCrudRouter (FastAPI / Proyectos)" scope="public">
+				<model package="EAID_L2_SERVER" tpos="0" ea_localid="17" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_YJS_SERVER" xmi:type="uml:Package" name="YjsSyncServer (Node.js / ws)" scope="public">
+				<model package="EAID_L2_SERVER" tpos="0" ea_localid="18" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_DEPLOY_API" xmi:type="uml:Package" name="Diagrams &amp; Deploy API (FastAPI Endpoints)" scope="public">
+				<model package="EAID_L2_SERVER" tpos="0" ea_localid="19" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_VOICE_API" xmi:type="uml:Package" name="Voice &amp; IA API (Faster-Whisper)" scope="public">
+				<model package="EAID_L2_SERVER" tpos="0" ea_localid="20" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_L3_CORE" xmi:type="uml:Package" name="Core MDD" scope="public">
+				<model package="EAPK_DSN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="21" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" stereotype="capa de dominio y procesamiento" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_CANONICAL" xmi:type="uml:Package" name="Modelo Canonico UML 2.5 (AST / Pydantic)" scope="public">
+				<model package="EAID_L3_CORE" tpos="0" ea_localid="22" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_GEN_MDD" xmi:type="uml:Package" name="Generador MDD (Jinja2 / Spring Boot)" scope="public">
+				<model package="EAID_L3_CORE" tpos="0" ea_localid="23" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_VALIDATORS" xmi:type="uml:Package" name="Validadores (UML / JPA)" scope="public">
+				<model package="EAID_L3_CORE" tpos="0" ea_localid="24" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_XMI_ADAPT" xmi:type="uml:Package" name="Adaptador XMI 2.1 (Enterprise Architect)" scope="public">
+				<model package="EAID_L3_CORE" tpos="0" ea_localid="25" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_SYNTH_DDL" xmi:type="uml:Package" name="Generador Sintetico y DDL (Faker / SQL)" scope="public">
+				<model package="EAID_L3_CORE" tpos="0" ea_localid="26" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_POSTMAN" xmi:type="uml:Package" name="Mapper Postman (Collection v2)" scope="public">
+				<model package="EAID_L3_CORE" tpos="0" ea_localid="27" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_L4_BD" xmi:type="uml:Package" name="BD - Env" scope="public">
+				<model package="EAPK_DSN00001_0001_4000_8000_000000000001" tpos="0" ea_localid="28" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" stereotype="capa de persistencia e infraestructura" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_POSTGRES" xmi:type="uml:Package" name="PostgreSQL 15 (Users, Diagrams, JSON)" scope="public">
+				<model package="EAID_L4_BD" tpos="0" ea_localid="29" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_FILESYSTEM" xmi:type="uml:Package" name="FileSystem Local (Export ZIP / XMI Temp)" scope="public">
+				<model package="EAID_L4_BD" tpos="0" ea_localid="30" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+			<element xmi:idref="EAID_P_DOCKER" xmi:type="uml:Package" name="Docker Compose (Orquestacion)" scope="public">
+				<model package="EAID_L4_BD" tpos="0" ea_localid="31" ea_eleType="package"/>
+				<properties isSpecification="false" sType="Package" nType="0" scope="public"/>
+				<project author="UMLForge" version="1.0" status="Proposed"/>
+			</element>
+		</elements>
+		<connectors>
+			<connector xmi:idref="EAID_C_UI_AUTH">
+				<source xmi:idref="EAID_P_AUTH_UI"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_AUTH_ROUTER"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="201"/>
+				<properties name="(HTTP REST / JWT)" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="(HTTP REST / JWT)"/>
+			</connector>
+			<connector xmi:idref="EAID_C_UI_CRUD">
+				<source xmi:idref="EAID_P_PROJ_UI"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_CRUD_ROUTER"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="202"/>
+				<properties name="(HTTP REST)" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="(HTTP REST)"/>
+			</connector>
+			<connector xmi:idref="EAID_C_UI_WS">
+				<source xmi:idref="EAID_P_CANVAS_UI"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_YJS_SERVER"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="203"/>
+				<properties name="(WebSockets Yjs / Audio)" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="(WebSockets Yjs / Audio)"/>
+			</connector>
+			<connector xmi:idref="EAID_C_L2_DEPLOY">
+				<source xmi:idref="EAID_P_CRUD_ROUTER"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_DEPLOY_API"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="204"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L2_VOICE">
+				<source xmi:idref="EAID_P_YJS_SERVER"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_VOICE_API"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="205"/>
+				<properties name="(Auth check)" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt="(Auth check)"/>
+			</connector>
+			<connector xmi:idref="EAID_C_L2_CANON">
+				<source xmi:idref="EAID_P_AUTH_ROUTER"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_CANONICAL"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="206"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L2_MDD">
+				<source xmi:idref="EAID_P_DEPLOY_API"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_GEN_MDD"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="207"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L2_VAL">
+				<source xmi:idref="EAID_P_VOICE_API"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_VALIDATORS"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="208"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L3_XMI">
+				<source xmi:idref="EAID_P_CANONICAL"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_XMI_ADAPT"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="209"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L3_DDL">
+				<source xmi:idref="EAID_P_GEN_MDD"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_SYNTH_DDL"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="210"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L3_POST">
+				<source xmi:idref="EAID_P_VALIDATORS"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_POSTMAN"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="211"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L4_PG">
+				<source xmi:idref="EAID_P_XMI_ADAPT"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_POSTGRES"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="212"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L4_FS">
+				<source xmi:idref="EAID_P_SYNTH_DDL"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_FILESYSTEM"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="213"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+			<connector xmi:idref="EAID_C_L4_DC">
+				<source xmi:idref="EAID_P_POSTMAN"><role visibility="Public"/><type containment="Unspecified"/></source>
+				<target xmi:idref="EAID_P_DOCKER"><role visibility="Public"/><type containment="Unspecified"/></target>
+				<model ea_localid="214"/>
+				<properties name="" ea_type="Dependency" direction="Source -&gt; Destination"/>
+				<appearance linemode="3" linecolor="0" linewidth="1" seqno="0" headStyle="0" lineStyle="0"/>
+				<labels mt=""/>
+			</connector>
+		</connectors>
+		<diagrams>
+			<diagram xmi:id="EAID_DIAG_341_ARCH">
+				<model package="EAPK_DSN00001_0001_4000_8000_000000000001" localID="50" owner="EAPK_DSN00001_0001_4000_8000_000000000001"/>
+				<properties name="3.4.1 Arquitectura de Diseno" type="Package"/>
+				<project author="UMLForge" version="1.0" created="2026-11-09 00:00:00" modified="2026-11-09 00:00:00"/>
+				<style1 value="ShowPrivate=1;ShowProtected=1;ShowPublic=1;HideRelationships=0;Locked=0;Border=1;HighlightForeign=1;PackageContents=0;SequenceNotes=0;ScalePrintImage=0;PPgs.cx=1;PPgs.cy=1;DocSize.cx=1000;DocSize.cy=1500;ShowDetails=0;Orientation=P;Zoom=100;ShowTags=0;OpParams=1;VisibleAttributeDetail=0;ShowOpRetType=1;ShowIcons=1;CollabNums=0;HideProps=0;ShowReqs=0;ShowCons=0;PaperSize=1;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;HideStereo=0;HideElemStereo=0;ShowTests=0;ShowMaint=0;ConnectorNotation=UML 2.1;ExplicitNavigability=0;ShowShape=1;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ShowNotes=0;SuppressBrackets=0;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;"/>
+				<style2 value="ExcludeRTF=0;DocAll=0;HideQuals=0;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=0;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;TConnectorNotation=UML 2.1;TExplicitNavigability=0;AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;m_bElementClassifier=1;ProfileData=;MDGDgm=;STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=1;SuppressBrackets=0;SuppConnectorLabels=0;PrintPageHeadFoot=0;ShowAsList=0;SuppressedCompartments=PackageContents;SaveTag=D95F455B;"/>
+				<elements>
+					<element geometry="Left=60;Top=90;Right=300;Bottom=180;" subject="EAID_P_AUTH_UI" seqno="1" style="DUID=DP1;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=330;Top=90;Right=570;Bottom=180;" subject="EAID_P_PROJ_UI" seqno="2" style="DUID=DP2;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=600;Top=90;Right=840;Bottom=180;" subject="EAID_P_CANVAS_UI" seqno="3" style="DUID=DP3;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=330;Right=300;Bottom=415;" subject="EAID_P_AUTH_ROUTER" seqno="4" style="DUID=DP4;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=330;Top=330;Right=570;Bottom=415;" subject="EAID_P_CRUD_ROUTER" seqno="5" style="DUID=DP5;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=600;Top=330;Right=840;Bottom=415;" subject="EAID_P_YJS_SERVER" seqno="6" style="DUID=DP6;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=330;Top=475;Right=570;Bottom=560;" subject="EAID_P_DEPLOY_API" seqno="7" style="DUID=DP7;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=600;Top=475;Right=840;Bottom=560;" subject="EAID_P_VOICE_API" seqno="8" style="DUID=DP8;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=710;Right=300;Bottom=795;" subject="EAID_P_CANONICAL" seqno="9" style="DUID=DP9;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=330;Top=710;Right=570;Bottom=795;" subject="EAID_P_GEN_MDD" seqno="10" style="DUID=DP10;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=600;Top=710;Right=840;Bottom=795;" subject="EAID_P_VALIDATORS" seqno="11" style="DUID=DP11;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=855;Right=300;Bottom=940;" subject="EAID_P_XMI_ADAPT" seqno="12" style="DUID=DP12;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=330;Top=855;Right=570;Bottom=940;" subject="EAID_P_SYNTH_DDL" seqno="13" style="DUID=DP13;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=600;Top=855;Right=840;Bottom=940;" subject="EAID_P_POSTMAN" seqno="14" style="DUID=DP14;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=60;Top=1080;Right=300;Bottom=1170;" subject="EAID_P_POSTGRES" seqno="15" style="DUID=DP15;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=330;Top=1080;Right=570;Bottom=1170;" subject="EAID_P_FILESYSTEM" seqno="16" style="DUID=DP16;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=600;Top=1080;Right=840;Bottom=1170;" subject="EAID_P_DOCKER" seqno="17" style="DUID=DP17;BCOL=16777215;BFIL=16777215;LCOL=0;LWTH=1;"/>
+					<element geometry="Left=40;Top=40;Right=860;Bottom=200;" subject="EAID_L1_UI" seqno="101" style="DUID=DL101;BCOL=-1;BFIL=-1;LCOL=0;LWTH=2;PackageContents=0;ShowPackageContents=0;"/>
+					<element geometry="Left=40;Top=270;Right=860;Bottom=580;" subject="EAID_L2_SERVER" seqno="102" style="DUID=DL102;BCOL=-1;BFIL=-1;LCOL=0;LWTH=2;PackageContents=0;ShowPackageContents=0;"/>
+					<element geometry="Left=40;Top=650;Right=860;Bottom=960;" subject="EAID_L3_CORE" seqno="103" style="DUID=DL103;BCOL=-1;BFIL=-1;LCOL=0;LWTH=2;PackageContents=0;ShowPackageContents=0;"/>
+					<element geometry="Left=40;Top=1030;Right=860;Bottom=1190;" subject="EAID_L4_BD" seqno="104" style="DUID=DL104;BCOL=-1;BFIL=-1;LCOL=0;LWTH=2;PackageContents=0;ShowPackageContents=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_UI_AUTH" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_UI_CRUD" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_UI_WS" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L2_DEPLOY" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L2_VOICE" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L2_CANON" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L2_MDD" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L2_VAL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L3_XMI" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L3_DDL" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L3_POST" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L4_PG" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L4_FS" style=";Hidden=0;"/>
+					<element geometry="SX=0;SY=0;EX=0;EY=0;Path=;" subject="EAID_C_L4_DC" style=";Hidden=0;"/>
+				</elements>
+			</diagram>
+		</diagrams>
+	</xmi:Extension>
+</xmi:XMI>

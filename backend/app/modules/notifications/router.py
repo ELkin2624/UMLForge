@@ -8,6 +8,7 @@ from app.core.auth_deps import require_authenticated_user
 from app.modules.notifications.schemas import (
     NotificationResponse, UnreadCountResponse, RegisterDeviceRequest, UnregisterDeviceRequest
 )
+from app.modules.notifications.service import with_invitation_status
 
 router = APIRouter(prefix="/api/v1/notifications", tags=["notifications"])
 
@@ -56,7 +57,7 @@ def get_notifications(
     notifications = db.query(Notification).filter(
         Notification.recipient_user_id == current_user.id
     ).order_by(Notification.created_at.desc()).all()
-    return notifications
+    return with_invitation_status(db, notifications)
 
 @router.get("/unread-count", response_model=UnreadCountResponse)
 def get_unread_count(

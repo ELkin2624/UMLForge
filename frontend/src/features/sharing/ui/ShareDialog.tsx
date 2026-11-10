@@ -25,6 +25,7 @@ import { useShareStore } from '../model/share-store';
 import { useCollaboration } from '../../../hooks/use-collaboration';
 import { useModelStore } from '../../../store/model-store';
 import { useAuthStore } from '../../auth/store';
+import { useDashboardStore } from '../../projects-dashboard/model/dashboard-store';
 import { canManageAccess } from '../model/capabilities';
 import { buildJoinUrl } from '../model/invite-utils';
 import { useShareLink } from '../model/use-share-link';
@@ -107,7 +108,7 @@ export function ShareDialog() {
 
   // Asegurar que la sesión colaborativa sobre este diagrama esté activa y conectada al abrir Compartir
   useEffect(() => {
-    if (isDialogOpen && diagramId) {
+    if (isDialogOpen && diagramId && useDashboardStore.getState().screen === 'editor') {
       try {
         sessionStorage.setItem('umlforge-collab-active', 'true');
         sessionStorage.setItem('umlforge-active-diagram', diagramId);
@@ -591,8 +592,11 @@ export function ShareDialog() {
                       Presente en la sala como un colaborador más
                     </label>
                     <span className="gdocs-general-desc">
-                      Todos los conectados lo ven en la lista de participantes. Nunca modifica el
-                      diagrama sin que una persona apruebe sus propuestas.
+                      Todos los conectados lo ven en la lista de participantes.
+                    </span>
+                    <span className="gdocs-general-desc">
+                      Ajusta los permisos de edición desde el panel Arquitecto IA. La IA respeta
+                      el rol de quien la usa.
                     </span>
                     {agentPresence.error && (
                       <span className="gdocs-general-desc" role="alert">{agentPresence.error}</span>

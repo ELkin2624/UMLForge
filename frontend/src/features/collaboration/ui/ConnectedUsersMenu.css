@@ -1,0 +1,41 @@
+.connected-users { position: relative; flex: 0 0 auto; }
+
+.connected-users__trigger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  min-width: 44px; height: 36px; padding: 0 8px;
+  color: var(--ink-black); background: var(--bg-card);
+  border: var(--border-ink-thin); border-radius: 10px;
+  box-shadow: var(--shadow-hard-sm); font: inherit; font-size: 12px; font-weight: 800;
+  cursor: pointer;
+}
+.connected-users__trigger:hover, .connected-users__trigger[aria-expanded="true"] {
+  background: var(--pastel-mint); transform: translateY(-1px);
+}
+.connected-users__trigger:focus-visible { outline: 2px solid var(--ink-black); outline-offset: 2px; }
+.connected-users__trigger--error { background: #fee2e2; color: #991b1b; }
+
+.connected-users__popover {
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 1100;
+  width: min(280px, calc(100vw - 24px)); max-height: min(360px, 60vh); overflow-y: auto;
+  padding: 12px; background: var(--bg-card); color: var(--ink-black);
+  border: var(--border-ink); border-radius: 12px; box-shadow: var(--shadow-hard-lg);
+}
+.connected-users__popover strong { display: block; margin-bottom: 8px; font-size: 13px; }
+.connected-users__popover p { margin: 6px 0; color: var(--ink-gray); font-size: 12px; }
+.connected-users__popover .connected-users__status { padding-bottom: 8px; border-bottom: 1px solid var(--bg-cream-alt); }
+.connected-users__popover .connected-users__error { display: flex; gap: 6px; align-items: flex-start; color: #991b1b; }
+.connected-users__warning { display: flex; align-items: flex-start; gap: 6px; padding: 6px; background: var(--pastel-yellow); font-size: 12px; }
+.connected-users__warning button { margin-left: auto; border: 0; background: transparent; cursor: pointer; }
+.connected-users__person { display: flex; align-items: center; gap: 8px; padding: 7px 0; }
+.connected-users__person + .connected-users__person { border-top: 1px solid var(--bg-cream-alt); }
+.connected-users__avatar {
+  display: grid; place-items: center; flex: 0 0 28px; height: 28px;
+  border: var(--border-ink-thin); border-radius: 50%; font-size: 12px; font-weight: 800;
+}
+.connected-users__avatar--agent { background: var(--pastel-lilac); }
+.connected-users__name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 700; }
+.connected-users__person small { color: var(--ink-gray); font-size: 11px; }
+
+@media (max-width: 768px) {
+  .connected-users__popover { position: fixed; top: 60px; right: 12px; }
+}

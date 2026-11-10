@@ -32,6 +32,7 @@ class CanvasPatchOperation(BaseModel):
     @model_validator(mode="after")
     def normalize_uml_visibility(self) -> "CanvasPatchOperation":
         """Adapta la notación UML (+, -, #, ~) al contrato canónico del editor."""
+        self.payload = {k: v for k, v in self.payload.items() if v is not None}
         visibility = {"+": "public", "-": "private", "#": "protected", "~": "package"}
         attributes = self.payload.get("attributes")
         if isinstance(attributes, list):
@@ -39,6 +40,58 @@ class CanvasPatchOperation(BaseModel):
                 if isinstance(attribute, dict) and attribute.get("visibility") in visibility:
                     attribute["visibility"] = visibility[attribute["visibility"]]
         return self
+
+
+class _GeminiAttrSchema(BaseModel):
+    name: str
+    type: str = "String"
+    visibility: Optional[str] = "private"
+
+
+class _GeminiAttrUpdateSchema(BaseModel):
+    name: str
+    new_name: Optional[str] = None
+    type: Optional[str] = None
+    visibility: Optional[str] = None
+
+
+class _GeminiOpSchema(BaseModel):
+    name: str
+    return_type: str = "void"
+
+
+class _GeminiPayloadSchema(BaseModel):
+    attributes: Optional[List[_GeminiAttrSchema]] = None
+    operations: Optional[List[_GeminiOpSchema]] = None
+    stereotype: Optional[str] = None
+    new_name: Optional[str] = None
+    add_attributes: Optional[List[_GeminiAttrSchema]] = None
+    update_attributes: Optional[List[_GeminiAttrUpdateSchema]] = None
+    remove_attributes: Optional[List[str]] = None
+    source: Optional[str] = None
+    target: Optional[str] = None
+    type: Optional[str] = None
+    source_multiplicity: Optional[str] = None
+    target_multiplicity: Optional[str] = None
+
+
+class _GeminiPatchSchema(BaseModel):
+    op: Literal["ADD_CLASS", "UPDATE_CLASS", "DELETE_CLASS", "ADD_RELATION", "DELETE_RELATION"]
+    target_name: str = Field(description="Nombre de la clase o relación afectada")
+    payload: _GeminiPayloadSchema = Field(default_factory=_GeminiPayloadSchema, description=PAYLOAD_CONTRACT)
+    reason: str = Field(description="Breve justificación arquitectónica del cambio")
+
+
+class GeminiStructuredOutputSchema(BaseModel):
+    """Esquema sin `additionalProperties` (Dict[str, Any]) requerido por Gemini Developer API."""
+
+    reply_to_user: str = Field(description="Respuesta directa para el chat privado del usuario")
+    shared_decision_note: Optional[str] = Field(
+        default=None,
+        description="Si se tomó una decisión de diseño relevante para el equipo, resúmela aquí",
+    )
+    canvas_patches: List[_GeminiPatchSchema] = Field(default_factory=list)
+    execution_mode: Literal["DIRECT", "SUGGESTION"] = "SUGGESTION"
 
 
 class AgentStructuredOutput(BaseModel):
@@ -101,6 +154,8 @@ class CollaborateResponse(BaseModel):
         default_factory=dict,
         description="Metadatos del contexto usado: fuente, versión, tamaño y si se recortó",
     )
+    permission: Literal["ask", "safe", "full"] = "ask"
+    allow_delete: bool = False
 
 
 class AuditEventCreate(BaseModel):

@@ -70,6 +70,27 @@ class NoSQLRepository:
                 msg["timestamp"] = msg["timestamp"].isoformat()
         return list(reversed(messages))
 
+    async def get_team_history(self, diagram_id: str, user_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+        """Contexto reciente de otros miembros, solo para el agente, sin adjuntos ni parches."""
+        await self.ensure_indexes()
+        cursor = (
+            self.private_chats.find(
+                {"diagram_id": str(diagram_id), "user_id": {"$ne": str(user_id)}},
+                {"_id": 0, "user_id": 1, "role": 1, "content": 1, "timestamp": 1},
+            )
+            .sort("timestamp", -1)
+            .limit(limit)
+        )
+        messages = await cursor.to_list(length=limit)
+        return [
+            {
+                "user_id": msg["user_id"],
+                "role": msg.get("role", "user"),
+                "content": msg.get("content", "")[:500],
+            }
+            for msg in reversed(messages)
+        ]
+
     async def append_private_message(
         self,
         diagram_id: str,

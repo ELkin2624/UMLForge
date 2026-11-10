@@ -76,6 +76,12 @@ export function apollonComponentToCanonical(
     id: stableId,
     name: apollonModel.title || existingCanonical?.name || 'UML Model',
     uml_version: existingCanonical?.uml_version || '2.5.1',
+    visual_state: {
+      ...existingCanonical?.visual_state,
+      ...Object.fromEntries(apollonModel.nodes
+        .filter(node => node.position)
+        .map(node => [node.id, { x: node.position.x, y: node.position.y }]))
+    },
     // Preservar clases y relaciones previas intactas
     classes: existingCanonical?.classes || [],
     relationships: existingCanonical?.relationships || [],
@@ -158,6 +164,11 @@ export function canonicalComponentToApollon(canonical: CanonicalModel): ApollonM
       data: { points: [] },
     });
   });
+
+  for (const node of nodes) {
+    const savedPosition = canonical.visual_state?.[node.id];
+    if (savedPosition) node.position = { ...savedPosition };
+  }
 
   return {
     version: '4.0.0',

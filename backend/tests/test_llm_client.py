@@ -112,6 +112,39 @@ def test_ollama_local_devuelve_una_respuesta_real_y_esquema_estructurado():
     assert http.post.call_args.kwargs["headers"] == {"Authorization": "Bearer test-token"}
 
 
+def test_imagen_se_envia_al_modelo_ollama_con_soporte_visual():
+    payload = AgentStructuredOutput(reply_to_user="Vi la imagen", canvas_patches=[])
+    response = MagicMock()
+    response.json.return_value = {"message": {"content": payload.model_dump_json()}}
+    response.raise_for_status.return_value = None
+    http = AsyncMock()
+    http.post.return_value = response
+    context = MagicMock()
+    context.__aenter__ = AsyncMock(return_value=http)
+    context.__aexit__ = AsyncMock(return_value=None)
+
+    with patch("app.modules.ai_agent.infrastructure.llm_client.httpx.AsyncClient", return_value=context):
+        result = asyncio.run(
+            LLMClient(api_key="", provider="ollama").invoke_architect_agent(
+                **{**CALL, "image_base64": "data:image/jpeg;base64,QUJD"}
+            )
+        )
+
+    assert result.simulated is False
+    assert http.post.call_args.kwargs["json"]["messages"][1]["images"] == ["QUJD"]
+
+
+def test_respaldo_simulado_no_inventa_analisis_de_imagen():
+    result = asyncio.run(
+        LLMClient(api_key="").invoke_architect_agent(
+            **{**CALL, "image_base64": "data:image/png;base64,QUJD"}
+        )
+    )
+    assert result.simulated is True
+    assert result.canvas_patches == []
+    assert "no pude analizar" in result.reply_to_user.lower()
+
+
 def test_ollama_reintenta_si_se_piden_atributos_y_el_parche_llega_vacio():
     first = AgentStructuredOutput(
         reply_to_user="Creé Perro con atributos.",
