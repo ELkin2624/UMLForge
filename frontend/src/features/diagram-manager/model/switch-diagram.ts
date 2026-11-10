@@ -4,6 +4,7 @@ import { useShareStore } from '../../sharing/model/share-store';
 import { canEdit } from '../../sharing/model/capabilities';
 import { getSharedCollaborationManager } from '../../collaboration';
 import { useVersioningStore } from '../../versioning';
+import { useAuthStore } from '../../auth/store';
 import { emptyModel, hasContent, toRole } from './diagram-utils';
 
 const ACTIVE_KEY = 'umlforge-active-diagram';
@@ -12,7 +13,9 @@ const COLLAB_KEY = 'umlforge-collab-active';
 function rememberActive(id: string): void {
   try {
     sessionStorage.setItem(ACTIVE_KEY, id);
-    sessionStorage.removeItem(COLLAB_KEY);
+    // Abrir un diagrama siempre entra a su sala: sin ella el editor queda en solo lectura
+    // (las ediciones se guardan como comandos que solo se envían con la sala conectada).
+    sessionStorage.setItem(COLLAB_KEY, 'true');
     const url = new URL(window.location.href);
     url.searchParams.set('diagram', id);
     window.history.replaceState({}, '', url.toString());
@@ -58,4 +61,8 @@ export async function switchToDiagram(id: number | string): Promise<void> {
   // 6. Cargar el modelo. Un diagrama vacío usa un modelo vacío (no null: el editor ignora null).
   const model = hasContent(diagram.data) ? diagram.data : emptyModel(diagram.name);
   useModelStore.getState().setModel(model);
+
+  // 7. Conectar a la sala del diagrama (igual que al pulsar Compartir).
+  const user = useAuthStore.getState().user;
+  getSharedCollaborationManager().connect(target, user?.display_name || user?.username);
 }

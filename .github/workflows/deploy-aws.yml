@@ -1,0 +1,41 @@
+# Despliegue automático a la EC2 en cada push a main (o a mano desde la pestaña Actions).
+# Secretos necesarios (Settings -> Secrets and variables -> Actions):
+#   EC2_HOST     IP elástica o dominio de la EC2
+#   EC2_USER     usuario SSH (ubuntu en Ubuntu, ec2-user en Amazon Linux)
+#   EC2_SSH_KEY  contenido completo del .pem
+#   EC2_APP_DIR  ruta del repo en la EC2, p. ej. /home/ubuntu/UMLForge
+name: Deploy AWS
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+# Evita dos despliegues a la vez si haces pushes seguidos.
+concurrency:
+  group: deploy-aws
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Desplegar en EC2 por SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          APP_DIR: ${{ secrets.EC2_APP_DIR }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: APP_DIR
+          command_timeout: 30m
+          script: |
+            set -e
+            cd "$APP_DIR"
+            git fetch origin main
+            git checkout main
+            git pull --ff-only origin main
+            # .env.prod vive solo en el servidor (no está en git).
+            docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+            docker image prune -f

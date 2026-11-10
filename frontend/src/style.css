@@ -279,7 +279,8 @@ body,
 
 .collab-panel {
   position: fixed;
-  bottom: 16px;
+  /* Por encima de los controles de zoom/deshacer de Apollon (abajo a la izquierda). */
+  bottom: 76px;
   left: 16px;
   z-index: 900;
   width: 240px;
