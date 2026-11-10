@@ -10,6 +10,7 @@ import httpx
 from sqlalchemy.orm import Session
 
 from app.core.database.models import DeviceToken
+from app.core.database.session import SessionLocal
 
 logger = logging.getLogger(__name__)
 
@@ -39,15 +40,38 @@ def send_expo_push(
         }
         for t in tokens
     ]
+    dead: list[str] = []
     try:
         with httpx.Client(timeout=10.0) as client:
             for i in range(0, len(messages), EXPO_BATCH_SIZE):
-                res = client.post(EXPO_PUSH_URL, json=messages[i : i + EXPO_BATCH_SIZE])
+                batch = messages[i : i + EXPO_BATCH_SIZE]
+                res = client.post(EXPO_PUSH_URL, json=batch)
                 if res.status_code != 200:
                     logger.warning("Expo push devolvió %s: %s", res.status_code, res.text[:200])
                     continue
-                for ticket in res.json().get("data", []):
-                    if ticket.get("status") == "error":
-                        logger.warning("Expo push rechazado: %s", ticket.get("message"))
+                # Los tickets llegan en el mismo orden que los mensajes enviados.
+                for message, ticket in zip(batch, res.json().get("data", [])):
+                    if ticket.get("status") != "error":
+                        continue
+                    logger.warning("Expo push rechazado: %s", ticket.get("message"))
+                    if (ticket.get("details") or {}).get("error") == "DeviceNotRegistered":
+                        dead.append(message["to"])
     except Exception:  # noqa: BLE001 - el push es best-effort
         logger.exception("No se pudo enviar la notificación push")
+    if dead:
+        remove_tokens(dead)
+
+
+def remove_tokens(tokens: list[str]) -> None:
+    """Borra tokens que Expo declaró inválidos. Usa su propia sesión (corre en segundo plano)."""
+    try:
+        db = SessionLocal()
+        try:
+            db.query(DeviceToken).filter(DeviceToken.token.in_(tokens)).delete(
+                synchronize_session=False
+            )
+            db.commit()
+        finally:
+            db.close()
+    except Exception:  # noqa: BLE001 - la limpieza también es best-effort
+        logger.exception("No se pudieron borrar los tokens push inválidos")
