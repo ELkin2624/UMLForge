@@ -1,7 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-def test_parse_intent_gemini_success(client):
+def test_parse_intent_gemini_success(client, monkeypatch):
+    # El endpoint exige alguna API key; el cliente de Gemini está mockeado abajo.
+    monkeypatch.setattr("app.modules.voice.router.settings.GEMINI_API_KEY", "dummy_gemini")
     mock_response = MagicMock()
     mock_response.text = '{"commands": [{"type": "CREATE_CLASS", "className": "Rol"}]}'
 

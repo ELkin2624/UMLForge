@@ -25,7 +25,7 @@ export async function fetchPrivateHistory(diagramId: string): Promise<ChatMessag
   const url = `/ai/history/${encodeURIComponent(diagramId)}`;
   const rawList = await request<any[]>(url);
   return rawList.map((item, index) => ({
-    id: item.id || `msg-${index}-${Date.now()}`,
+    id: item.id || (item.run_id ? `${item.run_id}:${item.role}` : `msg-${item.timestamp || index}-${item.role}-${index}`),
     role: item.role,
     content: item.content,
     patches: item.patches || [],

@@ -6,6 +6,8 @@ import httpx
 from google import genai
 from google.genai import types
 
+from .tool_provider import gemini_models
+
 from ..schemas import (
     PAYLOAD_CONTRACT,
     AgentResult,
@@ -29,12 +31,9 @@ class LLMClient:
     ):
         self.api_key = api_key or ""
         self.provider = provider
-        self.model_name = "gemini-3.5-flash-lite"
-        self.fallback_models = [
-            "gemini-flash-lite-latest",
-            "gemini-3.8-flash",
-            "gemini-3.5-flash",
-        ]
+        models = gemini_models()
+        self.model_name = models[0]
+        self.fallback_models = models[1:]
         self.client = (
             genai.Client(
                 api_key=self.api_key,
@@ -64,16 +63,7 @@ class LLMClient:
     ) -> AgentResult:
         """Invoca el proveedor configurado con salida fuertemente estructurada."""
         if self.provider == "gemini" and (not self.client or not self.api_key):
-            logger.info("Sin GEMINI_API_KEY configurada. Generando respuesta contextual simulada.")
-            return self._as_simulated(
-                self._simulate_architect_response(
-                    user_name=user_name,
-                    user_prompt=user_prompt,
-                    shared_decisions=shared_decisions,
-                    canvas_snapshot=canvas_snapshot,
-                    image_base64=image_base64,
-                )
-            )
+            raise RuntimeError("Gemini no está configurado.")
 
         system_instruction = f"""
 Eres el Arquitecto de Software Senior (IA) compartido del proyecto colaborativo en UMLForge.
@@ -167,16 +157,7 @@ Actualmente estás conversando en privado con: {user_name}.
                 last_error = e
 
         logger.error(f"Fallo en llamada a Gemini con todos los modelos: {last_error}")
-        # En caso de fallo de red o cuota en Gemini, fallback inteligente
-        return self._as_simulated(
-            self._simulate_architect_response(
-                user_name=user_name,
-                user_prompt=user_prompt,
-                shared_decisions=shared_decisions,
-                canvas_snapshot=canvas_snapshot,
-                image_base64=image_base64,
-            )
-        )
+        raise RuntimeError("No se pudo consultar Gemini.") from last_error
 
     async def _invoke_ollama(
         self,
@@ -223,14 +204,7 @@ Actualmente estás conversando en privado con: {user_name}.
                         execution_mode="SUGGESTION",
                     )
                 )
-            return self._as_simulated(
-                self._simulate_architect_response(
-                    user_name=user_name,
-                    user_prompt=user_prompt,
-                    shared_decisions=shared_decisions,
-                    canvas_snapshot=canvas_snapshot,
-                )
-            )
+            raise RuntimeError("No se pudo consultar Ollama.") from exc
 
     async def _ollama_structured_response(
         self,

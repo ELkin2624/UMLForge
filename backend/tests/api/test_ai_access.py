@@ -241,7 +241,7 @@ def test_la_auditoria_usa_el_autor_del_token(client, world):
 def test_memoria_compartida_visible_para_el_equipo(client, world):
     ask(client, world, "editor")
     data = client.get(f"/api/v1/ai/shared-memory/{world['id']}", headers=world["owner"]).json()
-    assert data["architectural_decisions"][0]["author"] == "Bob"
+    assert data["architectural_decisions"] == []  # Una propuesta no es una decisión aceptada.
 
 
 def test_la_respuesta_indica_si_fue_simulada(client, world):
@@ -255,8 +255,7 @@ def test_la_respuesta_indica_si_fue_simulada(client, world):
     assert ask(client, world, "editor").json()["simulated"] is True
     feed = client.get(f"/api/v1/ai/audit-feed/{world['id']}", headers=world["owner"]).json()
     # la auditoría distingue lo simulado de lo que respondió el modelo real
-    assert feed[-1]["actor"].startswith("IA simulada")
-    assert feed[0]["actor"].startswith("Gemini IA")
+    assert feed == []  # Las consultas no registran cambios aplicados.
 
 
 class CapturingLLM:
@@ -272,7 +271,7 @@ def test_el_contexto_sale_del_almacen_y_no_del_cliente(client, world):
     llm = CapturingLLM()
     app.dependency_overrides[ai_router.get_llm_client] = lambda: llm
     saved = client.put(
-        f"/api/v1/diagrams/{world['id']}", json={"data": _model("Cliente", "Pedido")}, headers=world["owner"]
+        f"/api/v1/diagrams/{world['id']}", json={"data": _model("Cliente", "Pedido"), "expected_revision": 1}, headers=world["owner"]
     )
     assert saved.status_code == 200
 
@@ -319,7 +318,7 @@ def test_diagrama_grande_se_recorta_y_el_cliente_lo_sabe(client, world):
          "attributes": [{"id": f"c{i}a{j}", "name": f"campo{j}", "type": "String"} for j in range(10)]}
         for i in range(150)
     ]}
-    client.put(f"/api/v1/diagrams/{world['id']}", json={"data": big}, headers=world["owner"])
+    client.put(f"/api/v1/diagrams/{world['id']}", json={"data": big, "expected_revision":1}, headers=world["owner"])
     res = ask(client, world, "editor")
     info = res.json()["context"]
     assert info["truncated"] is True and info["classes"] == 150

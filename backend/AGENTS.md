@@ -81,3 +81,9 @@ Routers registrados en `main.py`: health, auth, users, diagram CRUD, sharing, in
 - `voice` usa `faster-whisper` y `av<14` (pesados; descargan modelos en el primer uso).
 - `ai_agent` usa `google-genai` y `cohere`, y guarda estado en MongoDB (`motor`, asíncrono).
 - `verify_e2e_new_domain.py` en la raíz de `backend/` es un script suelto de verificación, no parte de la app.
+
+## Actualización: agente colaborador y confirmación de comandos
+
+`modules/collaboration` confirma comandos mediante el motor compartido de `packages/uml-commands`, compare-and-set en MongoDB y publicación autenticada al servidor Yjs. Modelo, posiciones, revisión y versión pendiente se confirman juntos; el historial se proyecta de forma idempotente. Los reemplazos completos y restauraciones requieren `expected_revision`.
+
+El trabajador de `ai_agent/runtime.py` arranca en el lifespan con `COLLAB_SERVICE_TOKEN` configurado. `agent_runs` y `agent_leases` conservan tareas, aprobaciones y recuperación. No guarda tokens de usuario: revisa permisos actuales por ID. El modelo propone mediante herramientas; el modo lo elige la persona. Las consultas legacy `/ai/collaborate` no aplican cambios ni registran propuestas como decisiones aceptadas. Configuración, endpoints y pruebas en `docs/agente-colaborativo.md`.

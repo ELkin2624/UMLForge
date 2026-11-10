@@ -7,26 +7,27 @@ def url(world):
     return f"/api/v1/diagrams/{world['id']}/agent"
 
 
-def test_por_defecto_esta_desactivado(client, world):
+def test_por_defecto_esta_activado(client, world):
+    # La IA funciona desde el inicio, sin que el propietario tenga que activarla.
     assert client.get(url(world), headers=world["owner"]).json() == {
-        "enabled": False,
+        "enabled": True,
         "permission": "ask",
     }
     detail = client.get(f"/api/v1/diagrams/{world['id']}", headers=world["owner"])
-    assert detail.json()["agent_enabled"] is False
+    assert detail.json()["agent_enabled"] is True
 
 
 def test_todos_los_miembros_pueden_ver_pero_solo_el_propietario_activar(client, world):
     for who in ("editor", "reader"):
         assert client.get(url(world), headers=world[who]).json() == {
-            "enabled": False,
+            "enabled": True,
             "permission": "ask",
         }
-        res = client.put(url(world), json={"enabled": True}, headers=world[who])
+        res = client.put(url(world), json={"enabled": False}, headers=world[who])
         assert res.status_code == 403
-    assert client.put(url(world), json={"enabled": True}).status_code == 401
+    assert client.put(url(world), json={"enabled": False}).status_code == 401
     # nada cambió
-    assert client.get(url(world), headers=world["owner"]).json()["enabled"] is False
+    assert client.get(url(world), headers=world["owner"]).json()["enabled"] is True
 
 
 def test_usuario_ajeno_no_puede_ver_la_politica(client, world, db_session):
@@ -34,17 +35,17 @@ def test_usuario_ajeno_no_puede_ver_la_politica(client, world, db_session):
     assert client.get(url(world), headers=_h(stranger)).status_code == 403
 
 
-def test_activar_y_desactivar_se_refleja_para_todos_los_miembros(client, world):
-    res = client.put(url(world), json={"enabled": True}, headers=world["owner"])
+def test_desactivar_y_reactivar_se_refleja_para_todos_los_miembros(client, world):
+    res = client.put(url(world), json={"enabled": False}, headers=world["owner"])
     assert res.status_code == 200 and res.json() == {
-        "enabled": True,
+        "enabled": False,
         "permission": "ask",
     }
     detail_url = f"/api/v1/diagrams/{world['id']}"
     for who in ("owner", "editor", "reader"):
-        assert client.get(detail_url, headers=world[who]).json()["agent_enabled"] is True
-    client.put(url(world), json={"enabled": False}, headers=world["owner"])
-    assert client.get(detail_url, headers=world["reader"]).json()["agent_enabled"] is False
+        assert client.get(detail_url, headers=world[who]).json()["agent_enabled"] is False
+    client.put(url(world), json={"enabled": True}, headers=world["owner"])
+    assert client.get(detail_url, headers=world["reader"]).json()["agent_enabled"] is True
 
 
 def test_diagrama_inexistente_da_404(client, world):
@@ -56,16 +57,16 @@ def test_cada_miembro_configura_su_permiso_sin_afectar_a_los_demas(client, world
     for who, permission in (("owner", "full"), ("editor", "safe"), ("reader", "full")):
         res = client.put(url(world), json={"permission": permission}, headers=world[who])
         assert res.status_code == 200
-        assert res.json() == {"enabled": False, "permission": permission}
+        assert res.json() == {"enabled": True, "permission": permission}
 
     for who, permission in (("owner", "full"), ("editor", "safe"), ("reader", "full")):
         assert client.get(url(world), headers=world[who]).json()["permission"] == permission
 
-    res = client.put(url(world), json={"enabled": True}, headers=world["owner"])
+    res = client.put(url(world), json={"enabled": False}, headers=world["owner"])
     assert res.status_code == 200
-    assert res.json() == {"enabled": True, "permission": "full"}
+    assert res.json() == {"enabled": False, "permission": "full"}
     assert client.get(url(world), headers=world["editor"]).json() == {
-        "enabled": True, "permission": "safe"
+        "enabled": False, "permission": "safe"
     }
 
     invalid = client.put(
@@ -74,7 +75,7 @@ def test_cada_miembro_configura_su_permiso_sin_afectar_a_los_demas(client, world
     assert invalid.status_code == 422
 
     combined = client.put(
-        url(world), json={"enabled": False, "permission": "ask"}, headers=world["editor"]
+        url(world), json={"enabled": True, "permission": "ask"}, headers=world["editor"]
     )
     assert combined.status_code == 403
     assert client.get(url(world), headers=world["editor"]).json()["permission"] == "safe"

@@ -1,663 +1,391 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  Bot,
-  Send,
-  MessageSquare,
-  History,
-  Layers,
-  Trash2,
-  Lock,
-  Sparkles,
-  Mic,
-  MicOff,
-  Image as ImageIcon,
-  Camera,
-  X,
-  ChevronRight,
-  Loader2,
-  Undo2,
-  Redo2,
-} from 'lucide-react';
-import { useAIAssistantStore } from '../model/ai-store';
-import { useAuthStore } from '../../auth/store';
-import { useShareStore } from '../../sharing/model/share-store';
-import { canManageAccess } from '../../sharing/model/capabilities';
-import { getSharedCollaborationManager } from '../../collaboration';
-import { useAgentPresence } from '../../collaboration/model/use-agent-presence';
-import { SpeechEngine } from '../../voice/api/speech-engine';
-import { WhisperEngine } from '../../voice/api/whisper-engine';
-import { useCommandHistory } from '../../uml-commands';
-import { AuditFeedTab } from './AuditFeedTab';
-import { PatchPreview } from './PatchPreview';
-import { AgentPermissionControl } from './AgentPermissionControl';
-import './AIAssistantSidebar.css';
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Bot, X, Send, Mic, Image as ImageIcon } from "lucide-react";
+import { describeCommand } from "../model/describe-command";
+import { useServerAgent } from "../model/server-agent";
+import { fetchPrivateHistory, clearPrivateHistory } from "../api/ai-api";
+import type { ChatMessage } from "../types";
+import { useShareStore } from "../../sharing/model/share-store";
+import { canEdit, canManageAccess } from "../../sharing/model/capabilities";
+import { useAuthStore } from "../../auth/store";
+import { useModelStore } from "../../../store/model-store";
+import { SpeechEngine } from "../../voice/api/speech-engine";
+import { WhisperEngine } from "../../voice/api/whisper-engine";
+import { useAgentPresence } from "../../collaboration/model/use-agent-presence";
+import { AgentPermissionControl } from "./AgentPermissionControl";
+import { AuditFeedTab } from "./AuditFeedTab";
+import "./ServerAgent.css";
 
-export const AIAssistantSidebar: React.FC = () => {
-  const {
-    privateHistory,
-    activeTab,
-    isThinking,
-    suggestions,
-    setActiveTab,
-    loadHistory,
-    clearHistory,
-    sendMessage,
-    approvePatch,
-    approveAll,
-    reproposePatch,
-    rejectPatch,
-    syncWithYjs,
-  } = useAIAssistantStore();
+export const AIAssistantSidebar = () => {
+  const [open, setOpen] = useState(() => window.innerWidth >= 900);
+  const [text, setText] = useState("");
+  const [image, setImage] = useState<string>();
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [tab, setTab] = useState<"chat" | "tasks" | "audit">("chat");
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const speech = useRef<SpeechEngine | null>(null);
+  const file = useRef<HTMLInputElement>(null);
+  const room = useShareStore((s) => s.roomId);
+  const role = useShareStore((s) => s.localRole);
+  const user = useAuthStore((s) => s.user);
+  const connection = useModelStore((s) => s.collaboration.status);
+  const model = useModelStore((s) => s.model);
+  const agent = useServerAgent();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const editable = canEdit(role) && connection === "synced";
 
-  const [collapsed, setCollapsed] = useState(() =>
-    typeof window !== 'undefined' ? window.innerWidth < 900 : true
-  );
-  const [inputText, setInputText] = useState('');
-  const [attachedImage, setAttachedImage] = useState<string | null>(null);
-  const [imageError, setImageError] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-  const speechEngineRef = useRef<SpeechEngine | null>(null);
-  const whisperEngineRef = useRef<WhisperEngine | null>(null);
-  const recognitionRef = useRef<any>(null);
-
-  const roomId = useShareStore((s) => s.roomId) || 'default-room';
-  const localRole = useShareStore((s) => s.localRole);
-  const canManageAIPermissions = canManageAccess(localRole);
+  const canManageAIPermissions = canManageAccess(role);
   const agentSettings = useAgentPresence(
-    roomId === 'default-room' ? null : roomId,
-    !collapsed,
+    !room || room === "default-room" ? null : room,
+    open,
     canManageAIPermissions,
   );
-  const history = useCommandHistory();
-  const sameDiagram = history.diagramId === roomId;
-  const lastUndo = sameDiagram ? history.undoStack.at(-1) : undefined;
-  const lastRedo = sameDiagram ? history.redoStack.at(-1) : undefined;
-  const currentUser = useAuthStore((s) => s.user);
-  const userId = currentUser?.id ? String(currentUser.id) : 'guest_user';
-  const userName = currentUser?.display_name || currentUser?.username || 'Usuario';
 
-  const manager = getSharedCollaborationManager();
-  const ydoc = manager.getDoc();
-
-  // Inicializar motores de voz
   useEffect(() => {
-    speechEngineRef.current = new SpeechEngine();
-    whisperEngineRef.current = new WhisperEngine();
-    return () => {
-      speechEngineRef.current?.dispose();
-    };
+    speech.current = new SpeechEngine();
+    return () => speech.current?.dispose();
   }, []);
 
-  // Sincronizar mapas de Yjs (presencia de IA y sugerencias compartidas)
   useEffect(() => {
-    const unbind = syncWithYjs(ydoc);
-    return () => unbind();
-  }, [ydoc, syncWithYjs]);
+    if (!room || !/^\d+$/.test(room)) return;
+    let cancelled = false;
+    setMessages([]);
+    const refresh = async () => {
+      await agent.refresh(room);
+      if (!cancelled && user) {
+        const history = await fetchPrivateHistory(room).catch(() => []);
+        if (!cancelled) setMessages(history);
+      }
+    };
+    void refresh();
+    void agent.checkProvider();
+    const timer = window.setInterval(() => void refresh(), 2000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [room, user?.id]);
 
-  // Cargar historial privado del usuario al montar o cambiar de sala
-  useEffect(() => {
-    if (roomId && userId) {
-      loadHistory(roomId, userId);
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    if (!room || (!text.trim() && !image) || !editable) return;
+    await agent.start(room, text, image);
+    if (!useServerAgent.getState().error) {
+      setText("");
+      setImage(undefined);
+      setTab("tasks");
     }
-  }, [roomId, userId, loadHistory]);
+  }
 
-  // Auto-scroll al recibir mensajes
-  useEffect(() => {
-    if (!collapsed && activeTab === 'chat') {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [privateHistory, collapsed, activeTab]);
-
-  const readImageFile = async (file: File) => {
-    setImageError(null);
-    if (!file.type.startsWith('image/')) {
-      setImageError('Selecciona un archivo de imagen.');
+  function attach(blob: File) {
+    if (blob.size > 6_000_000) {
+      setVoiceError("La imagen debe pesar menos de 6 MB.");
       return;
     }
-    if (file.size > 15 * 1024 * 1024) {
-      setImageError('La imagen debe pesar menos de 15 MB.');
-      return;
-    }
+    const reader = new FileReader();
+    reader.onload = () => setImage(String(reader.result));
+    reader.readAsDataURL(blob);
+  }
+
+  async function microphone() {
+    setVoiceError(null);
     try {
-      const bitmap = await createImageBitmap(file);
-      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-      canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-      bitmap.close();
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve, 'image/jpeg', 0.85),
+      if (recording) {
+        setRecording(false);
+        setTranscribing(true);
+        const audio = await speech.current?.stopRecording();
+        if (audio) setText(await new WhisperEngine().transcribe(audio));
+      } else {
+        await speech.current?.startRecording();
+        setRecording(true);
+      }
+    } catch (reason) {
+      setVoiceError(
+        reason instanceof Error ? reason.message : "No se pudo transcribir.",
       );
-      if (!blob) throw new Error('No se pudo preparar la imagen.');
-      const reader = new FileReader();
-      reader.onload = () => setAttachedImage(reader.result as string);
-      reader.readAsDataURL(blob);
-    } catch {
-      setImageError('No se pudo abrir la imagen. Prueba con JPG o PNG.');
+    } finally {
+      setTranscribing(false);
     }
-  };
+  }
 
-  // Soporte para pegar imágenes directamente (Ctrl + V)
-  const handlePaste = (e: React.ClipboardEvent) => {
-    const items = e.clipboardData?.items;
-    if (!items) return;
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.startsWith('image/')) {
-        const file = items[i].getAsFile();
-        if (file) {
-          void readImageFile(file);
-        }
-        break;
-      }
-    }
-  };
+  const provider = agent.provider;
+  const available = provider
+    ? `${provider.provider} · ${provider.model}${provider.available ? "" : " · no disponible"}`
+    : "Disponibilidad sin verificar";
+  const runs = agent.room === room ? agent.runs : [];
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) void readImageFile(file);
-    e.target.value = '';
-  };
-
-  // Manejo de grabación por voz (Micrófono dual: Web Speech API tiempo real + Whisper backend)
-  const handleMicToggle = async () => {
-    if (isRecording) {
-      setIsRecording(false);
-      setIsTranscribing(true);
-
-      // Detener Web Speech API si estaba activo
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch {}
-        recognitionRef.current = null;
-      }
-
-      try {
-        const audioBlob = await speechEngineRef.current?.stopRecording();
-        if (audioBlob && whisperEngineRef.current) {
-          const text = await whisperEngineRef.current.transcribe(audioBlob);
-          if (text.trim()) {
-            setInputText(text.trim());
-          }
-        }
-      } catch (err) {
-        console.warn('Whisper backend advertencia (usando transcripción actual):', err);
-      } finally {
-        setIsTranscribing(false);
-      }
-    } else {
-      // Iniciar grabación de audio y reconocimiento simultáneo
-      try {
-        await speechEngineRef.current?.startRecording();
-        setIsRecording(true);
-
-        const SpeechRecognition =
-          (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-        if (SpeechRecognition) {
-          try {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'es-ES';
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.onresult = (event: any) => {
-              let transcript = '';
-              for (let i = 0; i < event.results.length; i++) {
-                transcript += event.results[i][0].transcript;
-              }
-              if (transcript.trim()) {
-                setInputText(transcript.trim());
-              }
-            };
-            recognition.onerror = () => {};
-            recognition.start();
-            recognitionRef.current = recognition;
-          } catch {}
-        }
-      } catch (err) {
-        console.error('No se pudo acceder al micrófono:', err);
-      }
-    }
-  };
-
-  const handleSend = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    if ((!inputText.trim() && !attachedImage) || isThinking) return;
-
-    sendMessage({
-      diagramId: roomId,
-      userId,
-      userName,
-      prompt: inputText.trim(),
-      imageBase64: attachedImage || undefined,
-      ydoc,
-    });
-
-    setInputText('');
-    setAttachedImage(null);
-  };
-
-  const patchCount = Object.keys(suggestions).length;
-  const approvableCount = Object.values(suggestions).filter((p) => p.status !== 'stale').length;
+  if (!open)
+    return (
+      <button
+        className="agent-open"
+        onClick={() => setOpen(true)}
+        aria-label="Abrir agente"
+      >
+        <Bot size={18} /> Agente
+      </button>
+    );
 
   return (
-    <>
-      {/* Botón flotante para abrir cuando está colapsado */}
-      {collapsed && (
-        <button
-          onClick={() => setCollapsed(false)}
-          className="ai-toggle-btn"
-          title="Abrir Arquitecto IA Colaborativo"
-          aria-label="Abrir Arquitecto IA"
-        >
-          <Bot size={17} />
-          <span>Arquitecto IA</span>
-          {patchCount > 0 && <span className="ai-tab-badge">{patchCount}</span>}
+    <aside className="server-agent" aria-label="Agente colaborador">
+      <header>
+        <strong>
+          <Bot size={18} /> Agente colaborador
+        </strong>
+        <button onClick={() => setOpen(false)} aria-label="Cerrar agente">
+          <X size={18} />
         </button>
-      )}
-
-      <aside className={`ai-sidebar ${collapsed ? 'ai-collapsed' : ''}`} onPaste={handlePaste}>
-        {/* Cabecera sincronizada con TopMenuBar */}
-        <div className="ai-header">
-          <div className="ai-header-left">
-            <div className="ai-header-icon">
-              <Bot size={18} />
-            </div>
-            <div>
-              <div className="ai-header-title">
-                Arquitecto IA
-                <span className="ai-badge-private">
-                  <Lock size={9} /> Privado
-                </span>
-              </div>
-              <div className="ai-header-subtitle">Memoria Compartida Activa</div>
-            </div>
-          </div>
-
-          <div className="ai-header-actions">
-            {activeTab === 'chat' && (
-              <button
-                onClick={() => clearHistory(roomId, userId)}
-                className="ai-action-btn"
-                title="Limpiar chat privado"
-                aria-label="Limpiar historial"
-              >
-                <Trash2 size={14} />
-              </button>
-            )}
-            <button
-              onClick={() => setCollapsed(true)}
-              className="ai-action-btn"
-              title="Colapsar panel"
-              aria-label="Cerrar panel"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-
-        {/* Selector de Pestañas Bauhaus */}
-        <div className="ai-tabs">
+      </header>
+      <p className="agent-provider">
+        {available}{" "}
+        <button onClick={() => void agent.checkProvider()}>Verificar</button>
+      </p>
+      <p>
+        Actúa cuando se lo pides. El propietario puede desactivarlo en Compartir.
+      </p>
+      <AgentPermissionControl
+        permission={agentSettings.permission}
+        loading={agentSettings.loading}
+        loaded={agentSettings.loaded}
+        error={agentSettings.error}
+        onChange={(next) => void agentSettings.update(next)}
+      />
+      <nav aria-label="Secciones del agente">
+        {(["chat", "tasks", "audit"] as const).map((value) => (
           <button
-            className={`ai-tab-btn ${activeTab === 'chat' ? 'active' : ''}`}
-            onClick={() => setActiveTab('chat')}
+            key={value}
+            className={tab === value ? "active" : ""}
+            onClick={() => setTab(value)}
           >
-            <MessageSquare size={13} /> Chat
+            {value === "chat"
+              ? "Chat privado"
+              : value === "tasks"
+                ? `Tareas (${runs.length})`
+                : "Auditoría"}
           </button>
-          <button
-            className={`ai-tab-btn ${activeTab === 'audit' ? 'active' : ''}`}
-            onClick={() => setActiveTab('audit')}
-          >
-            <History size={13} /> Muro Equipo
-          </button>
-          <button
-            className={`ai-tab-btn ${activeTab === 'suggestions' ? 'active' : ''}`}
-            onClick={() => setActiveTab('suggestions')}
-          >
-            <Layers size={13} /> Sugerencias
-            {patchCount > 0 && <span className="ai-tab-badge">{patchCount}</span>}
-          </button>
-        </div>
-
-        {/* Contenido según Pestaña */}
-        {activeTab === 'chat' && (
+        ))}
+      </nav>
+      {voiceError && <p className="agent-error">{voiceError}</p>}
+      {agent.error && <p className="agent-error">{agent.error}</p>}
+      <div className="agent-body">
+        {tab === "audit" && <AuditFeedTab />}
+        {tab === "chat" && (
           <>
-            <div className="ai-messages-container">
-              {privateHistory.map((msg) => (
-                <div key={msg.id} className={`ai-msg ai-msg-${msg.role}`}>
-                  <div className="ai-msg-bubble">
-                    {/* Si el mensaje tiene imagen adjunta */}
-                    {msg.image && (
-                      <div className="ai-msg-image-thumb">
-                        <img src={msg.image} alt="Boceto o diagrama adjuntado" />
-                      </div>
-                    )}
-
-                    <div>{msg.content}</div>
-
-                    {/* Si produjo parches UML */}
-                    {msg.patches && msg.patches.length > 0 && (
-                      <div style={{ marginTop: '8px', paddingTop: '6px', borderTop: '1px solid #1a1a1a' }}>
-                        <div
-                          style={{
-                            fontSize: '11px',
-                            color: '#7c3aed',
-                            fontWeight: 800,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            marginBottom: '4px',
-                          }}
-                        >
-                          <Sparkles size={11} /> {msg.patches.length} sugerencia(s) generada(s)
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          {msg.patches.map((p) => (
-                            <div
-                              key={p.patch_id}
-                              style={{
-                                fontSize: '11px',
-                                backgroundColor: '#faf5ff',
-                                padding: '4px 6px',
-                                borderRadius: '6px',
-                                border: '1.5px dashed #1a1a1a',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                              }}
-                            >
-                              <span>
-                                <strong>{p.operation}</strong>: {p.target}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {isThinking && (
-                <div className="ai-msg ai-msg-model">
-                  <div
-                    className="ai-msg-bubble"
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#7c3aed', fontWeight: 600 }}
-                  >
-                    <Sparkles size={15} className="animate-spin" />
-                    <span>IA analizando el contexto y preparando cambios...</span>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Formulario de entrada Multimodal (Texto + Voz + Imágenes) */}
-            <div className="ai-input-area">
-              {/* Vista previa de imagen adjunta */}
-              {attachedImage && (
-                <div className="ai-attached-preview">
-                  <img src={attachedImage} alt="Preview" className="ai-preview-thumb" />
-                  <span className="ai-preview-info">Boceto/Imagen lista para análisis</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAttachedImage(null);
-                      setImageError(null);
-                    }}
-                    className="ai-preview-remove-btn"
-                    title="Quitar imagen"
-                  >
-                    <X size={15} />
-                  </button>
-                </div>
-              )}
-              {imageError && <span className="ai-preview-info" role="alert">{imageError}</span>}
-
-              {roomId !== 'default-room' && (
-                <AgentPermissionControl
-                  permission={agentSettings.permission}
-                  loading={agentSettings.loading}
-                  loaded={agentSettings.loaded}
-                  error={agentSettings.error}
-                  onChange={(permission) => void agentSettings.update(permission)}
-                />
-              )}
-
-              {/* Input file invisible */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageSelect}
-                accept="image/*"
-                style={{ display: 'none' }}
-              />
-              <input
-                type="file"
-                ref={cameraInputRef}
-                onChange={handleImageSelect}
-                accept="image/*"
-                capture="environment"
-                style={{ display: 'none' }}
-              />
-
-              <form onSubmit={handleSend} className="ai-input-form">
-                {/* Botón Imagen / Boceto */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isThinking || isRecording}
-                  className="ai-btn-addon"
-                  title="Subir imagen o boceto de diagrama (también puedes pegar con Ctrl+V)"
-                >
-                  <ImageIcon size={17} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => cameraInputRef.current?.click()}
-                  disabled={isThinking || isRecording}
-                  className="ai-btn-addon"
-                  title="Tomar una foto con la cámara"
-                  aria-label="Tomar una foto"
-                >
-                  <Camera size={17} />
-                </button>
-
-                {/* Botón Micrófono / Voz */}
-                <button
-                  type="button"
-                  onClick={handleMicToggle}
-                  disabled={isThinking || isTranscribing}
-                  className={`ai-btn-addon ${isRecording ? 'recording' : ''}`}
-                  title={isRecording ? 'Detener grabación y transcribir' : 'Hablar por micrófono (Voz)'}
-                >
-                  {isTranscribing ? (
-                    <Loader2 size={17} className="animate-spin text-purple-600" />
-                  ) : isRecording ? (
-                    <MicOff size={17} />
-                  ) : (
-                    <Mic size={17} />
-                  )}
-                </button>
-
-                {/* Input de Texto */}
-                <input
-                  type="text"
-                  placeholder={
-                    isRecording
-                      ? 'Escuchando audio...'
-                      : isTranscribing
-                      ? 'Transcribiendo con Whisper...'
-                      : 'Escribe, habla o pega un boceto...'
-                  }
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  className="ai-text-input"
-                  disabled={isThinking || isRecording}
-                />
-
-                {/* Botón Enviar */}
-                <button
-                  type="submit"
-                  disabled={(!inputText.trim() && !attachedImage) || isThinking || isRecording}
-                  className="ai-send-btn"
-                  title="Enviar a la IA"
-                >
-                  <Send size={15} />
-                </button>
-              </form>
-            </div>
-          </>
-        )}
-
-        {activeTab === 'audit' && <AuditFeedTab />}
-
-        {activeTab === 'suggestions' && (
-          <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '14px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              background: '#fafaf9',
-            }}
-          >
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-              <button
-                type="button"
-                className="ai-patch-btn-reject"
-                disabled={!lastUndo}
-                onClick={() => history.undo(roomId)}
-                aria-label="Deshacer el último cambio aplicado por la IA"
-                title={lastUndo ? `Deshacer: ${lastUndo.label}` : 'Nada que deshacer'}
-              >
-                <Undo2 size={14} /> Deshacer
-              </button>
-              <button
-                type="button"
-                className="ai-patch-btn-approve"
-                disabled={!lastRedo}
-                onClick={() => history.redo(roomId)}
-                aria-label="Rehacer el cambio deshecho"
-                title={lastRedo ? `Rehacer: ${lastRedo.label}` : 'Nada que rehacer'}
-              >
-                <Redo2 size={14} /> Rehacer
-              </button>
-            </div>
-            {approvableCount > 1 && (
-              <button
-                type="button"
-                className="ai-patch-btn-approve"
-                onClick={() => approveAll({ diagramId: roomId, ydoc })}
-                title="Aplica todas las sugerencias vigentes como un solo cambio (todas o ninguna)"
-              >
-                Aprobar todas ({approvableCount})
-              </button>
-            )}
-            {history.error && (
-              <div role="alert" style={{ fontSize: '11.5px', color: '#991b1b', background: '#fee2e2', border: '1.5px solid #1a1a1a', borderRadius: '8px', padding: '6px 8px' }}>
-                {history.error}
-              </div>
-            )}
-            {patchCount === 0 ? (
-              <div style={{ textAlign: 'center', color: '#64748b', fontSize: '12px', marginTop: '30px' }}>
-                No hay sugerencias pendientes en el lienzo.
-              </div>
+            {messages.length === 0 ? (
+              <p>Tu conversación privada con el agente aparecerá aquí.</p>
             ) : (
-              Object.values(suggestions).map((patch) => (
-                <div key={patch.patch_id} className="ai-patch-card">
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    <strong style={{ fontSize: '13px', color: '#1a1a1a' }}>{patch.target}</strong>
-                    <span
-                      style={{
-                        fontSize: '10px',
-                        fontWeight: 800,
-                        padding: '2px 6px',
-                        background: '#fef08a',
-                        border: '1.5px solid #1a1a1a',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      {patch.operation}
-                    </span>
-                  </div>
-                  <p style={{ margin: '0 0 8px 0', fontSize: '11.5px', color: '#475569', lineHeight: 1.4 }}>
-                    {patch.reason}
-                  </p>
-                  <div style={{ marginBottom: '8px' }}>
-                    <PatchPreview patch={patch} />
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#7c3aed' }}>
-                      Por: {patch.requested_by}
-                    </span>
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      <button
-                        onClick={() =>
-                          approvePatch({
-                            diagramId: roomId,
-                            patchId: patch.patch_id,
-                            userName,
-                            ydoc,
-                          })
-                        }
-                        className="ai-patch-btn-approve"
-                        disabled={patch.status === 'stale'}
-                      >
-                        Aprobar
-                      </button>
-                      {patch.status === 'stale' && (
-                        <button
-                          onClick={() =>
-                            reproposePatch({
-                              diagramId: roomId,
-                              patchId: patch.patch_id,
-                              userId,
-                              userName,
-                              ydoc,
-                            })
-                          }
-                          className="ai-patch-btn-approve"
-                          title="Pedir al agente que la proponga de nuevo sobre el estado actual"
-                        >
-                          Re-proponer
-                        </button>
-                      )}
-                      <button
-                        onClick={() =>
-                          rejectPatch({
-                            diagramId: roomId,
-                            patchId: patch.patch_id,
-                            userName,
-                            ydoc,
-                          })
-                        }
-                        className="ai-patch-btn-reject"
-                      >
-                        Rechazar
-                      </button>
-                    </div>
-                  </div>
+              messages.map((item, index) => (
+                <div key={index} className={`agent-msg ${item.role}`}>
+                  <small>{item.role === "user" ? "Tú" : "Agente"}</small>
+                  <p>{item.content}</p>
                 </div>
               ))
             )}
+            {messages.length > 0 && room && (
+              <button
+                className="agent-clear"
+                onClick={async () => {
+                  await clearPrivateHistory(room);
+                  setMessages([]);
+                }}
+              >
+                Limpiar mi historial
+              </button>
+            )}
+          </>
+        )}
+        {tab === "tasks" && (
+          <>
+            {!runs.length && <p>No hay tareas en este diagrama.</p>}
+            {runs.map((run) => (
+              <article key={run.id} className="agent-task">
+                <strong>
+                  {run.user_name} · {run.mode === "edit" ? "Editar" : "Sugerir"}
+                </strong>
+                <p>{run.progress}</p>
+                {run.error && <p role="alert">{run.error}</p>}
+                {run.reply && <p>{run.reply}</p>}
+                {(run.context?.truncated ||
+                  run.context?.history_truncated ||
+                  run.context?.messages_truncated) && (
+                  <p>
+                    Se utilizó un resumen parcial del contexto. Selecciona una
+                    clase para consultar sus detalles.
+                  </p>
+                )}
+                {run.reasons?.map((reason, index) => (
+                  <p key={index}>Motivo compartido: {reason}</p>
+                ))}
+                {run.commands.length > 0 && (
+                  <details>
+                    <summary>{run.commands.length} cambios preparados</summary>
+                    {run.commands.flatMap((cmd) =>
+                      describeCommand(cmd, model).map((line, index) => (
+                        <p key={`${cmd.commandId}:${index}`}>{line}</p>
+                      )),
+                    )}
+                  </details>
+                )}
+                {run.status === "awaiting_approval" && (
+                  <>
+                    <button
+                      onClick={() =>
+                        agent.setPreview(
+                          agent.preview?.id === run.id ? null : run,
+                        )
+                      }
+                    >
+                      Vista previa en el lienzo
+                    </button>
+                    <p>
+                      {run.destructive
+                        ? "Incluye eliminaciones: requiere aprobación explícita."
+                        : "Los cambios aún no están aplicados."}
+                    </p>
+                    <button
+                      disabled={!editable}
+                      onClick={() =>
+                        room && void agent.action(room, run.id, "approve")
+                      }
+                    >
+                      Aprobar lote
+                    </button>
+                    <button
+                      disabled={!editable}
+                      onClick={() =>
+                        room && void agent.action(room, run.id, "reject")
+                      }
+                    >
+                      Rechazar
+                    </button>
+                  </>
+                )}
+                {["queued", "running"].includes(run.status) && (
+                  <button
+                    disabled={
+                      !editable ||
+                      (user?.id !== run.user_id && role !== "OWNER")
+                    }
+                    onClick={() =>
+                      room && void agent.action(room, run.id, "cancel")
+                    }
+                  >
+                    Cancelar tarea
+                  </button>
+                )}
+                {["failed", "stale", "cancelled"].includes(run.status) &&
+                  user?.id === run.user_id && (
+                    <button
+                      disabled={!editable}
+                      onClick={() =>
+                        room && void agent.action(room, run.id, "retry")
+                      }
+                    >
+                      Volver a proponer
+                    </button>
+                  )}
+                {run.status === "completed" &&
+                  run.commands.length > 0 &&
+                  user?.id === run.user_id &&
+                  !run.undone && (
+                    <button
+                      disabled={!editable}
+                      onClick={() =>
+                        room && void agent.action(room, run.id, "undo")
+                      }
+                    >
+                      Deshacer mis cambios
+                    </button>
+                  )}
+              </article>
+            ))}
+          </>
+        )}
+      </div>
+      <form
+        onSubmit={submit}
+        onPaste={(event) => {
+          for (const item of event.clipboardData.items)
+            if (item.type.startsWith("image/")) {
+              const blob = item.getAsFile();
+              if (blob) attach(blob);
+            }
+        }}
+      >
+        <label htmlFor="agent-mode">Modo de esta tarea</label>
+        <select
+          id="agent-mode"
+          value={agent.mode}
+          onChange={(event) =>
+            agent.setMode(event.target.value as "suggest" | "edit")
+          }
+          disabled={agent.submitting}
+        >
+          <option value="suggest">Sugerir · aprobar antes de aplicar</option>
+          <option value="edit">Editar · aplicar cambios permitidos</option>
+        </select>
+        {agent.mode === "edit" && (
+          <p>Las eliminaciones siempre requieren aprobación.</p>
+        )}
+        {image && (
+          <div>
+            <img
+              className="agent-attachment"
+              src={image}
+              alt="Imagen adjunta"
+            />
+            <button type="button" onClick={() => setImage(undefined)}>
+              Quitar imagen
+            </button>
           </div>
         )}
-      </aside>
-    </>
+        <textarea
+          aria-label="Mensaje al agente"
+          value={text}
+          maxLength={4000}
+          placeholder="Agrega una clase, revisa una relación u ordena el diagrama…"
+          onChange={(event) => setText(event.target.value)}
+          disabled={!editable || agent.submitting}
+        />
+        <div className="agent-compose-actions">
+          <input
+            ref={file}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(event) => {
+              const blob = event.target.files?.[0];
+              if (blob) attach(blob);
+            }}
+          />
+          <button
+            type="button"
+            disabled={!editable}
+            onClick={() => file.current?.click()}
+            aria-label="Adjuntar imagen"
+          >
+            <ImageIcon size={18} />
+          </button>
+          <button
+            type="button"
+            disabled={!editable || transcribing}
+            onClick={() => void microphone()}
+            aria-label={recording ? "Detener grabación" : "Dictar mensaje"}
+          >
+            <Mic size={18} />
+            {recording ? "Detener" : transcribing ? "Transcribiendo…" : ""}
+          </button>
+          <button
+            type="submit"
+            disabled={!editable || agent.submitting || (!text.trim() && !image)}
+          >
+            <Send size={16} />
+            {agent.submitting ? "Enviando…" : "Enviar"}
+          </button>
+        </div>
+        {!editable && (
+          <p>Conecta a la sala con permisos de edición para iniciar tareas.</p>
+        )}
+      </form>
+    </aside>
   );
 };

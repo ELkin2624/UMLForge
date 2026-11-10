@@ -10,6 +10,7 @@ class DiagramCreate(BaseModel):
 
 
 class DiagramUpdate(BaseModel):
+    expected_revision: int | None = None
     name: str | None = None
     data: dict[str, Any] | None = None
     # Origen del cambio: "ai" cuando el cliente guarda parches aplicados por la IA.
@@ -28,6 +29,7 @@ class DiagramResponse(BaseModel):
 
 
 class DiagramDetailResponse(DiagramResponse):
+    layout: dict[str, Any] = {}
     data: dict[str, Any]
     version: int = 0
     # True si el agente de IA participa en la sala de este diagrama.

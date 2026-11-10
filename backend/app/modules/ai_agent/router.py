@@ -97,7 +97,7 @@ async def collaborate(
     except Exception as e:
         # El detalle técnico va al log, no al cliente.
         logger.error("Error en endpoint /collaborate: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail="Error al procesar la consulta con la IA")
+        raise HTTPException(status_code=503, detail="El proveedor de IA no está disponible")
 
 
 @router.get("/history/{diagram_id}")

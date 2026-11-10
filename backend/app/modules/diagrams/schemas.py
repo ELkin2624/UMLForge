@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -45,3 +45,9 @@ class ErrorResponse(BaseModel):
     status: int
     detail: str
     errors: list[APIErrorDetail] = Field(default_factory=list)
+
+
+class GenerateSQLRequest(BaseModel):
+    model_data: dict[str, Any]
+    mode: Literal["schema", "data", "both"] = "both"
+    rows_per_entity: int = Field(default=3, ge=1, le=1000, strict=True)

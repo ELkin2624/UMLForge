@@ -264,7 +264,7 @@ def test_many_to_many_request_contains_related_ids():
     dataset = SyntheticDataGenerator.generate(model, ordered, DomainType.GENERIC)
 
     col = generate_postman_collection(model, ordered_entities=ordered, dataset=dataset)
-    owner_create = next(i for i in col.item[1].item if i.name == "Create TagOwner")
+    owner_create = next(i for folder in col.item for i in folder.item if i.name == "Create TagOwner")
     assert "tagTargetIds" in owner_create.request.body.raw
     assert "{{tagTargetId}}" in owner_create.request.body.raw
 

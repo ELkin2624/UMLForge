@@ -1,10 +1,17 @@
-import * as Y from 'yjs';
-import { YWebSocketProvider } from '../api/websocket-provider';
-import { createYjsDocument, getModelJson, setModelJson } from './yjs-document';
-import { setupAwareness, getOrCreateLocalIdentity } from './awareness';
-import { bindYjsToStore } from './yjs-bindings';
-import { useModelStore } from '../../../store/model-store';
-import type { CollaborationStatus, PeerInfo } from './types';
+import * as Y from "yjs";
+import { YWebSocketProvider } from "../api/websocket-provider";
+import {
+  enqueuePosition,
+  knownLayout,
+  onRoomLayout,
+  receiveRoom,
+} from "./command-client";
+import { createYjsDocument, getModelJson, setModelJson } from "./yjs-document";
+import { setupAwareness, getOrCreateLocalIdentity } from "./awareness";
+import { bindYjsToStore } from "./yjs-bindings";
+import { useModelStore } from "../../../store/model-store";
+import type { CollaborationStatus, PeerInfo } from "./types";
+import type { Position } from './visual-state-manager';
 
 /**
  * CollaborationManager — orquesta Y.Doc, WebsocketProvider, Awareness y Bindings.
@@ -23,21 +30,22 @@ import type { CollaborationStatus, PeerInfo } from './types';
 export const CONNECT_TIMEOUT_MS = 8000;
 
 export const CONNECT_ERROR_MESSAGE =
-  'No se pudo conectar al servidor de colaboración. Verifica que esté en ejecución ' +
-  '(infra/collaboration-server) y que tu sesión siga activa. Se seguirá reintentando.';
+  "No se pudo conectar al servidor de colaboración. Verifica que esté en ejecución " +
+  "(infra/collaboration-server) y que tu sesión siga activa. Se seguirá reintentando.";
 
 /** Códigos de cierre que envía el servidor Yjs al rechazar una conexión. */
 export const CLOSE_UNAUTHORIZED = 4001;
 export const CLOSE_FORBIDDEN = 4003;
 
 export const FORBIDDEN_MESSAGE =
-  'No tienes permiso para entrar a este diagrama. Pídele al dueño que te invite ' +
+  "No tienes permiso para entrar a este diagrama. Pídele al dueño que te invite " +
   'desde "Compartir" (buscándote por usuario) y acepta la invitación desde las notificaciones.';
 
 export class CollaborationManager {
   private _roomName: string | null = null;
   private _offClose: (() => void) | null = null;
   private _connectTimer: ReturnType<typeof setTimeout> | null = null;
+  private _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private _doc: Y.Doc | null = null;
   private _provider: YWebSocketProvider | null = null;
   private _unbindYjs: (() => void) | null = null;
@@ -45,7 +53,9 @@ export class CollaborationManager {
   private _offSync: (() => void) | null = null;
   private _offStatus: (() => void) | null = null;
   private _syncHandled = false;
-  private _visualSubscribers = new Set<(visualState: Record<string, { x: number; y: number }>) => void>();
+  private _visualSubscribers = new Set<
+    (visualState: Record<string, Position>) => void
+  >();
   private _unbindVisualState: (() => void) | null = null;
 
   /**
@@ -66,8 +76,11 @@ export class CollaborationManager {
     if (this._provider && this._roomName === roomName) {
       if (displayName) {
         const awareness = this._provider.getAwareness();
-        const user = (awareness.getLocalState()?.user ?? {}) as Record<string, unknown>;
-        awareness.setLocalStateField('user', { ...user, name: displayName });
+        const user = (awareness.getLocalState()?.user ?? {}) as Record<
+          string,
+          unknown
+        >;
+        awareness.setLocalStateField("user", { ...user, name: displayName });
       }
       return;
     }
@@ -87,25 +100,26 @@ export class CollaborationManager {
     this._provider = new YWebSocketProvider(this._doc, roomName);
 
     // Actualizar store: conectando
-    this._updateStore({ status: 'connecting', roomName, error: null });
+    this._updateStore({ status: "connecting", roomName, error: null });
 
     // 3a. Listener de estado del WebSocket
     this._offStatus = this._provider.onStatus(({ status }) => {
-      if (status === 'connected') {
+      if (status === "connected") {
         if (!this._syncHandled) {
-          this._clearConnectTimer();
-          this._updateStore({ status: 'connected', error: null });
+          if (!/^\d+$/.test(roomName)) this._clearConnectTimer();
+          this._updateStore({ status: "connected", error: null });
           // Fallback de seguridad: si tras 1s no ha disparado sync, forzar sync si el provider ya sincronizó
-          setTimeout(() => {
-            if (!this._syncHandled && this._doc && this._provider) {
-              handleSync();
-            }
-          }, 1000);
+          if (!/^\d+$/.test(roomName))
+            setTimeout(() => {
+              if (!this._syncHandled && this._doc && this._provider) {
+                handleSync();
+              }
+            }, 1000);
         }
-      } else if (status === 'disconnected') {
+      } else if (status === "disconnected") {
         // Solo actualizar si ya habíamos sincronizado (no durante la conexión inicial)
         if (this._syncHandled) {
-          this._updateStore({ status: 'disconnected' });
+          this._updateStore({ status: "disconnected" });
         }
       }
     });
@@ -116,11 +130,14 @@ export class CollaborationManager {
       this._syncHandled = true;
       this._clearConnectTimer();
 
-      this._updateStore({ status: 'synced', error: null });
+      this._updateStore({ status: "synced", error: null });
       this._applyDocumentAuthority(this._doc);
 
       // 4. Iniciar bindings bidireccionales DESPUÉS de resolver autoridad
-      this._unbindYjs = bindYjsToStore(this._doc);
+      this._unbindYjs = bindYjsToStore(
+        this._doc,
+        /^\d+$/.test(roomName) ? roomName : undefined,
+      );
       this._setupVisualStateObserver(this._doc);
     };
 
@@ -130,7 +147,23 @@ export class CollaborationManager {
       if (code === CLOSE_FORBIDDEN && this._provider) {
         this._clearConnectTimer();
         this._provider.disconnect(); // detiene los reintentos de y-websocket
-        this._updateStore({ status: 'error', error: FORBIDDEN_MESSAGE });
+        this._updateStore({ status: "error", error: FORBIDDEN_MESSAGE });
+      } else if (
+        /^\d+$/.test(roomName) &&
+        this._provider &&
+        !this._reconnectTimer
+      ) {
+        // El documento del servidor puede haberse recreado: no mezclar dos historias Yjs.
+        const provider = this._provider;
+        provider.disconnect();
+        this._updateStore({ status: "disconnected" });
+        this._reconnectTimer = setTimeout(() => {
+          this._reconnectTimer = null;
+          if (this._provider !== provider) return;
+          const name = useModelStore.getState().collaboration.displayName;
+          this.disconnect();
+          this.connect(roomName, name);
+        }, 1000);
       }
     });
 
@@ -147,21 +180,27 @@ export class CollaborationManager {
     // Persistir displayName actualizado en sessionStorage si fue provisto
     if (displayName) {
       try {
-        const stored = sessionStorage.getItem('umlforge-identity');
+        const stored = sessionStorage.getItem("umlforge-identity");
         const parsed = stored ? JSON.parse(stored) : {};
         sessionStorage.setItem(
-          'umlforge-identity',
-          JSON.stringify({ ...parsed, name: displayName })
+          "umlforge-identity",
+          JSON.stringify({ ...parsed, name: displayName }),
         );
-      } catch { /* silenciar */ }
+      } catch {
+        /* silenciar */
+      }
     }
 
     this._teardownAwareness = setupAwareness(
       this._provider,
       identity,
       (peers: PeerInfo[], localClientId: number) => {
-        this._updateStore({ peers, peersCount: peers.filter((p) => !p.isAgent).length, localClientId });
-      }
+        this._updateStore({
+          peers,
+          peersCount: peers.filter((p) => !p.isAgent).length,
+          localClientId,
+        });
+      },
     );
 
     // 5. Conectar. Si no hay respuesta a tiempo, avisar en lugar de quedar en "Conectando…".
@@ -170,7 +209,7 @@ export class CollaborationManager {
     this._connectTimer = setTimeout(() => {
       this._connectTimer = null;
       if (!this._syncHandled && this._provider) {
-        this._updateStore({ status: 'error', error: CONNECT_ERROR_MESSAGE });
+        this._updateStore({ status: "error", error: CONNECT_ERROR_MESSAGE });
       }
     }, CONNECT_TIMEOUT_MS);
     this._provider.connect();
@@ -194,6 +233,10 @@ export class CollaborationManager {
    * 7. Resetear store
    */
   disconnect(): void {
+    if (this._reconnectTimer) {
+      clearTimeout(this._reconnectTimer);
+      this._reconnectTimer = null;
+    }
     this._clearConnectTimer();
 
     // 1. Bindings
@@ -269,27 +312,42 @@ export class CollaborationManager {
    */
   private _applyDocumentAuthority(doc: Y.Doc): void {
     const remoteJson = getModelJson(doc);
+    if (this._roomName && /^\d+$/.test(this._roomName)) {
+      if (remoteJson)
+        receiveRoom(this._roomName, {
+          data: JSON.parse(remoteJson),
+          layout: doc.getMap<Position>("visual-state").toJSON(),
+          revision: doc.getMap<number>("room").get("revision") ?? 1,
+        });
+      return;
+    }
     const localModel = useModelStore.getState().model;
-    const isLocalEmpty = !localModel || (!localModel.classes?.length && !localModel.components?.length);
+    const isLocalEmpty =
+      !localModel ||
+      (!localModel.classes?.length && !localModel.components?.length);
 
     if (remoteJson) {
       try {
         const remoteModel = JSON.parse(remoteJson);
-        const isRemoteEmpty = !remoteModel || (!remoteModel.classes?.length && !remoteModel.components?.length);
+        const isRemoteEmpty =
+          !remoteModel ||
+          (!remoteModel.classes?.length && !remoteModel.components?.length);
 
         if (!isRemoteEmpty) {
           // La sala tiene elementos válidos -> adoptar el modelo remoto en Zustand
           useModelStore.getState().setModelFromRemote(remoteModel);
         } else if (!isLocalEmpty) {
           // La sala está vacía pero localmente tenemos un modelo con clases -> publicar local
-          setModelJson(doc, JSON.stringify(localModel), 'umlforge-local');
+          setModelJson(doc, JSON.stringify(localModel), "umlforge-local");
         }
       } catch {
-        console.warn('[UMLForge Collaboration] No se pudo parsear el modelo remoto.');
+        console.warn(
+          "[UMLForge Collaboration] No se pudo parsear el modelo remoto.",
+        );
       }
     } else if (!isLocalEmpty && localModel) {
       // Sala completamente vacía -> publicar modelo local
-      setModelJson(doc, JSON.stringify(localModel), 'umlforge-local');
+      setModelJson(doc, JSON.stringify(localModel), "umlforge-local");
     }
   }
 
@@ -302,11 +360,15 @@ export class CollaborationManager {
     error?: string | null;
   }): void {
     const store = useModelStore.getState();
-    if (partial.status !== undefined) store.setCollaborationStatus(partial.status);
-    if (partial.roomName !== undefined) store.setCollaborationRoom(partial.roomName);
+    if (partial.status !== undefined)
+      store.setCollaborationStatus(partial.status);
+    if (partial.roomName !== undefined)
+      store.setCollaborationRoom(partial.roomName);
     if (partial.peers !== undefined) store.setPeers(partial.peers);
-    if (partial.peersCount !== undefined) store.setPeersCount(partial.peersCount);
-    if (partial.localClientId !== undefined) store.setLocalClientId(partial.localClientId);
+    if (partial.peersCount !== undefined)
+      store.setPeersCount(partial.peersCount);
+    if (partial.localClientId !== undefined)
+      store.setLocalClientId(partial.localClientId);
     if (partial.error !== undefined) store.setCollaborationError(partial.error);
   }
 
@@ -321,18 +383,27 @@ export class CollaborationManager {
       this._unbindVisualState = null;
     }
 
-    const map = doc.getMap<{ x: number; y: number }>('visual-state');
+    const map = doc.getMap<Position>("visual-state");
 
-    const observer = (event: Y.YMapEvent<{ x: number; y: number }>, transaction: Y.Transaction) => {
-      if (transaction.origin === 'umlforge-local') return;
-      const state: Record<string, { x: number; y: number }> = {};
-      event.keysChanged.forEach((nodeId) => {
-        const position = map.get(nodeId);
-        if (position) state[nodeId] = position;
-      });
-      if (Object.keys(state).length === 0) return;
-      this._visualSubscribers.forEach(cb => {
-        try { cb(state); } catch (e) { console.error('[VisualState] Error en subscriber:', e); }
+    const observer = (
+      _event: Y.YMapEvent<Position>,
+      transaction: Y.Transaction,
+    ) => {
+      if (transaction.origin === "umlforge-local") return;
+      const room = this._roomName;
+      // Salas nuevas: las publicaciones pueden llegar desordenadas (una calculada antes de
+      // confirmarse tu último movimiento devolvía la clase a su sitio anterior un instante).
+      // knownLayout descarta revisiones viejas e incluye lo tuyo aún sin confirmar.
+      const state =
+        room && /^\d+$/.test(room)
+          ? { ...map.toJSON(), ...knownLayout(room) }
+          : map.toJSON();
+      this._visualSubscribers.forEach((cb) => {
+        try {
+          cb(state);
+        } catch (e) {
+          console.error("[VisualState] Error en subscriber:", e);
+        }
       });
     };
 
@@ -344,8 +415,12 @@ export class CollaborationManager {
     // Emitir inmediatamente el estado sincronizado actual a todos los subscribers registrados
     const initialSnapshot = map.toJSON();
     if (Object.keys(initialSnapshot).length > 0) {
-      this._visualSubscribers.forEach(cb => {
-        try { cb(initialSnapshot); } catch (e) { console.error('[VisualState] Error en snapshot inicial:', e); }
+      this._visualSubscribers.forEach((cb) => {
+        try {
+          cb(initialSnapshot);
+        } catch (e) {
+          console.error("[VisualState] Error en snapshot inicial:", e);
+        }
       });
     }
   }
@@ -353,21 +428,28 @@ export class CollaborationManager {
   /**
    * Obtiene el estado visual actual (nodeId -> {x, y})
    */
-  getVisualState(): Record<string, { x: number; y: number }> | null {
+  getVisualState(): Record<string, Position> | null {
     if (!this._doc) return null;
-    const map = this._doc.getMap<{ x: number; y: number }>('visual-state');
+    const map = this._doc.getMap<Position>("visual-state");
     return map.toJSON();
   }
 
   /**
    * Actualiza el estado visual de un nodo de forma throttled localmente
    */
-  updateVisualStateNode(nodeId: string, position: { x: number; y: number }): void {
+  updateVisualStateNode(
+    nodeId: string,
+    position: Position,
+  ): void {
     if (!this._doc) return;
-    const map = this._doc.getMap<{ x: number; y: number }>('visual-state');
+    if (this._roomName && /^\d+$/.test(this._roomName)) {
+      enqueuePosition(this._roomName, nodeId, position);
+      return;
+    }
+    const map = this._doc.getMap<Position>("visual-state");
     this._doc.transact(() => {
       map.set(nodeId, position);
-    }, 'umlforge-local');
+    }, "umlforge-local");
   }
 
   /**
@@ -375,18 +457,24 @@ export class CollaborationManager {
    */
   removeVisualStateNode(nodeId: string): void {
     if (!this._doc) return;
-    const map = this._doc.getMap<{ x: number; y: number }>('visual-state');
+    if (this._roomName && /^\d+$/.test(this._roomName)) {
+      enqueuePosition(this._roomName, nodeId, null);
+      return;
+    }
+    const map = this._doc.getMap<Position>("visual-state");
     this._doc.transact(() => {
       map.delete(nodeId);
-    }, 'umlforge-local');
+    }, "umlforge-local");
   }
 
   /**
    * Suscribe a los cambios del estado visual provenientes de la red.
    */
-  subscribeToVisualState(callback: (visualState: Record<string, { x: number; y: number }>) => void): () => void {
+  subscribeToVisualState(
+    callback: (visualState: Record<string, Position>) => void,
+  ): () => void {
     this._visualSubscribers.add(callback);
-    
+
     // Si ya existe el doc sincronizado, emitir de inmediato el snapshot actual
     if (this._doc) {
       const current = this.getVisualState();
@@ -395,7 +483,11 @@ export class CollaborationManager {
       }
     }
 
+    const off = onRoomLayout((room, layout) => {
+      if (room === this._roomName) callback(layout);
+    });
     return () => {
+      off();
       this._visualSubscribers.delete(callback);
     };
   }

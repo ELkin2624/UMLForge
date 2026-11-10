@@ -9,6 +9,7 @@ import {
 import { useCollaboration } from '../model/use-collaboration';
 import { StatusIcon } from './StatusIcon';
 import type { CollaborationStatus } from '../model/types';
+import { shouldShowCollaborationPanel } from '../model/panel-visibility';
 
 const STATUS_LABELS: Record<CollaborationStatus, string> = {
   idle: 'Inactivo',
@@ -40,6 +41,7 @@ export function CollaborationPanel() {
     disconnect,
     status,
     roomName,
+    peersCount,
     error,
     roomNameWarning,
     clearWarning,
@@ -55,8 +57,8 @@ export function CollaborationPanel() {
     } catch {}
   }, [disconnect]);
 
-  // Ocultar completamente el panel si no hay sesión activa o en proceso.
-  if (status === 'idle' || status === 'disconnected') {
+  // Solo con más personas en la sala (o un error): estando solo, el editor es uno normal.
+  if (!shouldShowCollaborationPanel(status, peersCount)) {
     return null;
   }
 

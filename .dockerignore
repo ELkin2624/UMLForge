@@ -1,0 +1,12 @@
+**/node_modules
+**/.venv
+**/__pycache__
+**/.git
+**/.env
+**/dist
+backend-springboot
+mobile
+docs
+kaggle
+reports
+infra/collaboration-server/node_modules

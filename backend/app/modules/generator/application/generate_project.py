@@ -3,14 +3,14 @@ from pathlib import Path
 from app.core.canonical_model.model import UMLModel
 from app.core.validators.generation_rules import GenerationValidator
 from app.core.validators.validation_result import ValidationResult
-
-from app.modules.generator.domain.entity_mapper import EntityMapper
 from app.modules.generator.domain.exceptions import GenerationError
-from app.modules.generator.domain.generated_project import GeneratedFile, GeneratedProject
+from app.modules.generator.domain.generated_project import (
+    GeneratedFile,
+    GeneratedProject,
+)
 from app.modules.generator.domain.generation_manifest import GenerationManifest
 from app.modules.generator.domain.openapi_mapper import OpenAPIMapper
 from app.modules.generator.domain.postman_mapper import PostmanMapper
-from app.modules.generator.domain.schema_mapper import SchemaMapper
 from app.modules.generator.infrastructure.jinja_renderer import JinjaRenderer
 
 
@@ -32,16 +32,14 @@ class ProjectGenerator:
             )
 
         # 2. Mapeos de dominio (Semantics) y Análisis de Dominio
-        entities = EntityMapper.map_entities(model)
-        from app.modules.generator.domain.domain_analyzer import DomainAnalyzer
-        from app.modules.generator.domain.dependency_graph import DependencyGraph
-        from app.modules.generator.domain.synthetic_data_generator import SyntheticDataGenerator
+        from .prepare_relational import prepare_relational
 
-        domain = DomainAnalyzer.analyze(model)
-        ordered_entities = DependencyGraph.topological_sort(entities)
-        dataset = SyntheticDataGenerator.generate(model, ordered_entities, domain)
-
-        schema_info = SchemaMapper.map_schema(ordered_entities)
+        relational = prepare_relational(model)
+        ordered_entities = relational.entities
+        entities = ordered_entities
+        domain = relational.domain
+        dataset = relational.dataset
+        schema_info = relational.schema
         openapi_info = OpenAPIMapper.map_openapi(project_name, ordered_entities)
         postman_info = PostmanMapper.map_postman(project_name, ordered_entities)
 
@@ -130,7 +128,7 @@ class ProjectGenerator:
 
         # Generar data.sql con seed coherente determinista SOLO si existen sentencias
         if has_seed_data:
-            seed_content = "-- Seed data for " + project_name + "\n" + "\n".join(dataset.sql_statements) + "\n"
+            seed_content = "-- Datos sintéticos\nSET standard_conforming_strings = on;\n" + "\n".join(dataset.sql_statements) + "\n"
             files.append(
                 GeneratedFile(
                     path="src/main/resources/data.sql",
@@ -193,9 +191,9 @@ class ProjectGenerator:
         )
 
         # Artefactos para el Ecosistema Móvil e IA On-Device
-        from app.modules.generator.domain.mobile_schema_mapper import MobileSchemaMapper
         from app.modules.generator.domain.ai_tools_mapper import AIToolsMapper
         from app.modules.generator.domain.manifest_mapper import ManifestMapper
+        from app.modules.generator.domain.mobile_schema_mapper import MobileSchemaMapper
 
         mobile_schema = MobileSchemaMapper.map_schema(project_name, ordered_entities, domain=domain.value)
         ai_tools = AIToolsMapper.map_tools(project_name, ordered_entities, domain=domain.value)

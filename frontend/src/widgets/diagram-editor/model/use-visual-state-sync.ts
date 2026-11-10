@@ -15,9 +15,12 @@ interface UseVisualStateSyncOptions {
   setAwarenessState: (key: string, value: any) => void;
 }
 
+/** Tiempo sin movimiento para dar por terminado un arrastre y enviar la posición final. */
+export const DRAG_SETTLE_MS = 200;
+
 /**
- * Hook responsable de la sincronización de posiciones visuales de los nodos (X/Y),
- * optimizando el envío con requestAnimationFrame y reaccionando a cambios remotos.
+ * Hook responsable de la sincronización de posiciones visuales (y tamaño) de los nodos:
+ * envía la posición final al terminar cada arrastre y aplica los cambios remotos.
  */
 export function useVisualStateSync({
   updateVisualStateNode,
@@ -28,7 +31,6 @@ export function useVisualStateSync({
   const lastVisualStateRef = useRef<VisualStateMap>({});
   const pendingVisualUpdatesRef = useRef<VisualStateMap>({});
   const pendingDeletionsRef = useRef<Set<string>>(new Set());
-  const rafScheduledRef = useRef(false);
   const dragEndTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const locallyDraggingNodeRef = useRef<string | null>(null);
 
@@ -67,21 +69,19 @@ export function useVisualStateSync({
         const draggingNodes = Object.keys(delta);
         if (draggingNodes.length > 0) {
           locallyDraggingNodeRef.current = draggingNodes[0];
+          // Durante un arrastre la posición solo cambia en este lienzo; se envía UNA vez al
+          // soltar. Antes se enviaba cada paso: cada uno era una escritura en la base (en la
+          // nube) y una versión del historial, y los demás veían la clase avanzar a saltos.
           setAwarenessState('draggingNode', draggingNodes[0]);
           if (dragEndTimeoutRef.current) clearTimeout(dragEndTimeoutRef.current);
           dragEndTimeoutRef.current = setTimeout(() => {
             locallyDraggingNodeRef.current = null;
             setAwarenessState('draggingNode', null);
             flushVisualUpdates();
-          }, 150);
-        }
-
-        if (!rafScheduledRef.current) {
-          rafScheduledRef.current = true;
-          window.requestAnimationFrame(() => {
-            rafScheduledRef.current = false;
-            flushVisualUpdates();
-          });
+          }, DRAG_SETTLE_MS);
+        } else {
+          // Solo borrados: no hay arrastre que esperar.
+          flushVisualUpdates();
         }
       }
 

@@ -53,7 +53,7 @@ def test_unirse_con_enlace_editor_permite_editar(client, world, db_session):
     token = enable(client, world, "EDITOR")["token"]
     stranger = _user(db_session, "mallory")
     assert client.post(f"/api/v1/share-links/{token}/join", headers=_h(stranger)).json()["role"] == "EDITOR"
-    res = client.put(f"/api/v1/diagrams/{world['id']}", json={"data": {"classes": []}}, headers=_h(stranger))
+    res = client.put(f"/api/v1/diagrams/{world['id']}", json={"data": {"classes": []}, "expected_revision": 1}, headers=_h(stranger))
     assert res.status_code == 200
 
 

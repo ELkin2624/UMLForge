@@ -1,5 +1,6 @@
 import * as Y from 'yjs';
-import { useModelStore } from '../../../store/model-store';
+import { enqueueModel, receiveRoom } from './command-client';
+import { useModelStore, isApplyingRemoteModel } from '../../../store/model-store';
 import { getModelMap, setModelJson } from './yjs-document';
 import type { UMLModel } from '../../../types/canonical-model';
 
@@ -22,7 +23,7 @@ export const LOCAL_ORIGIN = 'umlforge-local';
  * Retorna una función `unbind` que cancela ambas suscripciones.
  * Debe llamarse antes de destruir el doc o desconectar el provider.
  */
-export function bindYjsToStore(doc: Y.Doc): () => void {
+export function bindYjsToStore(doc: Y.Doc, managedRoom?: string): () => void {
   const yMap = getModelMap(doc);
 
   // ── 1. Store → Y.Doc ──────────────────────────────────────────────────────
@@ -31,7 +32,11 @@ export function bindYjsToStore(doc: Y.Doc): () => void {
 
   const unsubscribeStore = useModelStore.subscribe(
     (state) => state.model,
-    (model) => {
+    (model, previous) => {
+      if (managedRoom) {
+        if (!isApplyingRemote && !isApplyingRemoteModel() && model && previous) enqueueModel(managedRoom, previous, model);
+        return;
+      }
       // Si estamos aplicando un cambio remoto, no re-publicar en Yjs (evitar loop)
       if (isApplyingRemote) return;
       if (model === null) return;
@@ -58,6 +63,10 @@ export function bindYjsToStore(doc: Y.Doc): () => void {
 
     try {
       const model = JSON.parse(json) as UMLModel;
+      if (managedRoom) {
+        receiveRoom(managedRoom, {data:model, layout:doc.getMap<{x:number;y:number}>('visual-state').toJSON(), revision:doc.getMap<number>('room').get('revision') ?? 1});
+        return;
+      }
       isApplyingRemote = true;
       useModelStore.getState().setModelFromRemote(model);
     } catch {

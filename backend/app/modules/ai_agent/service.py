@@ -78,23 +78,7 @@ class AIAgentService:
             patches=ready_patches,
         )
 
-        # 6. Si hubo una decisión de diseño relevante para el equipo, registrar en Memoria Compartida y Audit Log
-        if ai_output.shared_decision_note:
-            await self.repo.append_shared_decision(
-                diagram_id=diagram_id,
-                user_name=user_name,
-                decision=ai_output.shared_decision_note,
-            )
-            await self.repo.log_audit_event(
-                diagram_id=diagram_id,
-                actor=(
-                    f"IA simulada (vía {user_name})"
-                    if simulated
-                    else f"Gemini IA (vía {user_name})"
-                ),
-                action_summary=ai_output.shared_decision_note,
-            )
-
+        # Las consultas legacy/móviles solo proponen; las decisiones se registran al aplicar una tarea.
         execution_mode = (
             "SUGGESTION"
             if permission == "ask"

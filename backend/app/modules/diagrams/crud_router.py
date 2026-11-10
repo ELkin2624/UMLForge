@@ -115,16 +115,22 @@ def get_diagram(
     db: Session = Depends(get_db),
     repo: DiagramRepository = Depends(get_diagram_repo),
 ):
-    return _detail(
+    try:
+        state = repo.state(diagram_id)
+    except DiagramNotFoundInStore:
+        state = {"data": {}, "layout": {}, "revision": 0}
+    result = _detail(
         diagram,
-        repo.get_data(diagram_id),
-        repo.current_version(diagram_id),
+        state["data"],
+        state["revision"],
         _role_of(db, diagram_id, current_user.id),
     )
+    result.layout = state["layout"]
+    return result
 
 
 @router.put("/{diagram_id}", response_model=DiagramDetailResponse)
-def update_diagram(
+async def update_diagram(
     diagram_id: int,
     diagram_in: DiagramUpdate,
     diagram: Diagram = Depends(require_diagram_access),
@@ -147,12 +153,25 @@ def update_diagram(
             if diagram_in.source == "ai"
             else user_author(current_user.id, display_name(current_user))
         )
+        from app.modules.diagram_store.repository import RevisionConflict
+        import uuid
+        if diagram_in.expected_revision is None:
+            raise HTTPException(409, "Se requiere expected_revision; recarga el diagrama.")
         try:
-            created = repo.save(diagram_id, diagram_in.data, author, source=diagram_in.source)
-        except DiagramNotFoundInStore:
-            # Diagrama anterior a la migración sin documento: se crea ahora.
-            repo.create(diagram_id, diagram_in.data, author, source=diagram_in.source)
-            created = {"version": 1}
+            state = repo.state(diagram_id)
+            if state["revision"] != diagram_in.expected_revision:
+                raise RevisionConflict()
+            created = None if state["data"] == diagram_in.data else repo.commit(
+                diagram_id, diagram_in.expected_revision, diagram_in.data,
+                state["layout"], author, diagram_in.source, f"replace:{uuid.uuid4()}")
+            if created:
+                from app.modules.collaboration.service import Coordinator
+                try:
+                    await Coordinator(repo).publish(diagram_id)
+                except HTTPException:
+                    pass  # El trabajador recupera la publicación pendiente.
+        except RevisionConflict:
+            raise HTTPException(409, "El diagrama cambió; recarga antes de reemplazarlo.")
         version_created = created is not None
 
     if diagram_in.name is not None and diagram_in.name != diagram.name:

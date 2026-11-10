@@ -60,7 +60,7 @@ def _h(user):
 def _model(*names):
     return {"classes": [
         {"id": n, "name": n, "attributes": [], "operations": []} for n in names
-    ]}
+    ], "relationships": []}
 
 
 @pytest.fixture
@@ -79,7 +79,7 @@ def world(client, db_session):
 
 def _put(client, w, who, data, **extra):
     return client.put(
-        f"/api/v1/diagrams/{w['id']}", json={"data": data, **extra}, headers=w[who]
+        f"/api/v1/diagrams/{w['id']}", json={"data": data, "expected_revision":client.get(f"/api/v1/diagrams/{w['id']}", headers=w[who]).json().get("version", 1), **extra}, headers=w[who]
     )
 
 
@@ -141,7 +141,7 @@ def test_ver_version_y_404(client, world):
 def test_restaurar_crea_version_nueva_y_conserva_historial(client, world):
     _put(client, world, "owner", _model("A"))
     _put(client, world, "owner", _model("A", "B"))
-    res = client.post(f"/api/v1/diagrams/{world['id']}/versions/2/restore", headers=world["editor"])
+    res = client.post(f"/api/v1/diagrams/{world['id']}/versions/2/restore", json={"expected_revision":3}, headers=world["editor"])
     assert res.status_code == 200
     body = res.json()
     assert body["version"] == 4 and body["data"] == _model("A")
@@ -198,3 +198,10 @@ def test_mongo_caido_responde_503(client, world):
     res = client.get(f"/api/v1/diagrams/{world['id']}", headers=world["owner"])
     assert res.status_code == 503
     assert res.json()["code"] == "STORE_UNAVAILABLE"
+
+
+@pytest.fixture(autouse=True)
+def coordinator_engine(monkeypatch):
+    from app.modules.collaboration.service import Coordinator
+    from tests.command_engine import engine
+    monkeypatch.setattr(Coordinator, "engine", engine)

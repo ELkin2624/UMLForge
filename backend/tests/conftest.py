@@ -120,3 +120,11 @@ def nosql_repo():
     yield repo
     app.dependency_overrides.pop(get_nosql_repo, None)
     app.dependency_overrides.pop(get_llm_client, None)
+
+
+@pytest.fixture(autouse=True)
+def isolated_agent_runtime(monkeypatch):
+    """Las pruebas de API no deben arrancar un trabajador contra las bases locales."""
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "COLLAB_SERVICE_TOKEN", "")
+    monkeypatch.setattr(settings, "AGENT_WORKER_ENABLED", False)

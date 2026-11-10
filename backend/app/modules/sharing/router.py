@@ -14,7 +14,7 @@ from app.modules.sharing.schemas import (
     ShareRequest, CreateInvitationRequest, CollaboratorResponse, ChangeRoleRequest, InvitationResponse
 )
 from app.core.errors import APIError
-from app.modules.notifications.push import send_expo_push, tokens_for_user
+from app.modules.notifications.service import add_notification, notify, queue_push
 
 router = APIRouter(prefix="/api/v1/diagrams/{diagram_id}", tags=["sharing"])
 
@@ -111,29 +111,23 @@ def create_invitation(
         db.flush() # Obtener invitation.id
 
         inviter_name = current_user.display_name or current_user.username
-        notification = Notification(
-            recipient_user_id=target_user.id,
-            type="DIAGRAM_INVITATION",
-            title="Invitación a diagrama",
-            message=f"{inviter_name} te ha invitado como {role_val} en el diagrama '{diagram.name}'.",
-            data={
+        notification = add_notification(
+            db,
+            target_user.id,
+            "DIAGRAM_INVITATION",
+            "Invitación a diagrama",
+            f"{inviter_name} te ha invitado como {role_val} en el diagrama '{diagram.name}'.",
+            {
                 "diagram_id": diagram.id,
                 "diagram_name": diagram.name,
                 "invitation_id": invitation.id,
                 "inviter_id": current_user.id,
                 "inviter_name": inviter_name,
                 "role": role_val
-            }
+            },
         )
-        db.add(notification)
         db.commit()
-        background_tasks.add_task(
-            send_expo_push,
-            tokens_for_user(db, target_user.id),
-            notification.title,
-            notification.message,
-            {"type": notification.type, **notification.data},
-        )
+        queue_push(db, background_tasks, notification)
 
         return CollaboratorResponse(
             user_id=target_user.id,
@@ -262,21 +256,14 @@ def revoke_access(
         db.delete(permission)
     
     # Notificación de revocación
-    notification = Notification(
-        recipient_user_id=user_id,
-        type="ACCESS_REVOKED",
-        title="Acceso revocado",
-        message="Se te ha revocado el acceso al diagrama.",
-        data={"diagram_id": diagram_id}
-    )
-    db.add(notification)
-    db.commit()
-    background_tasks.add_task(
-        send_expo_push,
-        tokens_for_user(db, user_id),
-        notification.title,
-        notification.message,
-        {"type": notification.type, **notification.data},
+    notify(
+        db,
+        background_tasks,
+        user_id,
+        "ACCESS_REVOKED",
+        "Acceso revocado",
+        "Se te ha revocado el acceso al diagrama.",
+        {"diagram_id": diagram_id},
     )
     return None
 

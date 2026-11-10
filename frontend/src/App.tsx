@@ -5,7 +5,7 @@ import { ValidationPanel, E2EResultPanel, LoadingOverlay } from './features/mode
 import { DeploymentResultPanel } from './features/project-deployment';
 import { Notification } from './shared/ui';
 import { PresenceToasts } from './components/presence/PresenceToasts';
-import { AIAssistantSidebar, AISuggestionsOverlay } from './features/ai-assistant';
+import { AIAssistantSidebar } from './features/ai-assistant';
 import { ShareDialog } from './features/sharing/ui/ShareDialog';
 import { ValidationResult, DeploymentResult } from './types/api-responses';
 import { useModelStore } from './store/model-store';
@@ -19,6 +19,8 @@ import { useAutosave, HistoryDialog } from './features/versioning';
 import { DiagramManagerDialog, switchToDiagram, useDiagramManagerStore } from './features/diagram-manager';
 import { DataDesignDialog } from './features/data-design';
 import { ProjectsDashboard, useDashboardStore } from './features/projects-dashboard';
+// getDiagram también guarda las posiciones del servidor: el lienzo se dibuja en su sitio.
+import { getDiagram } from './api/diagrams-api';
 import './style.css';
 
 function App() {
@@ -210,7 +212,7 @@ function App() {
 
           // Cargar datos completos del diagrama en Zustand
           try {
-            const fullDiagram = await request<any>(`/diagrams/${target.id}`);
+            const fullDiagram = await getDiagram(target.id);
             if (fullDiagram?.data && (fullDiagram.data.classes?.length || fullDiagram.data.components?.length)) {
               useModelStore.getState().setModel(fullDiagram.data as any);
             }
@@ -221,6 +223,8 @@ function App() {
           }
 
           // Al abrir el editor, todos los usuarios con permiso entran a la misma sala.
+          // Conectar siempre a la sala: sin ella el editor queda en solo lectura y las
+          // ediciones no se guardan (se envían como comandos a través de la sala).
           if (useDashboardStore.getState().screen === 'editor') {
             sessionStorage.setItem('umlforge-collab-active', 'true');
             if (isOwner) {
@@ -304,7 +308,6 @@ function App() {
       <E2EResultPanel result={e2eResult} onClose={() => setE2EResult(null)} />
 
       {/* ── Modo Sugerencias IA (Google Docs style) ── */}
-      <AISuggestionsOverlay />
 
       {/* ── Arquitecto IA Omnisciente (Chat Privado + Muro de Auditoría + Sugerencias) ── */}
       <AIAssistantSidebar />

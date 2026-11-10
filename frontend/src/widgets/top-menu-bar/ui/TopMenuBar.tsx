@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FolderOpen } from 'lucide-react';
+import { SqlGenerationDialog } from '../../../features/sql-generation';
+import type { UMLModel } from '../../../types/canonical-model';
 import { Brand } from './Brand';
 import { DesktopNav } from './DesktopNav';
 import { MobileToggle, MobileDrawer } from './MobileDrawer';
@@ -27,6 +29,11 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
     onBeforeAction: closeMenu,
   });
 
+  const [sqlModel, setSqlModel] = useState<UMLModel | null>(null);
+  const openSql = () => {
+    closeMenu();
+    setSqlModel(actions.model);
+  };
   const hasModel = Boolean(actions.model);
   const openDataDesign = () => {
     closeMenu();
@@ -75,6 +82,7 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
           onDataDesign={openDataDesign}
           onImportXMI={actions.handleImportXMIClick}
           onExportXMI={actions.handleExportXMI}
+          onGenerateSql={openSql}
           onGenerate={actions.handleGenerate}
           onValidate={actions.handleValidate}
           onE2E={actions.handleE2E}
@@ -101,11 +109,13 @@ export const TopMenuBar: React.FC<TopMenuBarProps> = props => {
         onDataDesign={openDataDesign}
         onImportXMI={actions.handleImportXMIClick}
         onExportXMI={actions.handleExportXMI}
+        onGenerateSql={openSql}
         onGenerate={actions.handleGenerate}
         onValidate={actions.handleValidate}
         onE2E={actions.handleE2E}
         onDeploy={actions.handleDeploy}
       />
+      {sqlModel && <SqlGenerationDialog model={sqlModel} onClose={() => setSqlModel(null)} />}
     </header>
   );
 };

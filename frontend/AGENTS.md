@@ -60,3 +60,9 @@ Reglas de capas: `shared` no importa de `features`; `features` no importa de otr
 - `style.css` (1249 líneas) mezcla tokens, layout y estilos de paneles (`.collab-panel__*`, `.gdocs-*`). Los estilos nuevos van junto a su feature.
 - `index.html` aún dice `lang="en"` y título "UML CASE Tool".
 - Hay dos lockfiles (`package-lock.json` y `pnpm-lock.yaml`); usa `npm` como indica `package.json`.
+
+## Actualización: agente y comandos autoritativos
+
+En salas numéricas, el editor ya no publica ni autoguarda snapshots arbitrarios en Yjs. `features/collaboration/model/command-client.ts` envía diferencias protegidas a `/diagrams/{id}/commands`; el servidor confirma la revisión y publica el resultado. `useAutosave` ahora registra la espera de esos comandos. Los conflictos conservan el lote para revisión. No reintroducir escrituras directas del navegador ni atribución de IA mediante autosave en este flujo.
+
+El motor y los tipos canónicos se comparten desde `packages/uml-commands`; las rutas anteriores reexportan esas implementaciones. El agente usa tareas persistentes en `ai-assistant/model/server-agent.ts`, con aprobación y deshacer en el backend. El store anterior queda para compatibilidad y lectura de actividad; sus acciones locales no son el flujo del panel nuevo. El cursor visible usa awareness del servidor. Ver `docs/agente-colaborativo.md`.

@@ -8,9 +8,11 @@ const AGENT_USER = { name: 'Asistente IA', color: '#8B5CF6', isAgent: true };
  * Es solo presencia: el agente no escribe en el documento desde aquí.
  */
 function applyAgentPresence(docName, enabled) {
-  const { awareness } = yUtils.getYDoc(docName);
+  const doc = yUtils.getYDoc(docName);
+  doc.getMap('room').set('agent_enabled', enabled);
+  const { awareness } = doc;
   const present = awareness.getLocalState() !== null;
-  if (enabled && !present) awareness.setLocalState({ user: { ...AGENT_USER } });
+  if (enabled && !present) awareness.setLocalState({ user: { ...AGENT_USER }, agent: {status:'idle', timestamp:Date.now()} });
   if (!enabled && present) awareness.setLocalState(null);
 }
 

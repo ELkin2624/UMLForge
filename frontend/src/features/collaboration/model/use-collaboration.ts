@@ -3,6 +3,9 @@ import { CollaborationManager } from './collaboration-manager';
 import { getOrCreateLocalIdentity } from './awareness';
 import { useModelStore } from '../../../store/model-store';
 import { useAuthStore } from '../../auth/store';
+import type { Position } from './visual-state-manager';
+import { knownLayout } from './command-client';
+import { useShareStore } from '../../sharing/model/share-store';
 
 let sharedCollaborationManager: CollaborationManager | null = null;
 
@@ -58,12 +61,15 @@ export function useCollaboration() {
   }, []);
 
   // API para Visual State
+  // Y.Doc más las posiciones que ya conoce la sala (llegan por HTTP antes que el Y.Doc).
   const getVisualState = useCallback(() => {
-    return manager.getVisualState();
+    const room = useShareStore.getState().roomId;
+    const fromRoom = room && /^\d+$/.test(room) ? knownLayout(room) : {};
+    return { ...(manager.getVisualState() ?? {}), ...fromRoom };
   }, [manager]);
 
   const updateVisualStateNode = useCallback(
-    (nodeId: string, position: { x: number; y: number }) => {
+    (nodeId: string, position: Position) => {
       manager.updateVisualStateNode(nodeId, position);
     },
     [manager]
@@ -77,7 +83,7 @@ export function useCollaboration() {
   );
 
   const subscribeToVisualState = useCallback(
-    (cb: (state: Record<string, { x: number; y: number }>) => void) => {
+    (cb: (state: Record<string, Position>) => void) => {
       return manager.subscribeToVisualState(cb);
     },
     [manager]

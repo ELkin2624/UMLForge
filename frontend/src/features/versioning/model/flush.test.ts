@@ -22,18 +22,18 @@ describe('flushPendingSave', () => {
     expect(order).toEqual(['guardado', 'despues']);
   });
 
-  it('si el guardado falla, no lanza (la consulta sigue con lo guardado)', async () => {
+  it('si falla el guardado, impide continuar con contexto obsoleto', async () => {
     registerFlushHandler(async () => {
       throw new Error('sin red');
     });
-    await expect(flushPendingSave()).resolves.toBeUndefined();
+    await expect(flushPendingSave()).rejects.toThrow('sin red');
   });
 
   it('no espera indefinidamente: respeta el tiempo máximo', async () => {
     vi.useFakeTimers();
     registerFlushHandler(() => new Promise<void>(() => {})); // nunca termina
-    const done = flushPendingSave(1000);
+    const done = expect(flushPendingSave(1000)).rejects.toThrow('pendientes');
     await vi.advanceTimersByTimeAsync(1000);
-    await expect(done).resolves.toBeUndefined();
+    await done;
   });
 });

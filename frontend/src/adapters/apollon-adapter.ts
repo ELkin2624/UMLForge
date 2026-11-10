@@ -10,11 +10,28 @@ import {
   canonicalComponentToApollon,
 } from './component-apollon-adapter';
 import dagre from 'dagre';
+import type { Position } from '../features/collaboration/model/visual-state-manager';
 
 export {
   apollonComponentToCanonical,
   canonicalComponentToApollon,
 };
+
+/** Medidas de Apollon para una clase: cabecera 40 y 30 por atributo o método. */
+export const CLASS_DEFAULT_WIDTH = 220;
+const CLASS_HEADER_HEIGHT = 40;
+const CLASS_ROW_HEIGHT = 30;
+
+function classRows(node: ApollonNode): number {
+  const data = (node.data || {}) as { attributes?: unknown[]; methods?: unknown[] };
+  return (Array.isArray(data.attributes) ? data.attributes.length : 0) +
+    (Array.isArray(data.methods) ? data.methods.length : 0);
+}
+
+/** Altura natural de una clase, la misma que calcula Apollon para su contenido. */
+export function classNaturalHeight(rows: number): number {
+  return CLASS_HEADER_HEIGHT + rows * CLASS_ROW_HEIGHT;
+}
 
 export function autoLayoutApollonModel(nodes: ApollonNode[], edges: ApollonEdge[]): void {
   if (nodes.length === 0) return;
@@ -24,14 +41,9 @@ export function autoLayoutApollonModel(nodes: ApollonNode[], edges: ApollonEdge[
   g.setDefaultEdgeLabel(() => ({}));
 
   nodes.forEach(node => {
-    const classData = (node.data || {}) as { attributes?: unknown[]; methods?: unknown[] };
-    const attrCount = Array.isArray(classData.attributes) ? classData.attributes.length : 0;
-    const methodCount = Array.isArray(classData.methods) ? classData.methods.length : 0;
-    const computedHeight = Math.max(node.height || 100, 100 + (attrCount + methodCount) * 28);
-    const computedWidth = Math.max(node.width || 220, 220);
-
-    node.width = computedWidth;
-    node.height = computedHeight;
+    // El tamaño solo se usa para calcular el espaciado: el acomodo no lo modifica.
+    const computedHeight = node.height || classNaturalHeight(classRows(node));
+    const computedWidth = node.width || CLASS_DEFAULT_WIDTH;
     g.setNode(node.id, { width: computedWidth, height: computedHeight });
   });
 
@@ -52,8 +64,8 @@ export function autoLayoutApollonModel(nodes: ApollonNode[], edges: ApollonEdge[
   nodes.forEach(node => {
     const dagreNode = g.node(node.id);
     if (dagreNode) {
-      const left = dagreNode.x - (node.width || 220) / 2;
-      const top = dagreNode.y - (node.height || 100) / 2;
+      const left = dagreNode.x - (node.width || CLASS_DEFAULT_WIDTH) / 2;
+      const top = dagreNode.y - (node.height || classNaturalHeight(classRows(node))) / 2;
       if (left < minLeft) minLeft = left;
       if (top < minTop) minTop = top;
     }
@@ -66,8 +78,8 @@ export function autoLayoutApollonModel(nodes: ApollonNode[], edges: ApollonEdge[
     const dagreNode = g.node(node.id);
     if (dagreNode) {
       node.position = {
-        x: Math.round(dagreNode.x - (node.width || 220) / 2 + offsetX),
-        y: Math.round(dagreNode.y - (node.height || 100) / 2 + offsetY),
+        x: Math.round(dagreNode.x - (node.width || CLASS_DEFAULT_WIDTH) / 2 + offsetX),
+        y: Math.round(dagreNode.y - (node.height || classNaturalHeight(classRows(node))) / 2 + offsetY),
       };
     }
   });
@@ -85,9 +97,11 @@ export function apollonToCanonical(
     return apollonComponentToCanonical(apollonModel, existingCanonical);
   }
 
-  const stableId = apollonModel.id && apollonModel.id.length > 0
-    ? apollonModel.id
-    : existingCanonical?.id || 'default-model';
+  // El id del modelo canónico (el del servidor) manda: cada navegador tiene su propio id
+  // interno de Apollon y, si se usaba ese, el editor creía que era otro diagrama y
+  // reacomodaba todas las clases.
+  const stableId = existingCanonical?.id ||
+    (apollonModel.id && apollonModel.id.length > 0 ? apollonModel.id : 'default-model');
 
   const canonical: CanonicalModel = {
     id: stableId,
@@ -207,8 +221,8 @@ export function canonicalToApollon(canonical: CanonicalModel): ApollonModel {
     const classNode: ApollonNode = {
       id: cls.id,
       type: 'class' as DiagramNodeType,
-      width: 200,
-      height: 100 + (cls.attributes.length + cls.operations.length) * 30,
+      width: CLASS_DEFAULT_WIDTH,
+      height: classNaturalHeight(cls.attributes.length + cls.operations.length),
       position: { x, y },
       data: { 
         name: cls.name,
@@ -223,7 +237,8 @@ export function canonicalToApollon(canonical: CanonicalModel): ApollonModel {
           type: 'classMethod',
         })),
       },
-      measured: { width: 200, height: 100 },
+      // Igual al tamaño declarado: antes 200x100 contradecía width/height y el alto saltaba.
+      measured: { width: CLASS_DEFAULT_WIDTH, height: classNaturalHeight(cls.attributes.length + cls.operations.length) },
     };
     nodes.push(classNode);
 
@@ -291,6 +306,40 @@ export function canonicalToApollon(canonical: CanonicalModel): ApollonModel {
 }
 
 /**
+ * Tamaño de un nodo que ya está en el lienzo al volver a aplicar el modelo.
+ * Antes el tamaño recalculado pisaba el real (las clases cambiaban de alto solas y se
+ * perdía el ancho dado por el usuario). Ahora: 1) tamaño guardado en el servidor;
+ * 2) tamaño actual, ajustando el alto solo si cambió el número de filas.
+ */
+export function keptSize(
+  existingNode: ApollonNode,
+  newNode: ApollonNode,
+  remote?: Position,
+): Partial<Pick<ApollonNode, 'width' | 'height' | 'measured'>> {
+  const width = remote?.width ?? existingNode.width ?? newNode.width;
+  let height = remote?.height ?? existingNode.height ?? newNode.height;
+  if (remote?.height === undefined && existingNode.height !== undefined) {
+    const extraRows = classRows(newNode) - classRows(existingNode);
+    if (extraRows !== 0) {
+      height = Math.max(
+        classNaturalHeight(classRows(newNode)),
+        existingNode.height + extraRows * CLASS_ROW_HEIGHT,
+      );
+    }
+  }
+  return withSize(width, height);
+}
+
+/** width/height y measured siempre iguales: dos tamaños distintos hacían saltar el alto. */
+function withSize(width?: number, height?: number): Partial<Pick<ApollonNode, 'width' | 'height' | 'measured'>> {
+  return {
+    ...(width !== undefined ? { width } : {}),
+    ...(height !== undefined ? { height } : {}),
+    ...(width !== undefined && height !== undefined ? { measured: { width, height } } : {}),
+  };
+}
+
+/**
  * Aplica un CanonicalModel a una instancia existente de ApollonEditor.
  * Conserva el estado visual local (coordenadas x/y, ancho/alto) de los elementos
  * que ya existen en el editor, evitando que reboten a posiciones por defecto.
@@ -300,7 +349,7 @@ export function applyCanonicalModelToApollon(
   editor: NativeApollonEditor,
   canonical: CanonicalModel,
   diagramType: 'class' | 'component',
-  visualState?: Record<string, { x: number; y: number }>,
+  visualState?: Record<string, Position>,
   forceLayout: boolean = false
 ): void {
   const currentApollon = editor.model;
@@ -334,6 +383,7 @@ export function applyCanonicalModelToApollon(
         ...newNode,          // Actualiza datos semánticos
         type: existingNode.type, // Conserva tipo visual si ya existía
         position,
+        ...keptSize(existingNode, newNode, remotePos),
       };
     }
     
@@ -342,6 +392,7 @@ export function applyCanonicalModelToApollon(
       return {
         ...newNode,
         position: { x: remotePos.x, y: remotePos.y },
+        ...withSize(remotePos.width ?? newNode.width, remotePos.height ?? newNode.height),
       };
     }
 
@@ -372,10 +423,10 @@ export function applyCanonicalModelToApollon(
  */
 export function autoDecomposeManyToMany(
   canonical: CanonicalModel,
-  visualState?: Record<string, { x: number; y: number }>
+  visualState?: Record<string, Position>
 ): {
   canonical: CanonicalModel;
-  visualState: Record<string, { x: number; y: number }>;
+  visualState: Record<string, Position>;
   decomposed: boolean;
 } {
   const isMany = (m?: string) => {
