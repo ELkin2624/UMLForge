@@ -58,6 +58,7 @@ interface MobileDrawerProps {
   onDataDesign: () => void;
   onImportXMI: () => void;
   onExportXMI: () => void;
+  onGenerateSql: () => void;
   onGenerate: (isLocal: boolean) => void;
   onValidate: () => void;
   onE2E: () => void;
@@ -77,6 +78,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
   onDataDesign,
   onImportXMI,
   onExportXMI,
+  onGenerateSql,
   onGenerate,
   onValidate,
   onE2E,
@@ -344,6 +346,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({
                 <span>Generación de Código</span>
               </div>
               <div className="mobile-drawer-items">
+                <button onClick={() => handleAction(onGenerateSql)} disabled={!hasModel || isBusy} className="mobile-drawer-btn">
+                  <Database size={16} /><span>Generar SQL PostgreSQL</span>
+                </button>
+
                 <button
                   onClick={() => handleAction(() => onGenerate(false))}
                   disabled={!hasModel || isBusy}

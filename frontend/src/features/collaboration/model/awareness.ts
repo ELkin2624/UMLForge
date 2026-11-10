@@ -107,6 +107,7 @@ function buildPeerList(awareness: Awareness): PeerInfo[] {
       name: user?.name ?? `Usuario-${clientId}`,
       color: user?.color ?? '#888888',
       isAgent: user?.isAgent === true,
+      agent: state.agent,
       cursor,
       selectedNode,
       editingNode,

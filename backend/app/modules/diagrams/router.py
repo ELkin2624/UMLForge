@@ -2,17 +2,20 @@ import json
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Body, Depends
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from app.core.dependencies import get_model_service, get_storage_service
 from app.core.errors import (
     ComponentDiagramUnsupportedError,
     InvalidModelError,
 )
-from app.modules.diagrams.schemas import GenerateRequest
-from app.modules.diagrams.schemas import ValidationResultResponse
-from app.modules.diagrams.service import ModelService
 from app.core.storage import StorageService
+from app.modules.diagrams.schemas import (
+    GenerateRequest,
+    GenerateSQLRequest,
+    ValidationResultResponse,
+)
+from app.modules.diagrams.service import ModelService
 
 router = APIRouter(prefix="/api/v1/models", tags=["models"])
 
@@ -87,3 +90,16 @@ def generate_project(
         media_type="application/zip",
         headers=headers,
     )
+
+
+@router.post("/generate-sql")
+def generate_sql(
+    request: GenerateSQLRequest,
+    model_service: ModelService = Depends(get_model_service),
+) -> Response:
+    content, filename, media_type = model_service.generate_sql(
+        request.model_data, request.mode, request.rows_per_entity
+    )
+    return Response(content=content, media_type=media_type, headers={
+        "Content-Disposition": f'attachment; filename="{filename}"'
+    })

@@ -1,0 +1,62 @@
+# Producción en una sola EC2. MongoDB va en Atlas (MONGO_URI en .env.prod).
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: umlforge
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: umlforge
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umlforge -d umlforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://umlforge:${POSTGRES_PASSWORD}@postgres:5432/umlforge
+      COLLAB_INTERNAL_URL: http://yjs:1234
+      MONGO_URI: ${MONGO_URI}
+      MONGO_DB_NAME: umlforge_ai
+      JWT_SECRET: ${JWT_SECRET}
+      COLLAB_SERVICE_TOKEN: ${COLLAB_SERVICE_TOKEN}
+      AI_PROVIDER: ${AI_PROVIDER:-gemini}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      CORS_ORIGINS: '["http://${PUBLIC_HOST}"]'
+
+  yjs:
+    build:
+      context: .
+      dockerfile: infra/collaboration-server/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: http://backend:8000
+      COLLAB_SERVICE_TOKEN: ${COLLAB_SERVICE_TOKEN}
+      CORS_ORIGIN: http://${PUBLIC_HOST}
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_YJS_WS_URL: ws://${PUBLIC_HOST}/ws
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - yjs
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:

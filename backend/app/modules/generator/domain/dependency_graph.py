@@ -1,121 +1,58 @@
-from collections import defaultdict, deque
-from typing import Any
+"""Orden estable de inserción según las dependencias reales de persistencia."""
 
 from .entity_info import EntityInfo
 from .exceptions import GenerationError
 
 
 class DependencyGraph:
-    """
-    Construye el grafo de dependencias de persistencia entre entidades.
-    Permite obtener el ordenamiento topológico (padres primero, hijos después)
-    y detectar ciclos de dependencia duros (irresolubles) o blandos (resolubles).
-    """
-
     @classmethod
     def topological_sort(cls, entities: list[EntityInfo]) -> list[EntityInfo]:
-        if not entities:
-            return []
-
-        entity_by_name = {e.class_name: e for e in entities}
-        entity_names = set(entity_by_name.keys())
-
-        # edges: target -> list of entities that depend on target (target must be created BEFORE owner)
-        hard_adj: dict[str, set[str]] = defaultdict(set)
-        soft_adj: dict[str, set[str]] = defaultdict(set)
-        hard_in_degree: dict[str, int] = {name: 0 for name in entity_names}
-        full_in_degree: dict[str, int] = {name: 0 for name in entity_names}
-
+        by_name = {e.class_name: e for e in entities}
+        hard: dict[str, set[str]] = {}
+        full: dict[str, set[str]] = {}
         for entity in entities:
-            owner_name = entity.class_name
-
-            # 1. Herencia: hijo depende del padre (hard)
-            if entity.parent_class and entity.parent_class in entity_names:
-                parent_name = entity.parent_class
-                if parent_name != owner_name:
-                    hard_adj[parent_name].add(owner_name)
-                    hard_in_degree[owner_name] += 1
-                    full_in_degree[owner_name] += 1
-
-            # 2. Relaciones de persistencia
+            required = {entity.parent_class} if entity.parent_class else set()
+            optional: set[str] = set()
             for rel in entity.relations:
-                # Solo el persistence_owner crea la dependencia hacia el target
-                if not rel.persistence_owner:
+                if not rel.persistence_owner or rel.relation_kind not in (
+                    "ONE_TO_ONE",
+                    "MANY_TO_ONE",
+                ):
                     continue
-
-                target_name = rel.target_entity
-                if target_name not in entity_names:
+                if rel.target_entity == entity.class_name:
                     continue
-
-                # Auto-referencia no afecta el orden relativo entre tablas distintas
-                if target_name == owner_name:
-                    continue
-
-                # Composición o multiplicidad estricta es hard
-                # Si es una relación ManyToOne o OneToOne estándar:
-                # Comprobamos si el campo correspondiente o relación es obligatoria
-                is_hard = rel.is_composition
-                
-                # Buscar si hay campo con el mismo nombre o join_column marcado como no nullable
-                matching_field = next(
-                    (f for f in entity.fields if f.name == rel.name or f.name == rel.join_column),
-                    None
-                )
-                if matching_field and not matching_field.is_nullable:
-                    is_hard = True
-
-                if is_hard:
-                    if owner_name not in hard_adj[target_name]:
-                        hard_adj[target_name].add(owner_name)
-                        hard_in_degree[owner_name] += 1
-                        full_in_degree[owner_name] += 1
+                if rel.is_composition or not rel.is_nullable:
+                    required.add(rel.target_entity)
                 else:
-                    if owner_name not in soft_adj[target_name] and owner_name not in hard_adj[target_name]:
-                        soft_adj[target_name].add(owner_name)
-                        full_in_degree[owner_name] += 1
+                    optional.add(rel.target_entity)
+            hard[entity.class_name] = required & by_name.keys()
+            full[entity.class_name] = (required | optional) & by_name.keys()
 
-        # Intentar ordenamiento topológico completo (Hard + Soft) con Kahn
-        full_adj: dict[str, set[str]] = defaultdict(set)
-        for u in entity_names:
-            full_adj[u] = hard_adj[u] | soft_adj[u]
+        def sort(dependencies: dict[str, set[str]]) -> list[EntityInfo]:
+            result: list[EntityInfo] = []
+            done: set[str] = set()
+            while len(result) < len(entities):
+                ready = next(
+                    (
+                        e
+                        for e in entities
+                        if e.class_name not in done
+                        and dependencies[e.class_name] <= done
+                    ),
+                    None,
+                )
+                if ready is None:
+                    break
+                result.append(ready)
+                done.add(ready.class_name)
+            return result
 
-        queue = deque([name for name in entity_names if full_in_degree[name] == 0])
-        sorted_names: list[str] = []
-
-        in_deg_copy = dict(full_in_degree)
-        while queue:
-            node = queue.popleft()
-            sorted_names.append(node)
-            for neighbor in full_adj[node]:
-                in_deg_copy[neighbor] -= 1
-                if in_deg_copy[neighbor] == 0:
-                    queue.append(neighbor)
-
-        if len(sorted_names) == len(entity_names):
-            return [entity_by_name[name] for name in sorted_names]
-
-        # Si hubo ciclo en el grafo completo, verificar si es ciclo DURO (solo hard_adj)
-        hard_queue = deque([name for name in entity_names if hard_in_degree[name] == 0])
-        hard_sorted: list[str] = []
-        hard_deg_copy = dict(hard_in_degree)
-
-        while hard_queue:
-            node = hard_queue.popleft()
-            hard_sorted.append(node)
-            for neighbor in hard_adj[node]:
-                hard_deg_copy[neighbor] -= 1
-                if hard_deg_copy[neighbor] == 0:
-                    hard_queue.append(neighbor)
-
-        if len(hard_sorted) < len(entity_names):
-            # Ciclo duro irresoluble!
-            unresolved = [name for name in entity_names if hard_deg_copy[name] > 0]
+        ordered = sort(full)
+        if len(ordered) == len(entities):
+            return ordered
+        ordered = sort(hard)
+        if len(ordered) != len(entities):
             raise GenerationError(
-                f"SEED_CYCLE_DETECTED: Ciclo de dependencias no resoluble detectado entre las entidades: {', '.join(unresolved)}"
+                "SEED_CYCLE_DETECTED: ciclo de dependencias obligatorias no soportado."
             )
-
-        # Si el ciclo se rompe al ignorar las aristas blandas (soft), es resoluble
-        # Completamos el orden con los nodos que faltaban respetando el orden hard
-        remaining = [name for name in hard_sorted if name not in sorted_names]
-        final_names = sorted_names + remaining
-        return [entity_by_name[name] for name in final_names]
+        return ordered

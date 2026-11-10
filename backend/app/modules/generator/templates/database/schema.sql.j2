@@ -1,17 +1,22 @@
--- Database Schema for {{ app_name }}
-
+-- Esquema PostgreSQL. Ejecutar sobre una base vacía.
+BEGIN;
+SET LOCAL standard_conforming_strings = on;
 {% for table in schema.tables %}
-CREATE TABLE IF NOT EXISTS {{ table.name }} (
-    {% for col in table.columns %}
-    {{ col.name }} {{ col.sql_type }}{% if col.is_primary_key %} PRIMARY KEY{% endif %}{% if not col.is_nullable and not col.is_primary_key %} NOT NULL{% endif %}{% if not loop.last %},{% endif %}
-    {% endfor %}
-    {% if table.foreign_keys %}
-    ,
-    {% for fk in table.foreign_keys %}
-    {{ fk }}{% if not loop.last %},{% endif %}
-    {% endfor %}
-    {% endif %}
-);
-
+CREATE TABLE IF NOT EXISTS {{ table.name|sql_identifier }} (
+{% for col in table.columns %}
+    {{ col.name|sql_identifier }} {{ col.sql_type }}{% if col.is_primary_key %} PRIMARY KEY{% endif %}{% if not col.is_nullable and not col.is_primary_key %} NOT NULL{% endif %}{% if col.is_unique %} UNIQUE{% endif %}{% if not loop.last %},{% endif %}
 {% endfor %}
-
+{% for constraint in table.foreign_keys if constraint.startswith('PRIMARY KEY') %}
+    , {{ constraint|sql_constraint }}
+{% endfor %}
+{% for constraint in table.checks %}
+    , {{ constraint }}
+{% endfor %}
+);
+{% endfor %}
+{% for table in schema.tables %}
+{% for fk in table.foreign_keys if fk.startswith('FOREIGN KEY') %}
+{{ fk|sql_add_fk(table.name) }}
+{% endfor %}
+{% endfor %}
+COMMIT;

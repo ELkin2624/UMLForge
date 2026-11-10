@@ -26,6 +26,7 @@ interface DesktopNavProps {
   onDataDesign: () => void;
   onImportXMI: () => void;
   onExportXMI: () => void;
+  onGenerateSql: () => void;
   onGenerate: (isLocal: boolean) => void;
   onValidate: () => void;
   onE2E: () => void;
@@ -43,6 +44,7 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
   onDataDesign,
   onImportXMI,
   onExportXMI,
+  onGenerateSql,
   onGenerate,
   onValidate,
   onE2E,
@@ -146,6 +148,10 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
 
             <div className="top-dropdown-divider" />
             <div className="top-dropdown-header">Generación de Código</div>
+
+            <button onClick={onGenerateSql} disabled={!hasModel || isBusy} className="top-dropdown-item">
+              <Database size={16} /><span>Generar SQL PostgreSQL</span>
+            </button>
 
             <button
               onClick={() => onGenerate(false)}

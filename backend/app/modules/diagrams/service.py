@@ -2,16 +2,18 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from app.core.canonical_model.model import UMLModel
 from pydantic import ValidationError
+
+from app.core.canonical_model.model import UMLModel
+from app.core.errors import GenerationError
 from app.core.validators.generation_rules import GenerationValidator
 from app.core.validators.uml_validator import UMLValidator
 from app.core.validators.validation_result import ValidationResult
-
-from app.core.errors import GenerationError
 from app.modules.diagrams.schemas import APIErrorDetail, ValidationResultResponse
 from app.modules.generator.application.generate_project import ProjectGenerator
-from app.modules.generator.domain.exceptions import GenerationError as CoreGenerationError
+from app.modules.generator.domain.exceptions import (
+    GenerationError as CoreGenerationError,
+)
 from app.modules.generator.infrastructure.filesystem_exporter import FilesystemExporter
 from app.modules.generator.infrastructure.zip_exporter import ZipExporter
 
@@ -112,3 +114,16 @@ class ModelService:
             raise GenerationError(str(e))
         except RuntimeError as e:
             raise GenerationError(f"Unexpected error during generation: {e}")
+
+
+    def generate_sql(self, model_data: dict[str, Any], mode: str, rows: int) -> tuple[bytes, str, str]:
+        from app.core.errors import InvalidModelError
+        from app.modules.generator.application.generate_sql import generate_sql
+
+        model, validation = self.validate_model(model_data)
+        if model is None or not validation.is_valid:
+            raise InvalidModelError(errors=[e.model_dump() for e in validation.errors])
+        try:
+            return generate_sql(model, mode, rows, self.templates_dir)
+        except CoreGenerationError as exc:
+            raise InvalidModelError(message=str(exc)) from exc

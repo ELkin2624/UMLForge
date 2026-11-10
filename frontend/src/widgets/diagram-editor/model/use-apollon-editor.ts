@@ -1,7 +1,7 @@
 import { useRef, useMemo, useCallback } from 'react';
 import { type ApollonEditor as NativeApollonEditor } from '@tumaet/apollon';
 import { useModelStore } from '../../../store/model-store';
-import { useCollaboration, applyVisualStateToModel } from '../../../features/collaboration';
+import { useCollaboration, applyVisualStateToModel, useCommandConflict } from '../../../features/collaboration';
 import { useShareStore } from '../../../features/sharing/model/share-store';
 import { canEdit } from '../../../features/sharing/model/capabilities';
 import { canonicalToApollon } from '../../../adapters/apollon-adapter';
@@ -16,6 +16,8 @@ import { useModelSync } from './use-model-sync';
 export function useApollonEditor() {
   const editorRef = useRef<NativeApollonEditor | null>(null);
   const localRole = useShareStore((s) => s.localRole);
+  const roomId = useShareStore((s) => s.roomId);
+  const conflict = useCommandConflict();
 
   const {
     setAwarenessState,
@@ -133,7 +135,7 @@ export function useApollonEditor() {
   return {
     editorRef,
     localRole,
-    canEditDiagram: canEdit(localRole),
+    canEditDiagram: canEdit(localRole) && status === 'synced' && !(conflict.room===roomId && conflict.message),
     initialModel,
     handleMouseMove,
     handleMouseLeave,

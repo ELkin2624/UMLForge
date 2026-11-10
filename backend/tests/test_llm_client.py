@@ -4,6 +4,8 @@ import asyncio
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
 from app.modules.ai_agent.infrastructure.llm_client import LLMClient
 from app.modules.ai_agent.schemas import AgentStructuredOutput
 
@@ -28,10 +30,9 @@ def fake_gemini(client: LLMClient, generate):
     )
 
 
-def test_sin_api_key_la_respuesta_se_marca_como_simulada():
-    result = invoke(LLMClient(api_key=""))
-    assert result.simulated is True
-    assert result.canvas_patches  # el respaldo sigue dando algo útil para desarrollo
+def test_sin_api_key_devuelve_error_sin_simular():
+    with pytest.raises(RuntimeError, match="no está configurado"):
+        invoke(LLMClient(api_key=""))
 
 
 def test_respuesta_real_de_gemini_no_esta_simulada():
@@ -47,14 +48,15 @@ def test_respuesta_real_de_gemini_no_esta_simulada():
     assert result.reply_to_user == "Listo"
 
 
-def test_si_gemini_falla_en_todos_los_modelos_se_marca_como_simulada():
+def test_si_gemini_falla_se_informa_el_error_sin_simular():
     client = LLMClient(api_key="")
 
     async def generate(**kwargs):
         raise RuntimeError("cuota agotada")
 
     fake_gemini(client, generate)
-    assert invoke(client).simulated is True
+    with pytest.raises(RuntimeError, match="No se pudo consultar Gemini"):
+        invoke(client)
 
 
 def test_el_modelo_no_puede_declararse_real_desde_su_salida_json():

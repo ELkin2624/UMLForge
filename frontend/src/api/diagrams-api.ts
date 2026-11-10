@@ -1,3 +1,4 @@
+import { hydrateRoom, roomState, flushRoom } from '../features/collaboration/model/command-client';
 import { request } from './client';
 import { UMLModel } from '../types/canonical-model';
 
@@ -11,6 +12,7 @@ export interface DiagramSaveResult {
   data: UMLModel;
   /** Número de la versión actual del diagrama. */
   version: number;
+  layout?: Record<string, {x:number; y:number}>;
   /** true si el guardado creó una versión nueva; false si no había diferencias. */
   version_created: boolean | null;
   my_role: string | null;
@@ -57,10 +59,10 @@ export async function saveDiagram(
   model: UMLModel,
   source: SaveSource = 'user'
 ): Promise<DiagramSaveResult> {
-  return request<DiagramSaveResult>(`/diagrams/${roomId}`, {
-    method: 'PUT',
-    body: JSON.stringify({ data: model, source }),
-  });
+  void source; void model;
+  if (!roomState(roomId)) throw new Error('Recarga el diagrama antes de guardar.');
+  await flushRoom(roomId);
+  return getDiagram(roomId);
 }
 
 /** Historial del diagrama, de la versión más nueva a la más antigua. */
@@ -87,6 +89,7 @@ export async function restoreVersion(
 ): Promise<DiagramSaveResult> {
   return request<DiagramSaveResult>(`/diagrams/${roomId}/versions/${version}/restore`, {
     method: 'POST',
+    body: JSON.stringify({expected_revision:roomState(roomId)?.revision}),
   });
 }
 
@@ -107,7 +110,9 @@ export async function listDiagrams(): Promise<DiagramSummary[]> {
 
 /** Un diagrama con su modelo canónico completo. */
 export async function getDiagram(id: number | string): Promise<DiagramSaveResult> {
-  return request<DiagramSaveResult>(`/diagrams/${id}`);
+  const result = await request<DiagramSaveResult>(`/diagrams/${id}`);
+  hydrateRoom(String(id), {data:result.data, layout:result.layout ?? {}, revision:result.version});
+  return result;
 }
 
 /** Crea un diagrama; el usuario queda como OWNER. */

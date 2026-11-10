@@ -264,7 +264,9 @@ class DataProfile:
                 return "{{$randomCompanyName}}", False
             return "{{$randomFullName}}", False
 
-        if any(k in name_lower for k in ("ci", "dni", "cedula", "identificacion", "documento")):
+        if name_lower in ("ci", "dni") or any(
+            k in name_lower for k in ("cedula", "identificacion", "documento")
+        ):
             return "{{$randomInt}}", False
 
         if any(k in name_lower for k in ("codigo", "code", "sku", "uuid")) or java_type == "UUID":
@@ -291,7 +293,7 @@ class DataProfile:
         if any(k in name_lower for k in ("descripcion", "observacion", "comentario", "nota", "notas", "detalle")):
             return "{{$randomLoremSentence}}", False
 
-        if java_type in ("LocalDate", "Date") or "fecha" in name_lower:
+        if java_type in ("LocalDate", "Date") or ("fecha" in name_lower and java_type == "String"):
             return "2025-01-15", False
 
         if java_type in ("LocalDateTime", "Instant"):
@@ -301,7 +303,7 @@ class DataProfile:
         return f"{class_name} {field.name}", False
 
     @classmethod
-    def resolve_sql_deterministic_value(
+    def _suggest_sql_value(
         cls, field: FieldInfo, class_name: str, domain: DomainType, index: int = 0
     ) -> str:
         """
@@ -329,7 +331,7 @@ class DataProfile:
             return "true" if index % 2 == 0 else "false"
 
         # 2. Fechas
-        if java_type in ("LocalDate", "Date") or "fecha" in name_lower:
+        if java_type in ("LocalDate", "Date") or ("fecha" in name_lower and java_type == "String"):
             day = (index % 25) + 1
             return f"'2025-01-{day:02d}'"
 
@@ -372,7 +374,9 @@ class DataProfile:
             phone_num = 70000000 + (index * 12345) % 9000000
             return f"'+591 {phone_num}'"
 
-        if any(k in name_lower for k in ("ci", "dni", "cedula", "identificacion", "documento")):
+        if name_lower in ("ci", "dni") or any(
+            k in name_lower for k in ("cedula", "identificacion", "documento")
+        ):
             id_num = 5000000 + (index * 34211) % 4000000
             return f"'{id_num}'"
 
@@ -422,3 +426,12 @@ class DataProfile:
         text = unicodedata.normalize("NFD", text)
         text = "".join(c for c in text if unicodedata.category(c) != "Mn")
         return re.sub(r"[^a-zA-Z0-9]", "", text).lower()
+
+    @classmethod
+    def resolve_sql_deterministic_value(
+        cls, field: FieldInfo, class_name: str, domain: DomainType, index: int = 0
+    ) -> str:
+        from .sql_values import constrained_value
+
+        candidate = cls._suggest_sql_value(field, class_name, domain, index)
+        return constrained_value(field, candidate)

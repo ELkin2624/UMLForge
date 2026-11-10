@@ -9,6 +9,7 @@ y no ``motor``.
 """
 
 import copy
+import logging
 import datetime
 import threading
 from abc import ABC, abstractmethod
@@ -18,6 +19,10 @@ from .diff import diff_models, summarize
 
 Author = dict[str, Any]
 Version = dict[str, Any]
+
+
+class RevisionConflict(Exception):
+    """El documento cambió antes de confirmar la operación."""
 
 
 class DiagramNotFoundInStore(Exception):
@@ -82,6 +87,73 @@ class DiagramRepository(ABC):
 
     @abstractmethod
     def save_dependencies(self, diagram_id: int, dependencies: list[dict[str, Any]]) -> None: ...
+
+    @abstractmethod
+    def _cas_document(self, diagram_id: int, expected: int, document: dict[str, Any]) -> bool: ...
+
+    def state(self, diagram_id: int) -> dict[str, Any]:
+        doc = self._get_document(diagram_id)
+        if doc is None:
+            raise DiagramNotFoundInStore(diagram_id)
+        return {"data": copy.deepcopy(doc.get("data", {})),
+                "layout": copy.deepcopy(doc.get("layout", {})),
+                "revision": int(doc["version"])}
+
+    def receipt(self, diagram_id: int, batch_id: str) -> Version | None:
+        doc = self._get_document(diagram_id) or {}
+        for event in doc.get("pending_versions", []):
+            if event.get("batch_id") == batch_id:
+                return copy.deepcopy(event)
+        for event in self.list_versions(diagram_id, limit=200):
+            if event.get("batch_id") == batch_id:
+                return self.get_version(diagram_id, event["version"])
+        return None
+
+    def commit(self, diagram_id: int, expected: int, data: dict[str, Any],
+               layout: dict[str, Any], author: Author, source: str, batch_id: str,
+               inverse: list[dict[str, Any]] | None = None, restored_from: int | None = None) -> Version:
+        previous = self.receipt(diagram_id, batch_id)
+        if previous:
+            return previous
+        doc = self._get_document(diagram_id)
+        if doc is None:
+            raise DiagramNotFoundInStore(diagram_id)
+        if int(doc["version"]) != expected:
+            raise RevisionConflict()
+        changes = diff_models(doc.get("data", {}), data)
+        summary = summarize(changes) if changes else "Reorganizó las posiciones del diagrama"
+        if restored_from:
+            summary = f"Restauró la versión {restored_from}. {summary}"
+        event = self._build_version(diagram_id, expected + 1, copy.deepcopy(data), author,
+            source, changes, summary, restored_from=restored_from)
+        event.update(layout=copy.deepcopy(layout), batch_id=batch_id, inverse=inverse or [])
+        pending = list(doc.get("pending_versions", []))
+        if len(pending) >= 8:
+            raise RuntimeError("No se puede guardar: hay versiones pendientes de persistencia.")
+        updated = {**doc, "data": copy.deepcopy(data), "layout": copy.deepcopy(layout),
+                   "version": expected + 1, "pending_versions": [*pending, event],
+                   "publish_pending": True, "updated_at": _now()}
+        if not self._cas_document(diagram_id, expected, updated):
+            raise RevisionConflict()
+        try:
+            self.project_versions(diagram_id)
+        except Exception:
+            logging.getLogger(__name__).exception("Versión confirmada; proyección pendiente para %s", diagram_id)
+        return event
+
+    def project_versions(self, diagram_id: int) -> None:
+        doc = self._get_document(diagram_id) or {}
+        for event in doc.get("pending_versions", []):
+            self._insert_version(event)
+        # La implementación concreta retira únicamente los eventos ya proyectados.
+        self._ack_versions(diagram_id, [e["version"] for e in doc.get("pending_versions", [])])
+
+    def _ack_versions(self, diagram_id: int, versions: list[int]) -> None: ...
+
+    def pending_publications(self) -> list[int]:
+        return []
+
+    def acknowledge_publication(self, diagram_id: int, revision: int) -> None: ...
 
     # --- Operaciones de alto nivel (comunes) ---------------------------------
 
@@ -219,7 +291,34 @@ class MongoDiagramRepository(DiagramRepository):
         )
 
     def _insert_version(self, version: Version) -> None:
-        self.versions.insert_one(dict(version))
+        self.versions.update_one(
+            {"diagram_id": version["diagram_id"], "version": version["version"]},
+            {"$setOnInsert": dict(version)}, upsert=True,
+        )
+
+    def _cas_document(self, diagram_id: int, expected: int, document: dict[str, Any]) -> bool:
+        result = self.documents.replace_one({"diagram_id": diagram_id, "version": expected}, document)
+        return bool(result.matched_count)
+
+    def receipt(self, diagram_id: int, batch_id: str) -> Version | None:
+        found = self.versions.find_one({"diagram_id": diagram_id, "batch_id": batch_id}, {"_id": 0})
+        if found:
+            return found
+        doc = self._get_document(diagram_id) or {}
+        return next((e for e in doc.get("pending_versions", []) if e.get("batch_id") == batch_id), None)
+
+    def _ack_versions(self, diagram_id: int, versions: list[int]) -> None:
+        self.documents.update_one({"diagram_id": diagram_id},
+            {"$pull": {"pending_versions": {"version": {"$in": versions}}}})
+
+    def pending_publications(self) -> list[int]:
+        return [d["diagram_id"] for d in self.documents.find(
+            {"$or": [{"publish_pending": True}, {"pending_versions.0": {"$exists": True}}]},
+            {"diagram_id": 1}).limit(100)]
+
+    def acknowledge_publication(self, diagram_id: int, revision: int) -> None:
+        self.documents.update_one({"diagram_id": diagram_id, "version": revision},
+            {"$set": {"publish_pending": False}})
 
     def has_document(self, diagram_id: int) -> bool:
         return self.documents.count_documents({"diagram_id": diagram_id}, limit=1) > 0
@@ -289,9 +388,36 @@ class InMemoryDiagramRepository(DiagramRepository):
 
     def _insert_version(self, version: Version) -> None:
         with self._lock:
-            self._versions.setdefault(version["diagram_id"], []).append(
-                copy.deepcopy(version)
-            )
+            versions = self._versions.setdefault(version["diagram_id"], [])
+            if not any(v["version"] == version["version"] for v in versions):
+                versions.append(copy.deepcopy(version))
+
+    def receipt(self, diagram_id: int, batch_id: str) -> Version | None:
+        for version in self._versions.get(diagram_id, []):
+            if version.get("batch_id") == batch_id:
+                return copy.deepcopy(version)
+        return super().receipt(diagram_id, batch_id)
+
+    def _cas_document(self, diagram_id: int, expected: int, document: dict[str, Any]) -> bool:
+        with self._lock:
+            if self._docs.get(diagram_id, {}).get("version") != expected:
+                return False
+            self._docs[diagram_id] = copy.deepcopy(document)
+            return True
+
+    def _ack_versions(self, diagram_id: int, versions: list[int]) -> None:
+        with self._lock:
+            if diagram_id in self._docs:
+                self._docs[diagram_id]["pending_versions"] = [
+                    e for e in self._docs[diagram_id].get("pending_versions", []) if e["version"] not in versions]
+
+    def pending_publications(self) -> list[int]:
+        return [key for key, doc in self._docs.items() if doc.get("publish_pending")]
+
+    def acknowledge_publication(self, diagram_id: int, revision: int) -> None:
+        with self._lock:
+            if self._docs.get(diagram_id, {}).get("version") == revision:
+                self._docs[diagram_id]["publish_pending"] = False
 
     def has_document(self, diagram_id: int) -> bool:
         return diagram_id in self._docs

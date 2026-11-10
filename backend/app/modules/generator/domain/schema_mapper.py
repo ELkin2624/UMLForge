@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 
 from .entity_info import EntityInfo
+from .exceptions import GenerationError
+from .sql_values import identifier, validate_field
 
 
 class ColumnInfo(BaseModel):
@@ -8,12 +10,14 @@ class ColumnInfo(BaseModel):
     sql_type: str
     is_primary_key: bool
     is_nullable: bool
+    is_unique: bool = False
 
 
 class TableInfo(BaseModel):
     name: str
     columns: list[ColumnInfo] = Field(default_factory=list)
     foreign_keys: list[str] = Field(default_factory=list)
+    checks: list[str] = Field(default_factory=list)
 
 
 class SchemaInfo(BaseModel):
@@ -25,7 +29,7 @@ class SchemaMapper:
     def _resolve_fk_sql_type(cls, target_ent: EntityInfo | None, target_id_type: str) -> str:
         if target_ent:
             pk_sql = target_ent.id_field.sql_type.upper()
-            if "SERIAL" in pk_sql or pk_sql in ("INT", "INTEGER"):
+            if pk_sql in ("SERIAL", "INT", "INTEGER"):
                 return "INTEGER"
             elif "BIGSERIAL" in pk_sql or pk_sql == "BIGINT":
                 return "BIGINT"
@@ -57,6 +61,8 @@ class SchemaMapper:
             if sql_type in ("BIGINT", "Long", "INTEGER", "INT"):
                 sql_type = "BIGSERIAL" if sql_type in ("BIGINT", "Long") else "SERIAL"
 
+            if entity.parent_class:
+                sql_type = cls._resolve_fk_sql_type(entity, entity.id_field.java_type)
             table.columns.append(
                 ColumnInfo(
                     name=entity.id_field.name,
@@ -98,7 +104,8 @@ class SchemaMapper:
                             name=rel.join_column,
                             sql_type=fk_sql_type,
                             is_primary_key=False,
-                            is_nullable=True,
+                            is_nullable=rel.is_nullable,
+                            is_unique=rel.relation_kind == "ONE_TO_ONE",
                         )
                     )
                     table.foreign_keys.append(
@@ -147,9 +154,31 @@ class SchemaMapper:
                     )
                     join_tables.append(join_table)
 
+            for f in [entity.id_field, *entity.fields]:
+                validate_field(f)
+                column = identifier(f.name)
+                for bound, op in ((f.min_value, ">="), (f.max_value, "<=")):
+                    if bound is not None:
+                        table.checks.append(f"CHECK ({column} {op} {bound})")
+                for bound, op in ((f.min_length, ">="), (f.max_length, "<=")):
+                    if bound is not None:
+                        table.checks.append(f"CHECK (char_length({column}) {op} {bound})")
             schema.tables.append(table)
 
         schema.tables.extend(join_tables)
+
+        names: set[str] = set()
+        for table in schema.tables:
+            identifier(table.name)
+            if table.name.lower() in names:
+                raise GenerationError(f"Tabla duplicada: {table.name}")
+            names.add(table.name.lower())
+            columns: set[str] = set()
+            for column in table.columns:
+                identifier(column.name)
+                if column.name.lower() in columns:
+                    raise GenerationError(f"Columna duplicada en {table.name}: {column.name}")
+                columns.add(column.name.lower())
         return schema
 
     @classmethod

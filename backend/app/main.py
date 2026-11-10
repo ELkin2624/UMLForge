@@ -1,5 +1,6 @@
 import logging
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
+import asyncio
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,6 +28,8 @@ from app.modules.notifications.router import router as notifications_router
 from app.modules.voice.router import router as voice_router
 from app.modules.ai_agent.router import router as ai_agent_router
 from app.modules.ai_agent.presence_router import router as agent_presence_router
+from app.modules.collaboration.router import router as command_router
+from app.modules.ai_agent.runs_router import router as runs_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,7 +39,22 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         import logging
         logging.getLogger("uvicorn").error(f"Error inicializando tablas en PostgreSQL: {e}")
-    yield
+    worker = None
+    if settings.AGENT_WORKER_ENABLED and settings.COLLAB_SERVICE_TOKEN:
+        from app.modules.ai_agent.router import get_nosql_repo
+        from app.modules.ai_agent.runs_repository import RunRepository
+        from app.modules.ai_agent.runtime import AgentRuntime
+        from app.core.dependencies import get_diagram_repo
+        memory = get_nosql_repo()
+        runtime = AgentRuntime(RunRepository(memory.db), get_diagram_repo(), memory)
+        worker = asyncio.create_task(runtime.loop())
+    try:
+        yield
+    finally:
+        if worker:
+            worker.cancel()
+            with suppress(asyncio.CancelledError):
+                await worker
 
 app = FastAPI(
     title="Herramienta CASE API",
@@ -72,6 +90,8 @@ app.include_router(xmi_router)
 app.include_router(voice_router)
 app.include_router(ai_agent_router)
 app.include_router(agent_presence_router)
+app.include_router(command_router)
+app.include_router(runs_router)
 
 
 # Exception Handlers

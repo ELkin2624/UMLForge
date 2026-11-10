@@ -1,3 +1,5 @@
+> Implementación actual: [Agente colaborador](agente-colaborativo.md). Este documento conserva el plan histórico; la autoridad de escritura pasó al coordinador del servidor y las tareas son persistentes. MCP externo sigue fuera del alcance.
+
 # Plan: agente de IA como colaborador del diagramador
 
 Basado en la auditoría del repo (HEAD `59b9fc8`). Se **adapta** lo existente; no se reconstruye nada.

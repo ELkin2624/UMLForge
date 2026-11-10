@@ -12,16 +12,18 @@ PAYLOAD_CONTRACT = (
     "Según la operación: "
     "ADD_CLASS {attributes:[{name,type,visibility?}], operations:[{name,return_type}]}; "
     "UPDATE_CLASS {new_name?, add_attributes:[{name,type}], "
-    "update_attributes:[{name,new_name?,type?,visibility?}], remove_attributes:[nombre]}; "
+    "update_attributes:[{name,new_name?,type?,visibility?}], remove_attributes:[nombre], "
+    "add_operations:[{name,return_type?}], update_operations:[{name,new_name?,return_type?}], remove_operations:[nombre]}; "
     "DELETE_CLASS {}; "
     "ADD_RELATION {source,target,type?,source_multiplicity?,target_multiplicity?}; "
+    "UPDATE_RELATION {source,target,type?,new_type?,new_source_multiplicity?,new_target_multiplicity?,new_name?}; "
     "DELETE_RELATION {source,target,type?}. "
     "Las clases se identifican por NOMBRE (target_name o source/target)."
 )
 
 
 class CanvasPatchOperation(BaseModel):
-    op: Literal["ADD_CLASS", "UPDATE_CLASS", "DELETE_CLASS", "ADD_RELATION", "DELETE_RELATION"]
+    op: Literal["ADD_CLASS", "UPDATE_CLASS", "DELETE_CLASS", "ADD_RELATION", "UPDATE_RELATION", "DELETE_RELATION"]
     target_name: str = Field(description="Nombre de la clase o relación afectada")
     payload: Dict[str, Any] = Field(
         default_factory=dict,

@@ -1,0 +1,33 @@
+.sql-dialog {
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 24px;
+  color: var(--ink-black);
+  background: var(--bg-card);
+  border: var(--border-ink);
+  border-radius: 16px;
+  box-shadow: var(--shadow-hard-lg);
+  font-family: var(--sans);
+}
+.sql-dialog::backdrop { background: var(--ink-black); opacity: .45; }
+.sql-dialog h2 { margin-top: 0; }
+.sql-dialog p { line-height: 1.5; }
+.sql-dialog label { display: block; margin: 16px 0 6px; font-weight: 600; }
+.sql-dialog select, .sql-dialog input, .sql-dialog button {
+  min-height: 44px;
+  padding: 10px;
+  font: inherit;
+  color: var(--ink-black);
+  border: var(--border-ink-thin);
+  border-radius: 10px;
+  background: var(--bg-card);
+}
+.sql-dialog select, .sql-dialog input { width: 100%; box-sizing: border-box; }
+.sql-dialog footer { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+.sql-dialog button { cursor: pointer; }
+.sql-dialog button[type=submit] { background: var(--btn-peach); box-shadow: var(--shadow-hard-sm); }
+.sql-dialog :disabled { opacity: .6; cursor: wait; }
+.sql-dialog :focus-visible { outline: 2px solid var(--ink-black); outline-offset: 3px; }
+.sql-dialog [role=alert] { font-weight: 600; }

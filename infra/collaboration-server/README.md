@@ -1,130 +1,41 @@
-# UMLForge — Servidor de Colaboración en Tiempo Real
+# UMLForge — servidor de colaboración
 
-Servidor WebSocket basado en `@y/websocket-server` (Yjs) que permite a múltiples clientes editar simultáneamente el mismo diagrama UML.
+Servidor WebSocket Yjs para distribuir el estado confirmado y la presencia de los participantes. Requiere Node.js 24 o superior, FastAPI, MongoDB y PostgreSQL.
 
----
+## Arranque
 
-## ⚠️ Advertencias importantes
-
-- **Sin persistencia**: Los documentos colaborativos se almacenan **en memoria**. Al reiniciar el servidor, todos los documentos y el historial de cambios se pierden. Si deseas persistencia, necesitas un servidor personalizado con `@y/websocket-server/utils` + LevelDB.
-- **Autenticación y roles**: cada conexión exige `?token=` y se valida contra FastAPI (`GET /diagrams/{id}`). Los lectores (`READER`) reciben el documento y comparten presencia, pero el servidor **descarta sus cambios**. Las salas no numéricas solo exigen sesión válida. El rol se lee al conectar: si cambia, hay que reconectar.
-- **Agente de IA (solo presencia)**: si el propietario lo activa (`PUT /api/v1/diagrams/{id}/agent`), el servidor lo publica como un peer más en el awareness (`user.isAgent`). `POST /agent/{id}/refresh` (con `Authorization: Bearer`) hace que el servidor relea el estado real desde FastAPI. El agente aún no escribe en el documento.
-- **Sin granularidad CRDT por campo**: UMLForge almacena el modelo como un JSON completo en `Y.Map`. El último en escribir gana a nivel de documento.
-
----
-
-## Requisitos
-
-- Node.js ≥ 18
-- npm ≥ 9
-
----
-
-## Instalación
+Desde la raíz del repositorio:
 
 ```bash
-cd services/collaboration-server
+python scripts/configure-collaboration.py
+cd infra/collaboration-server
 npm install
-```
-
----
-
-## Ejecución
-
-```bash
-# Iniciar con configuración por defecto (localhost:1234)
 npm start
-
-# O con variables de entorno personalizadas:
-PORT=1234 HOST=localhost npm start
-
-# Para acceso desde red local (otros dispositivos):
-PORT=1234 HOST=0.0.0.0 npm start
 ```
 
-El servidor escuchará en `ws://localhost:1234` por defecto.
+El script genera un secreto compartido en los archivos `.env` ignorados por Git. `npm start` carga el archivo local. Iniciar también FastAPI y el frontend (`cd frontend && npm run dev`). La configuración completa y el uso del agente están en [Agente colaborador](../../docs/agente-colaborativo.md).
 
----
+| Variable | Valor predeterminado | Uso |
+|---|---|---|
+| `HOST` | `localhost` | Interfaz de escucha; usar `0.0.0.0` para acceso desde la red |
+| `PORT` | `1234` | Puerto HTTP/WebSocket |
+| `BACKEND_URL` | `http://localhost:8000` | API que valida sesiones, permisos y estado inicial |
+| `COLLAB_SERVICE_TOKEN` | sin valor | Autenticación del canal interno; debe coincidir con FastAPI |
 
-## Variables de entorno
+## Estado y permisos
 
-| Variable | Default      | Descripción                    |
-|----------|--------------|--------------------------------|
-| `HOST`   | `localhost`  | Interfaz de red del servidor   |
-| `PORT`   | `1234`       | Puerto del servidor WebSocket  |
+Cada conexión exige un JWT de usuario y valida el acceso contra FastAPI. Los roles se consultan al conectar; un cambio de permiso requiere reconexión.
 
----
+En salas numéricas, los navegadores envían comandos protegidos a FastAPI y reciben por Yjs el resultado confirmado. Ningún navegador puede escribir directamente el documento, incluidos los editores. Los lectores comparten presencia y reciben cambios. Las salas antiguas no numéricas mantienen la edición local anterior.
 
-## Prueba con 3 navegadores (Chrome, Edge, Firefox)
+MongoDB persiste el modelo, las posiciones y las revisiones. Al conectar se hidrata la sala desde FastAPI. El Y.Doc y awareness viven en memoria; un reinicio del servidor WebSocket no borra el historial persistido. El trabajador del backend recupera publicaciones pendientes.
 
-### 1. Iniciar servicios
+El agente tiene una identidad y un cursor publicados por el servidor. El canal `/internal/*` requiere el secreto de servicio y permite ejecutar el motor compartido, publicar revisiones y actualizar presencia. El navegador no recibe ese secreto ni puede suplantar al agente.
+
+## Verificación
 
 ```bash
-# Terminal 1 — Servidor de colaboración
-cd services/collaboration-server && npm install && npm start
-
-# Terminal 2 — Frontend
-cd apps/web && npm run dev
+npm test
 ```
 
-### 2. Conectar 3 clientes
-
-Abre `http://localhost:5173` en Chrome, Edge y Firefox (o 3 perfiles distintos).
-
-En el panel de colaboración (esquina inferior-izquierda):
-1. Introduce un nombre de usuario distinto en cada navegador
-2. Usa la misma sala: `umlforge-barber-shop`
-3. Haz clic en **Conectar**
-
-### 3. Prueba A — Colaboración simultánea
-
-| Usuario | Acción                          | Resultado esperado              |
-|---------|---------------------------------|---------------------------------|
-| U1      | Crea clase `Cliente`            | U2 y U3 ven `Cliente`           |
-| U2      | Crea clase `Cita`               | U1 y U3 ven `Cita`              |
-| U3      | Crea clase `Servicio`           | U1 y U2 ven `Servicio`          |
-| U1      | Modifica atributo de `Cliente`  | U2 y U3 ven el cambio           |
-
-### 4. Prueba B — Late-joiner (sincronización inicial)
-
-1. U1 crea `Cliente`, `Cita`, `Servicio` y está conectado
-2. U2 se conecta **después** a la misma sala
-3. **Resultado**: U2 recibe automáticamente las 3 clases sin acción adicional
-
-### 5. Prueba C — Autoridad de sala (modelo local vs. remoto)
-
-1. U1 publica el modelo **Barbería** en sala `umlforge-barber-shop`
-2. U2 tiene un modelo local **Escuela**
-3. U2 se conecta a `umlforge-barber-shop`
-4. **Resultado**: U2 recibe el aviso `⚠️ Tu modelo local fue reemplazado por el modelo de la sala` y ve **Barbería**
-
-### 6. Prueba D — Desconexión y reconexión
-
-1. U3 se desconecta → U1 y U2 ven `2 usuarios online`
-2. U3 reconecta → recibe el estado actual; U1 y U2 ven `3 usuarios online`
-
-### 7. Prueba E — Aislamiento offline
-
-1. U1 está conectado, crea `Cliente`
-2. Se detiene el servidor WebSocket (`Ctrl+C`)
-3. U1 sigue editando (crea `Cita`) — **el editor no debe bloquearse**
-4. Se reinicia el servidor, U1 reconecta → sincronización del estado
-
----
-
-## Arquitectura
-
-```
-FastAPI         → http://localhost:8000   (REST: validación, generación, XMI, E2E)
-Y-WebSocket     → ws://localhost:1234     (colaboración Yjs)
-Vite Dev Server → http://localhost:5173   (frontend React)
-```
-
-El servidor de colaboración **no interactúa con FastAPI**. Son servicios completamente independientes.
-
-
-## Pruebas
-
-```bash
-npm test   # node:test; levanta el servidor con un backend simulado
-```
+Las pruebas usan un backend simulado y verifican permisos, publicación por revisión, presencia, cursor y rechazo de suplantaciones. Para probar la integración, abrir el mismo proyecto con dos sesiones autorizadas, activar el agente como propietario y solicitar una propuesta. Ambos clientes deben recibir la propuesta y, tras aprobarla, el modelo y las posiciones confirmadas. Al desconectar el servidor, el editor espera la reconexión antes de permitir cambios.

@@ -1,0 +1,125 @@
+.server-agent {
+  position: fixed;
+  top: 72px;
+  right: 14px;
+  bottom: 14px;
+  width: min(390px, calc(100vw - 28px));
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  background: var(--bg-card);
+  color: var(--ink-black);
+  border: var(--border-ink);
+  border-radius: 16px;
+  box-shadow: var(--shadow-hard-lg);
+  overflow: hidden;
+  font: 14px var(--sans);
+}
+.server-agent header,
+.server-agent nav,
+.server-agent form {
+  padding: 12px;
+  border-bottom: var(--border-ink-thin);
+}
+.server-agent header,
+.server-agent strong,
+.agent-compose-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+.server-agent p {
+  white-space: pre-wrap;
+  line-height: 1.45;
+  margin: 8px 12px;
+}
+.server-agent nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.server-agent button,
+.server-agent select,
+.server-agent textarea,
+.agent-open {
+  font: inherit;
+  color: var(--ink-black);
+  border: var(--border-ink-thin);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--bg-card);
+  min-height: 44px;
+}
+.server-agent button {
+  cursor: pointer;
+}
+.server-agent button:hover,
+.server-agent button[aria-pressed="true"] {
+  background: var(--btn-peach);
+}
+.server-agent :focus-visible {
+  outline: 2px solid var(--ink-black);
+  outline-offset: 2px;
+}
+.server-agent :disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.server-agent form {
+  border-top: var(--border-ink-thin);
+  border-bottom: 0;
+}
+.server-agent select,
+.server-agent textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 6px 0;
+}
+.server-agent textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.agent-scroll {
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 10px;
+}
+.agent-message,
+.agent-task {
+  border: var(--border-ink-thin);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.agent-message--user {
+  background: var(--bg-cream);
+}
+.agent-task button {
+  margin: 4px;
+}
+.agent-task details p {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.agent-provider {
+  font-size: 12px;
+  color: var(--ink-gray);
+}
+.agent-attachment {
+  max-height: 80px;
+  max-width: 100%;
+}
+.agent-open {
+  position: fixed;
+  right: 18px;
+  top: 76px;
+  z-index: 998;
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+}
+.server-agent [role="alert"] {
+  font-weight: 700;
+}

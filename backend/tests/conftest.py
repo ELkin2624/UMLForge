@@ -14,3 +14,11 @@ def diagram_repo():
     app.dependency_overrides[get_diagram_repo] = lambda: repo
     yield repo
     app.dependency_overrides.pop(get_diagram_repo, None)
+
+
+@pytest.fixture(autouse=True)
+def isolated_agent_runtime(monkeypatch):
+    """Las pruebas de API no deben arrancar un trabajador contra las bases locales."""
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "COLLAB_SERVICE_TOKEN", "")
+    monkeypatch.setattr(settings, "AGENT_WORKER_ENABLED", False)

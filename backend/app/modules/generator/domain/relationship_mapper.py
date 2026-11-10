@@ -65,6 +65,7 @@ class RelationshipMapper:
             is_collection=is_collection,
             cascade=cascade,
             is_composition=is_composition,
+            is_nullable=their_mult not in ("1", "1..1"),
         )
 
     @classmethod

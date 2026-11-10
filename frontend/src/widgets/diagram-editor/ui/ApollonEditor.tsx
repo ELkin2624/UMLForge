@@ -3,7 +3,7 @@ import { Apollon } from '@tumaet/apollon';
 import { CursorOverlay } from '../../../components/presence/CursorOverlay';
 import { SelectionOverlay } from '../../../components/presence/SelectionOverlay';
 import { useApollonEditor } from '../model/use-apollon-editor';
-import { AICursor } from '../../../features/ai-assistant';
+import { AgentPreview, CommandConflictBanner } from '../../../features/ai-assistant';
 
 /** Componente visual del editor de diagramas UML (Apollon) estructurado según FSD.
  * Responsabilidad exclusiva: Renderizar el canvas, overlays de presencia y vincular eventos. */
@@ -25,7 +25,8 @@ export const ApollonEditor: React.FC = () => {
       onMouseLeave={handleMouseLeave}
     >
       <CursorOverlay editorRef={editorRef} />
-      <AICursor />
+      <AgentPreview editorRef={editorRef} />
+      <CommandConflictBanner />
       <SelectionOverlay editorRef={editorRef} />
       <Apollon
         key={`ClassDiagram-${localRole}`}

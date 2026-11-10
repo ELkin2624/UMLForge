@@ -4,6 +4,8 @@ const yUtils = require('y-websocket/bin/utils');
 const { fetchAccess } = require('./src/access');
 const { restrictToReadOnly } = require('./src/read-only');
 const { applyAgentPresence } = require('./src/agent-presence');
+const { handleInternal, publish, agentPresence } = require('./src/coordinator');
+const { protectAgentPresence } = require('./src/presence-guard');
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': process.env.CORS_ORIGIN || '*',
@@ -44,6 +46,10 @@ async function handleAgentRefresh(backendUrl, docName, request, response) {
  */
 function createCollabServer({ backendUrl = process.env.BACKEND_URL || 'http://localhost:8000' } = {}) {
   const server = http.createServer((request, response) => {
+    if (request.url.startsWith('/internal/')) {
+      handleInternal(request, response, sendJson).catch(() => sendJson(response, 422, {error:'Solicitud inválida'}));
+      return;
+    }
     if (request.method === 'OPTIONS') {
       response.writeHead(204, CORS_HEADERS);
       return response.end();
@@ -61,6 +67,7 @@ function createCollabServer({ backendUrl = process.env.BACKEND_URL || 'http://lo
   });
 
   const wss = new WebSocket.Server({ server });
+  server.collaborationSockets = wss;
 
   wss.on('connection', async (conn, req) => {
     // Buffer de mensajes entrantes durante la validación asíncrona de autenticación.
@@ -98,10 +105,15 @@ function createCollabServer({ backendUrl = process.env.BACKEND_URL || 'http://lo
       console.log(`Connection accepted for ${docName} (rol ${access.role})`);
 
       // Los lectores no pueden modificar el documento (solo verlo y compartir presencia).
-      if (access.role === 'READER') restrictToReadOnly(conn);
+      if (/^\d+$/.test(docName)) {
+        publish(docName, { data: access.data, layout: access.layout, revision: access.revision });
+        restrictToReadOnly(conn);
+        protectAgentPresence(conn, yUtils.getYDoc(docName).clientID);
+      } else if (access.role === 'READER') restrictToReadOnly(conn);
 
       yUtils.setupWSConnection(conn, req, { docName });
       applyAgentPresence(docName, access.agentEnabled);
+      if(access.agentState) agentPresence(docName,access.agentState);
 
       // Reproducir los mensajes acumulados durante el handshake de autenticación
       for (const item of messageQueue) {

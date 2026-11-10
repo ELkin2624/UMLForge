@@ -6,7 +6,7 @@ import { DeploymentResultPanel } from './features/project-deployment';
 import { Notification } from './shared/ui';
 import { CollaborationPanel } from './components/CollaborationPanel';
 import { PresenceToasts } from './components/presence/PresenceToasts';
-import { AIAssistantSidebar, AISuggestionsOverlay } from './features/ai-assistant';
+import { AIAssistantSidebar } from './features/ai-assistant';
 import { ShareDialog } from './features/sharing/ui/ShareDialog';
 import { ValidationResult, DeploymentResult } from './types/api-responses';
 import { useModelStore } from './store/model-store';
@@ -333,7 +333,6 @@ function App() {
       <CollaborationPanel />
 
       {/* ── Modo Sugerencias IA (Google Docs style) ── */}
-      <AISuggestionsOverlay />
 
       {/* ── Arquitecto IA Omnisciente (Chat Privado + Muro de Auditoría + Sugerencias) ── */}
       <AIAssistantSidebar />

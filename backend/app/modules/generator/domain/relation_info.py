@@ -36,6 +36,7 @@ class RelationInfo(BaseModel):
     is_composition: bool = Field(
         default=False, description="Indica si es una composición"
     )
+    is_nullable: bool = True
     target_id_type: str = Field(
         default="Long", description="Tipo Java del ID de la entidad destino (ej. 'Long', 'UUID')"
     )

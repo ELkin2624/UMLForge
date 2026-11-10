@@ -12,12 +12,21 @@ export function registerFlushHandler(next: FlushHandler | null): void {
   handler = next;
 }
 
-/** Espera a que se guarde lo pendiente. Nunca lanza: si falla, la consulta sigue con lo guardado. */
+/** Espera confirmación; los errores impiden consultar o reemplazar un contexto sin guardar. */
 export async function flushPendingSave(timeoutMs = 5000): Promise<void> {
   if (!handler) return;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
-    await Promise.race([handler(), new Promise<void>((resolve) => setTimeout(resolve, timeoutMs))]);
-  } catch {
-    /* el autoguardado ya informa de su error en el SaveStatus */
+    await Promise.race([
+      handler(),
+      new Promise<void>((_, reject) => {
+        timer = setTimeout(
+          () => reject(new Error("Todavía hay cambios pendientes de guardar.")),
+          timeoutMs,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }

@@ -62,7 +62,7 @@ export async function refreshToken(): Promise<string | null> {
   return refreshPromise;
 }
 
-export async function request<T>(path: string, options?: RequestInit): Promise<T> {
+export async function request<T>(path: string, options?: RequestInit, responseType: 'json' | 'blob' = 'json'): Promise<T> {
   const url = `${API_BASE_URL}${path}`;
   let token = useAuthStore.getState().token;
 
@@ -120,7 +120,14 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
     let errorDetail = rawText;
     try {
       const errorData = JSON.parse(rawText);
-      errorDetail = errorData.detail?.message || errorData.detail || rawText;
+      const detail = errorData.detail;
+      const errors = Array.isArray(errorData.errors)
+        ? errorData.errors.map((item: { message?: string }) => item.message).filter(Boolean).join('; ')
+        : '';
+      errorDetail = errors || errorData.message || detail?.message ||
+        (typeof detail === 'string' ? detail : Array.isArray(detail)
+          ? detail.map((item: { msg?: string }) => item.msg || 'Solicitud inválida').join('; ')
+          : rawText);
     } catch {}
     throw new Error(errorDetail || `HTTP error! status: ${response.status}`);
   }
@@ -130,5 +137,5 @@ export async function request<T>(path: string, options?: RequestInit): Promise<T
     return null as unknown as T;
   }
 
-  return response.json();
+  return responseType === 'blob' ? response.blob() as Promise<T> : response.json();
 }

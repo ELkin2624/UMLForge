@@ -14,11 +14,20 @@ async function fetchAccess(backendUrl, docName, token) {
       return { authorized: false, status: res.status, reason: `diagrama ${docName}: FastAPI respondió ${res.status}` };
     }
     const body = await res.json().catch(() => ({}));
+    let agentState;
+    if (body.agent_enabled) {
+      const presence = await fetch(`${backendUrl}/api/v1/ai/room-presence/${docName}`, {headers}).catch(()=>null);
+      if (presence?.ok) agentState = (await presence.json()).state;
+    }
     return {
       authorized: true,
       // Sin rol explícito se asume el más restrictivo.
       role: body.my_role || 'READER',
       agentEnabled: body.agent_enabled === true,
+      agentState,
+      data: body.data || {classes:[], relationships:[]},
+      layout: body.layout || {},
+      revision: body.version || 1,
     };
   }
 
